@@ -20,6 +20,7 @@ import org.traccar.database.ConnectionManager;
 import org.traccar.database.DataManager;
 import org.traccar.database.IdentityManager;
 import org.traccar.database.PermissionsManager;
+import org.traccar.database.mongo.MongoDataManager;
 import org.traccar.geocode.BingMapsReverseGeocoder;
 import org.traccar.geocode.FactualReverseGeocoder;
 import org.traccar.geocode.GisgraphyReverseGeocoder;
@@ -117,9 +118,18 @@ public final class Context {
             Log.setupLogger(config);
         }
 
-        if (config.hasKey("database.url")) {
-            dataManager = new DataManager(config);
+        String strategy = config.getString("database.strategy", "rdbms");
+        switch (strategy) {
+            case "mongo":
+                dataManager = new MongoDataManager(config);
+                break;
+            case "rdbms":
+                if (config.hasKey("database.url")) {
+                    dataManager = new DataManager(config);
+                }
+                break;
         }
+
         identityManager = dataManager;
 
         if (config.getBoolean("geocoder.enable")) {

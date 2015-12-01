@@ -41,9 +41,15 @@
     <entry key='logger.level'>all</entry>
     <entry key='logger.file'>target/tracker-server.log</entry>
 
+
+    <!-- Mongo CONFIG -->
+    <entry key="mongo.host">localhost</entry>
+    <entry key="mongo.port">27017</entry>
+    <entry key="mongo.db.name">traccar</entry>
     <!-- DATABASE CONFIG -->
 
     <!--<entry key='database.driverFile'>hsqldb.jar</entry>-->
+    <entry key="database.strategy">mongo</entry>
     <entry key='database.driver'>org.h2.Driver</entry>
     <entry key='database.url'>jdbc:h2:~/h2db/db</entry>
     <entry key='database.user'>sa</entry>

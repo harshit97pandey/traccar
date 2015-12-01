@@ -65,6 +65,11 @@ public class DataManager implements IdentityManager {
         devicesRefreshDelay = config.getLong("database.refreshDelay", DEFAULT_REFRESH_DELAY) * 1000;
     }
 
+    public DataManager() {
+        config = null;
+        devicesRefreshDelay = 0;
+    }
+
     public DataSource getDataSource() {
         return dataSource;
     }
