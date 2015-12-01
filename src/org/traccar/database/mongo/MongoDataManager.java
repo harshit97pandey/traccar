@@ -128,16 +128,19 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 position.setServerTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
                 position.setLatitude(-36.8785803);
                 position.setLongitude(174.7281713);
+                position.setSpeed(1311.234123);
                 addPosition(position);
 
                 position.setTime(JsonConverter.parseDate("2015-05-22T12:00:02.000Z"));
                 position.setLatitude(-36.8870932);
                 position.setLongitude(174.7473116);
+                position.setSpeed(1311.234123);
                 addPosition(position);
 
                 position.setTime(JsonConverter.parseDate("2015-05-22T12:00:03.000Z"));
                 position.setLatitude(-36.8932371);
                 position.setLongitude(174.7743053);
+                position.setSpeed(1311.234123);
                 addPosition(position);
 
                 updateLatestPosition(position);
@@ -277,6 +280,7 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                         .append("distanceUnit", user.getDistanceUnit())
                         .append("latitude", user.getLatitude())
                         .append("longitude", user.getLongitude())
+                        .append("speedUnit", user.getSpeedUnit())
                         .append("zoom", user.getZoom())));
 
         if (user.getHashedPassword() != null) {
