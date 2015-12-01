@@ -528,6 +528,7 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                         .append("mapUrl", server.getMapUrl())
                         .append("language", server.getLanguage())
                         .append("speedUnit", server.getSpeedUnit())
+                        .append("distanceUnit", server.getDistanceUnit())
                         .append("latitude", server.getLatitude())
                         .append("longitude", server.getLongitude())
                         .append("zoom", server.getZoom())));
