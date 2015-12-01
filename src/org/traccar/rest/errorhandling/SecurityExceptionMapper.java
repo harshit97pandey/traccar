@@ -15,6 +15,7 @@ public class SecurityExceptionMapper implements ExceptionMapper<SecurityExceptio
 
     @Override
     public Response toResponse(SecurityException e) {
+        e.printStackTrace();
         return ResponseBuilder.getResponse(HttpServletResponse.SC_FORBIDDEN, e);
     }
 }

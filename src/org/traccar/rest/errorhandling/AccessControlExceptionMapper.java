@@ -16,6 +16,7 @@ public class AccessControlExceptionMapper implements ExceptionMapper<AccessContr
 
     @Override
     public Response toResponse(AccessControlException e) {
+        e.printStackTrace();
         return ResponseBuilder.getResponse(HttpServletResponse.SC_UNAUTHORIZED, e);
     }
 }

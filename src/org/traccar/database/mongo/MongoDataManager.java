@@ -5,6 +5,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import org.bson.BsonDouble;
 import org.bson.Document;
 import org.traccar.Config;
 import org.traccar.helper.Log;
@@ -177,8 +178,8 @@ public class MongoDataManager extends org.traccar.database.DataManager {
             user.setLanguage(cursor.getString("language"));
             user.setDistanceUnit(cursor.getString("distanceUnit"));
             user.setSpeedUnit(cursor.getString("speedUnit"));
-            user.setLatitude(getDouble(cursor, "latitude"));
-            user.setLongitude(getDouble(cursor, "longitude"));
+            user.setLatitude(cursor.getDouble("latitude"));
+            user.setLongitude(cursor.getDouble("longitude"));
             user.setZoom(cursor.getInteger("zoom", 0));
             user.setHashedPassword(cursor.getString("hashedPassword"));
             user.setSalt(cursor.getString("salt"));
@@ -203,7 +204,15 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 user.setId(next.getLong("id"));
                 user.setName(next.getString("name"));
                 user.setEmail(next.getString("email"));
-                user.setAdmin(next.getBoolean("admin"));
+                user.setReadonly(next.getBoolean("readonly", false));
+                user.setAdmin(next.getBoolean("admin", false));
+                user.setMap(next.getString("map"));
+                user.setLanguage(next.getString("language"));
+                user.setDistanceUnit(next.getString("distanceUnit"));
+                user.setSpeedUnit(next.getString("speedUnit"));
+                user.setLatitude(next.getDouble("latitude"));
+                user.setLongitude(next.getDouble("longitude"));
+                user.setZoom(next.getInteger("zoom", 0));
                 users.add(user);
             }
         } finally {
@@ -226,8 +235,8 @@ public class MongoDataManager extends org.traccar.database.DataManager {
             user.setLanguage(cursor.getString("language"));
             user.setDistanceUnit(cursor.getString("distanceUnit"));
             user.setSpeedUnit(cursor.getString("speedUnit"));
-            user.setLatitude(getDouble(cursor, "latitude"));
-            user.setLongitude(getDouble(cursor, "longitude"));
+            user.setLatitude(cursor.getDouble("latitude"));
+            user.setLongitude(cursor.getDouble("longitude"));
             user.setZoom(cursor.getInteger("zoom", 0));
             user.setHashedPassword(cursor.getString("hashedPassword"));
             user.setSalt(cursor.getString("salt"));
@@ -260,20 +269,20 @@ public class MongoDataManager extends org.traccar.database.DataManager {
 
     public void updateUser(User user) throws SQLException {
         database.getCollection(CollectionName.user).updateOne(new Document("id", user.getId()),
-                new Document("$set", new Document("name", user.getName()))
-                        .append("$set", new Document("email", user.getEmail()))
-                        .append("$set", new Document("admin", user.getAdmin()))
-                        .append("$set", new Document("map", user.getMap()))
-                        .append("$set", new Document("language", user.getLanguage()))
-                        .append("$set", new Document("distanceUnit", user.getDistanceUnit()))
-                        .append("$set", new Document("latitude", user.getLatitude()))
-                        .append("$set", new Document("longitude", user.getLongitude()))
-                        .append("$set", new Document("zoom", user.getZoom())));
+                new Document("$set", new Document("name", user.getName())
+                        .append("email", user.getEmail())
+                        .append("admin", user.getAdmin())
+                        .append("map", user.getMap())
+                        .append("language", user.getLanguage())
+                        .append("distanceUnit", user.getDistanceUnit())
+                        .append("latitude", user.getLatitude())
+                        .append("longitude", user.getLongitude())
+                        .append("zoom", user.getZoom())));
 
         if (user.getHashedPassword() != null) {
             database.getCollection(CollectionName.user).updateOne(new Document("id", user.getId()),
-                    new Document("$set", new Document("hashedPassword", user.getHashedPassword()))
-                            .append("$set", new Document("salt", user.getSalt())));
+                    new Document("$set", new Document("hashedPassword", user.getHashedPassword())
+                            .append("salt", user.getSalt())));
         }
     }
 
@@ -358,14 +367,14 @@ public class MongoDataManager extends org.traccar.database.DataManager {
 
     public void updateDevice(Device device) throws SQLException {
         database.getCollection(CollectionName.device).updateOne(new Document("id", device.getId()),
-                new Document("$set", new Document("name", device.getName()))
-                        .append("$set", new Document("uniqueId", device.getUniqueId())));
+                new Document("$set", new Document("name", device.getName())
+                        .append("uniqueId", device.getUniqueId())));
     }
 
     public void updateDeviceStatus(Device device) throws SQLException {
         database.getCollection(CollectionName.device).updateOne(new Document("id", device.getId()),
-                new Document("$set", new Document("status", device.getStatus()))
-                        .append("$set", new Document("lastUpdate", device.getLastUpdate())));
+                new Document("$set", new Document("status", device.getStatus())
+                        .append("lastUpdate", device.getLastUpdate())));
     }
 
     public void removeDevice(Device device) throws SQLException {
@@ -433,9 +442,9 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 .append("deviceTime", position.getDeviceTime())
                 .append("fixTime", position.getFixTime())
                 .append("valid", position.getValid())
-                .append("latitude", position.getLatitude())//
-                .append("longitude", position.getLongitude())//
-                .append("altitude", position.getAltitude())
+                .append("latitude", new BsonDouble(position.getLatitude()))//
+                .append("longitude", new BsonDouble(position.getLongitude()))//
+                .append("altitude", new BsonDouble(position.getAltitude()))
                 .append("speed", position.getSpeed())
                 .append("course", position.getCourse())
                 .append("address", position.getAddress())
@@ -476,7 +485,7 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 position.setOutdated(next.getBoolean("outdated", false));
                 position.setValid(next.getBoolean("valid"));
                 position.setLatitude(next.getDouble("latitude"));
-                position.setLongitude(getDouble(next, "longitude"));
+                position.setLongitude(next.getDouble("longitude"));
                 position.setAltitude(next.getDouble("altitude"));
                 position.setSpeed(next.getDouble("speed"));
                 position.setCourse(next.getDouble("course"));
@@ -487,14 +496,6 @@ public class MongoDataManager extends org.traccar.database.DataManager {
         } finally {
             cursor.close();
         }
-    }
-
-    private Double getDouble(Document document, Object key) {
-        if (document.containsKey(key)) {
-            Double aDouble = document.getDouble(key);
-            return aDouble;
-        }
-        return 0D;
     }
 
     public Server getServer() throws SQLException {
@@ -517,14 +518,14 @@ public class MongoDataManager extends org.traccar.database.DataManager {
 
     public void updateServer(Server server) throws SQLException {
         database.getCollection(CollectionName.server).updateOne(new Document("id", server.getId()),
-                new Document("$set", new Document("registration", server.getRegistration()))
-                        .append("$set", new Document("map", server.getMap()))
-                        .append("$set", new Document("bingKey", server.getBingKey()))
-                        .append("$set", new Document("mapUrl", server.getMapUrl()))
-                        .append("$set", new Document("language", server.getLanguage()))
-                        .append("$set", new Document("speedUnit", server.getSpeedUnit()))
-                        .append("$set", new Document("latitude", server.getLatitude()))
-                        .append("$set", new Document("longitude", server.getLongitude()))
-                        .append("$set", new Document("zoom", server.getZoom())));
+                new Document("$set", new Document("registration", server.getRegistration())
+                        .append("map", server.getMap())
+                        .append("bingKey", server.getBingKey())
+                        .append("mapUrl", server.getMapUrl())
+                        .append("language", server.getLanguage())
+                        .append("speedUnit", server.getSpeedUnit())
+                        .append("latitude", server.getLatitude())
+                        .append("longitude", server.getLongitude())
+                        .append("zoom", server.getZoom())));
     }
 }

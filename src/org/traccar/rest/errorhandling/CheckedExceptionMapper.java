@@ -15,6 +15,7 @@ public class CheckedExceptionMapper implements ExceptionMapper<Exception> {
 
     @Override
     public Response toResponse(Exception e) {
+        e.printStackTrace();
         return ResponseBuilder.getResponse(HttpServletResponse.SC_FORBIDDEN, e);
     }
 }
