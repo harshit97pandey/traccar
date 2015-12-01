@@ -95,33 +95,38 @@ Ext.define('Traccar.view.Report', {
     }, {
         text: Strings.positionFixTime,
         dataIndex: 'fixTime',
-        flex: 1,
+        flex: 2,
         xtype: 'datecolumn',
+        align:'right',
         renderer: Traccar.AttributeFormatter.getFormatter('fixTime')
     }, {
         text: Strings.positionLatitude,
         dataIndex: 'latitude',
         flex: 1,
+        align:'right',
         renderer: Traccar.AttributeFormatter.getFormatter('latitude')
     }, {
         text: Strings.positionLongitude,
         dataIndex: 'longitude',
         flex: 1,
+        align:'right',
         renderer: Traccar.AttributeFormatter.getFormatter('latitude')
     }, {
         text: Strings.positionAltitude,
         dataIndex: 'altitude',
         flex: 1,
+        align:'right',
         renderer: Traccar.AttributeFormatter.getFormatter('altitude')
     }, {
         text: Strings.positionSpeed,
         dataIndex: 'speed',
         flex: 1,
+        align:'right',
         renderer: Traccar.AttributeFormatter.getFormatter('speed')
     }, {
         text: Strings.positionAddress,
         dataIndex: 'address',
-        flex: 1,
+        flex: 2,
         renderer: Traccar.AttributeFormatter.getFormatter('address')
     }]
 });
