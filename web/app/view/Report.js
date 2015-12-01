@@ -95,7 +95,7 @@ Ext.define('Traccar.view.Report', {
     }, {
         text: Strings.positionFixTime,
         dataIndex: 'fixTime',
-        flex: 2,
+        flex: 1.5,
         xtype: 'datecolumn',
         align:'right',
         renderer: Traccar.AttributeFormatter.getFormatter('fixTime')
@@ -126,7 +126,7 @@ Ext.define('Traccar.view.Report', {
     }, {
         text: Strings.positionAddress,
         dataIndex: 'address',
-        flex: 2,
+        flex: 3,
         renderer: Traccar.AttributeFormatter.getFormatter('address')
     }]
 });

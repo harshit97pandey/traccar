@@ -257,6 +257,21 @@ Ext.define('Traccar.view.MapController', {
         });
     },
 
+    resizeColorMarker: function (style, radius, color) {
+        return new ol.style.Style({
+            image: new ol.style.Arrow({
+                radius: radius,
+                fill: new ol.style.Fill({
+                    color: color
+                }),
+                stroke: style.getImage().getStroke(),
+                rotation: style.getImage().getRotation()
+            }),
+            text: style.getText()
+        });
+    },
+
+
     selectMarker: function (marker, center, report) {
         if (this.selectedMarker && this.selectedStyle) {
             this.selectedMarker.setStyle(this.selectedStyle);
@@ -265,7 +280,9 @@ Ext.define('Traccar.view.MapController', {
         if (marker) {
             this.selectedStyle = marker.getStyle();
             if (report) {
-                marker.setStyle(this.getReportSelected());
+                marker.setStyle(this.resizeColorMarker(marker.getStyle(), 
+                        Traccar.Style.mapRadiusSelected, 
+                        Traccar.Style.mapColorReportSelected));
             } else {
                 marker.setStyle(
                         this.resizeMarker(marker.getStyle(), Traccar.Style.mapRadiusSelected));
