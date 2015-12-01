@@ -124,6 +124,7 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 position.setDeviceId(device.getId());
 
                 position.setTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
+                position.setServerTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
                 position.setLatitude(-36.8785803);
                 position.setLongitude(174.7281713);
                 addPosition(position);
@@ -404,6 +405,7 @@ public class MongoDataManager extends org.traccar.database.DataManager {
             position.setProtocol(next.getString("protocol"));
             position.setServerTime(next.getDate("serverTime"));
             position.setDeviceTime(next.getDate("deviceTime"));
+            position.setFixTime(next.getDate("fixTime"));
             position.setValid(next.getBoolean("valid", false));
             position.setLatitude(next.getDouble("latitude"));
             position.setLongitude(next.getDouble("longitude"));
@@ -427,7 +429,7 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 .append("id", position.getId())
                 .append("deviceId", position.getDeviceId())
                 .append("protocol", position.getProtocol())
-                .append("serverTime", position.getServerTime())
+                .append("serverTime", new Date())
                 .append("deviceTime", position.getDeviceTime())
                 .append("fixTime", position.getFixTime())
                 .append("valid", position.getValid())
@@ -466,6 +468,7 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 Document next = cursor.next();
                 Position position = new Position();
                 position.setId(next.getLong("id"));
+                position.setDeviceId(next.getLong("deviceId"));
                 position.setProtocol(next.getString("protocol"));
                 position.setServerTime(next.getDate("serverTime"));
                 position.setDeviceTime(next.getDate("deviceTime"));
