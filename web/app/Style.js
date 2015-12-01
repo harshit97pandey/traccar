@@ -52,7 +52,8 @@ Ext.define('Traccar.Style', {
     mapColorUnknown: 'rgba(250, 190, 77, 1.0)',
     mapColorOffline: 'rgba(255, 84, 104, 1.0)',
     mapColorReport: 'rgba(21, 127, 204, 1.0)',
-
+    mapColorReportSelected: 'rgba(194, 221, 242, 1.0)',
+    
     mapRadiusNormal: 9,
     mapRadiusSelected: 14,
 

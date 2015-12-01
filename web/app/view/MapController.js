@@ -240,6 +240,11 @@ Ext.define('Traccar.view.MapController', {
             Traccar.Style.mapRadiusNormal, Traccar.Style.mapColorReport);
     },
 
+    getReportSelected: function () {
+        return this.getMarkerStyle(
+            Traccar.Style.mapRadiusSelected, Traccar.Style.mapColorReportSelected);
+    },
+
     resizeMarker: function (style, radius) {
         return new ol.style.Style({
             image: new ol.style.Arrow({
@@ -252,15 +257,19 @@ Ext.define('Traccar.view.MapController', {
         });
     },
 
-    selectMarker: function (marker, center) {
-        if (this.selectedMarker) {
-            this.selectedMarker.setStyle(
-                this.resizeMarker(this.selectedMarker.getStyle(), Traccar.Style.mapRadiusNormal));
+    selectMarker: function (marker, center, report) {
+        if (this.selectedMarker && this.selectedStyle) {
+            this.selectedMarker.setStyle(this.selectedStyle);
         }
 
         if (marker) {
-            marker.setStyle(
-                this.resizeMarker(marker.getStyle(), Traccar.Style.mapRadiusSelected));
+            this.selectedStyle = marker.getStyle();
+            if (report) {
+                marker.setStyle(this.getReportSelected());
+            } else {
+                marker.setStyle(
+                        this.resizeMarker(marker.getStyle(), Traccar.Style.mapRadiusSelected));
+            }
             if (center) {
                 this.getView().getMapView().setCenter(marker.getGeometry().getCoordinates());
             }
@@ -274,7 +283,7 @@ Ext.define('Traccar.view.MapController', {
     },
 
     selectReport: function (position, center) {
-        this.selectMarker(this.reportMarkers[position.get('id')], center);
+        this.selectMarker(this.reportMarkers[position.get('id')], center, true);
     },
 
     selectFeature: function (feature) {
