@@ -23,7 +23,7 @@ import static org.traccar.web.BaseServlet.USER_KEY;
 @WebSocket
 @ServerEndpoint(value = "/ws/positions")
 public class PositionEventEndpoint {
-    private static final Map<Long, AsyncSession> SESSIONS = new HashMap<>();
+    private static final Map<Long, Map<Session, AsyncSession>> SESSIONS = new HashMap<>();
 
     public static void sessionRefreshUser(long userId) {
         synchronized (SESSIONS) {
@@ -33,10 +33,17 @@ public class PositionEventEndpoint {
 
     public static void sessionRefreshDevice(long deviceId) {
         synchronized (SESSIONS) {
-            Iterator<Map.Entry<Long, AsyncSession>> iterator = SESSIONS.entrySet().iterator();
+            Iterator<Map.Entry<Long, Map<Session, AsyncSession>>> iterator = SESSIONS.entrySet().iterator();
+
             while (iterator.hasNext()) {
-                if (iterator.next().getValue().hasDevice(deviceId)) {
-                    iterator.remove();
+                Map.Entry<Long, Map<Session, AsyncSession>> session = iterator.next();
+                Iterator<Map.Entry<Session, AsyncSession>> asyncSessions = session.getValue().entrySet().iterator();
+
+                while (asyncSessions.hasNext()) {
+                    Map.Entry<Session, AsyncSession> asyncSession = asyncSessions.next();
+                    if (asyncSession.getValue().hasDevice(deviceId)) {
+                        asyncSessions.remove();
+                    }
                 }
             }
         }
@@ -107,6 +114,10 @@ public class PositionEventEndpoint {
                 e.printStackTrace();
             }
         }
+
+        public synchronized void removeListener(){
+            Context.getConnectionManager().removeListener(devices, dataListener);
+        }
     }
 
     @OnWebSocketConnect
@@ -114,12 +125,17 @@ public class PositionEventEndpoint {
         synchronized (SESSIONS) {
             HttpSession httpSession = (HttpSession) session.getUpgradeRequest().getSession();
             Long userId = (Long) httpSession.getAttribute(USER_KEY);
+
             Collection<Long> devices = Context.getPermissionsManager().allowedDevices(userId);
             if (!SESSIONS.containsKey(userId)) {
-
-                SESSIONS.put(userId, new AsyncSession(devices, session));
+                Map<Session, AsyncSession> sessionMap = new HashMap<>();
+                sessionMap.put(session, new AsyncSession(devices, session));
+                SESSIONS.put(userId, sessionMap);
+            } else {
+                SESSIONS.get(userId).put(session, new AsyncSession(devices, session));
             }
-            SESSIONS.get(userId).request();
+            Map<Session, AsyncSession> sessionAsyncSessionMap = SESSIONS.get(userId);
+            sessionAsyncSessionMap.get(session).request();
         }
     }
 
@@ -133,15 +149,18 @@ public class PositionEventEndpoint {
         synchronized (SESSIONS) {
             HttpSession httpSession = (HttpSession) session.getUpgradeRequest().getSession();
             Long userId = (Long) httpSession.getAttribute(USER_KEY);
-            Collection<Long> devices = Context.getPermissionsManager().allowedDevices(userId);
-
+            Map<Session, AsyncSession> asyncSession = SESSIONS.get(userId);
+            if (asyncSession.containsKey(session)) {
+                asyncSession.remove(session).removeListener();
+            }
+            if (asyncSession.isEmpty()) {
+                SESSIONS.remove(userId);
+            }
         }
-
     }
 
     @OnWebSocketError
     public void onWebSocketError(Throwable cause) {
-        cause.printStackTrace(System.err);
+        cause.printStackTrace();
     }
-
 }
