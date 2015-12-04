@@ -337,7 +337,9 @@ public class MongoDataManager extends org.traccar.database.DataManager {
         return device;
     }
     public Collection<Device> getDevices(long userId) throws SQLException {
-        MongoCursor<Document> udCursor = database.getCollection(CollectionName.userDevice).find(new BasicDBObject("userId", userId)).iterator();
+        MongoCursor<Document> udCursor = database.getCollection(CollectionName.userDevice)
+                .find(new BasicDBObject("userId", userId))
+                .projection(new BasicDBObject("_id", 0).append("deviceId", 1)).iterator();
 
         List<Long> userDeviceIds = new ArrayList<>();
         while (udCursor.hasNext()) {
@@ -465,9 +467,10 @@ public class MongoDataManager extends org.traccar.database.DataManager {
     public Collection<Position> getLatestPositions() throws SQLException {
         List<Long> positionIds = new ArrayList<>();
         MongoCollection<Document> device = database.getCollection(CollectionName.device);
-        MongoCursor<Document> iterator = device.find().iterator();
+        MongoCursor<Document> iterator = device.find().projection(new Document("_id", 0).append("id", 1)).iterator();
         while (iterator.hasNext()) {
             Document next = iterator.next();
+
             positionIds.add(next.getLong("id"));
         }
 
