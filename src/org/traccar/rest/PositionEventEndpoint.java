@@ -4,7 +4,6 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.traccar.Context;
 import org.traccar.database.ConnectionManager;
-import org.traccar.helper.Log;
 import org.traccar.model.Device;
 import org.traccar.model.Position;
 import org.traccar.web.JsonConverter;
@@ -22,7 +21,7 @@ import static org.traccar.web.BaseServlet.USER_KEY;
  * Created by Niko on 12/4/2015.
  */
 @WebSocket
-@ServerEndpoint(value = "/events/")
+@ServerEndpoint(value = "/ws/positions")
 public class PositionEventEndpoint {
     private static final Map<Long, AsyncSession> SESSIONS = new HashMap<>();
 
@@ -44,18 +43,10 @@ public class PositionEventEndpoint {
     }
     public static class AsyncSession {
 
-        public static final boolean DEBUG_ASYNC = false;
-
         private final Set<Long> devices = new HashSet<>();
         private final Set<Device> deviceUpdates = new HashSet<>();
         private final Set<Position> positionUpdates = new HashSet<>();
         private Session session;
-
-        private void logEvent(String message) {
-            if (DEBUG_ASYNC) {
-                Log.debug("AsyncSession: " + this.hashCode() +  message);
-            }
-        }
 
         public AsyncSession(Collection<Long> devices, Session session) {
             this.devices.addAll(devices);
@@ -77,8 +68,6 @@ public class PositionEventEndpoint {
             @Override
             public void onUpdateDevice(Device device) {
                 synchronized (AsyncSession.this) {
-                    logEvent("onUpdateDevice deviceId: " + device.getId());
-
                     deviceUpdates.add(device);
                     response();
                 }
@@ -87,7 +76,6 @@ public class PositionEventEndpoint {
             @Override
             public void onUpdatePosition(Position position) {
                 synchronized (AsyncSession.this) {
-                    logEvent("onUpdatePosition deviceId: " + position.getDeviceId());
                     positionUpdates.add(position);
                     response();
                 }
@@ -95,7 +83,7 @@ public class PositionEventEndpoint {
         };
 
         public synchronized void request() {
-            if (!deviceUpdates.isEmpty() || !positionUpdates.isEmpty()) {
+            if ( ! deviceUpdates.isEmpty() || ! positionUpdates.isEmpty()) {
                 response();
             }
         }

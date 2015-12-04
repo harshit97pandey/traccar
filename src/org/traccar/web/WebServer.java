@@ -24,9 +24,12 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.websocket.server.WebSocketHandler;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.traccar.Config;
 import org.traccar.helper.Log;
+import org.traccar.rest.PositionEventEndpoint;
 
 /**
  * Integrated HTTP server
@@ -135,9 +138,19 @@ public class WebServer {
         servletHolder.getInitParameters().put("jersey.config.server.provider.packages", "org.traccar.rest");
 
         //add servlets
+        WebSocketHandler webSocketHandler = new WebSocketHandler() {
+            @Override
+            public void configure(WebSocketServletFactory webSocketServletFactory) {
+                webSocketServletFactory.getPolicy().setIdleTimeout(180000);
+                webSocketServletFactory.register(PositionEventEndpoint.class);
+            }
+        };
+
         servletHandler.addServlet(new ServletHolder(new AsyncServlet()), "/async/*");
+
         servletHandler.addServlet(servletHolder, "/*");
         handlers.addHandler(servletHandler);
+        handlers.addHandler(webSocketHandler);
     }
 
     private void initConsole() {
