@@ -1,6 +1,8 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
+import org.traccar.database.ConnectionManager;
+import org.traccar.model.Device;
 import org.traccar.model.MiscFormatter;
 import org.traccar.model.Position;
 import org.traccar.rest.utils.SessionUtil;
@@ -10,8 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +28,24 @@ public class PositionResource {
 
     @javax.ws.rs.core.Context
     HttpServletRequest req;
+
+
+    @Path("ws")
+    @GET
+    public Response wsTest(@QueryParam("deviceId") long deviceId) throws Exception {
+        Position position = new Position();
+        position.setDeviceId(deviceId);
+
+        position.setTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
+        position.setServerTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
+        position.setLatitude(-36.8785803);
+        position.setLongitude(174.7281713);
+        position.setSpeed(1311.234123);
+
+        Context.getConnectionManager().updatePosition(position);
+
+        return Response.ok().build();
+    }
 
     @Path("get")
     @GET
