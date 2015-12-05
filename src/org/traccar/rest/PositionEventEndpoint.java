@@ -107,7 +107,8 @@ public class PositionEventEndpoint {
                 data.add("positions", JsonConverter.arrayToJson(positionUpdates));
                 result.add("data", data.build());
             }
-
+deviceUpdates.clear();
+positionUpdates.clear();
             try {
                 session.getRemote().sendString(result.build().toString());
             } catch (IOException e) {
@@ -124,7 +125,7 @@ public class PositionEventEndpoint {
     public void onConnect(Session session) {
         synchronized (SESSIONS) {
             HttpSession httpSession = (HttpSession) session.getUpgradeRequest().getSession();
-            Long userId = (Long) httpSession.getAttribute(USER_KEY);
+            Long userId = 3L;//(Long) httpSession.getAttribute(USER_KEY);
 
             Collection<Long> devices = Context.getPermissionsManager().allowedDevices(userId);
             if (!SESSIONS.containsKey(userId)) {

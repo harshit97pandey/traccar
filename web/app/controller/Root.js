@@ -86,7 +86,58 @@ Ext.define('Traccar.controller.Root', {
         } else {
             Ext.create('widget.main');
         }
-        this.asyncUpdate(true);
+        //this.asyncUpdate(true);
+        this.startWebSocket();
+    },
+
+    startWebSocket: function() {
+        var wsUri = "ws://localhost:8082/ws/positions/";
+        
+        websocket = new WebSocket(wsUri);
+        websocket.onopen = function(evt) {
+            console.log("OPEN:");
+            console.log(evt);
+        };
+        websocket.onclose = function(evt) {
+            console.log("CLOSE");
+            console.log(evt);
+        };
+        websocket.onmessage = function(evt) {
+            console.log("MESSAGE:")
+            console.log(evt);
+            
+            var i, deviceStore, positionStore, data, devices, positions, device, position;
+            deviceStore = Ext.getStore('Devices');
+            positionStore = Ext.getStore('LatestPositions');
+            data = Ext.decode(evt.data).data;
+            devices = data.devices;
+            positions = data.positions;
+
+            for (i = 0; i < devices.length; i++) {
+                device = deviceStore.findRecord('id', devices[i].id, 0, false, false, true);
+                if (device) {
+                    device.set({
+                        status: devices[i].status,
+                        lastUpdate: devices[i].lastUpdate
+                    }, {
+                        dirty: false
+                    });
+                }
+            }
+
+            for (i = 0; i < positions.length; i++) {
+                position = positionStore.findRecord('deviceId', positions[i].deviceId, 0, false, false, true);
+                if (position) {
+                    position.set(positions[i]);
+                } else {
+                    positionStore.add(Ext.create('Traccar.model.Position', positions[i]));
+                }
+            }
+        };
+        websocket.onerror = function(evt) {
+            console.log("ERROR:")
+            console.log(evt) 
+        };
     },
 
     asyncUpdate: function (first) {

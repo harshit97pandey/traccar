@@ -29,6 +29,7 @@ public class PositionResource {
     @javax.ws.rs.core.Context
     HttpServletRequest req;
 
+    private static double x=174.7281713;
 
     @Path("ws")
     @GET
@@ -39,7 +40,8 @@ public class PositionResource {
         position.setTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
         position.setServerTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
         position.setLatitude(-36.8785803);
-        position.setLongitude(174.7281713);
+        x=x-1.1;
+        position.setLongitude(x);
         position.setSpeed(1311.234123);
 
         Context.getConnectionManager().updatePosition(position);
