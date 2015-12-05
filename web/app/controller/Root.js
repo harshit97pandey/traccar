@@ -99,13 +99,10 @@ Ext.define('Traccar.controller.Root', {
             console.log(evt);
         };
         websocket.onclose = function(evt) {
-            console.log("CLOSE");
+            console.log("CLOSE:");
             console.log(evt);
         };
         websocket.onmessage = function(evt) {
-            console.log("MESSAGE:")
-            console.log(evt);
-            
             var i, deviceStore, positionStore, data, devices, positions, device, position;
             deviceStore = Ext.getStore('Devices');
             positionStore = Ext.getStore('LatestPositions');
