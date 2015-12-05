@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.traccar.web.BaseServlet.USER_KEY;
 
@@ -22,6 +24,7 @@ import static org.traccar.web.BaseServlet.USER_KEY;
 @Produces(MediaType.APPLICATION_JSON)
 public class MainResource {
 
+    public static Map<String, Long> sessions = new ConcurrentHashMap<>();
     @javax.ws.rs.core.Context
     HttpServletRequest req;
 
@@ -30,6 +33,7 @@ public class MainResource {
     public Response session() throws SQLException, IOException {
         Long userId = (Long) req.getSession().getAttribute(USER_KEY);
         if (userId != null) {
+
             return ResponseBuilder.getResponse(JsonConverter.objectToJson(
                     Context.getDataManager().getUser(userId)));
         }
@@ -44,6 +48,7 @@ public class MainResource {
                 email, password);
         if (user != null) {
             req.getSession().setAttribute(USER_KEY, user.getId());
+            sessions.put(req.getSession().getId(), user.getId());
             return ResponseBuilder.getResponse(JsonConverter.objectToJson(user));
         }
         return ResponseBuilder.getResponse(false);
@@ -53,6 +58,7 @@ public class MainResource {
     @GET
     public Response logout() throws IOException {
         req.getSession().removeAttribute(USER_KEY);
+        sessions.remove(req.getSession().getId());
         return ResponseBuilder.getResponse(true);
     }
 

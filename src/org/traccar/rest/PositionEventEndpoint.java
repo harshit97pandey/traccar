@@ -13,6 +13,7 @@ import javax.json.JsonObjectBuilder;
 import javax.servlet.http.HttpSession;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.util.*;
 
 import static org.traccar.web.BaseServlet.USER_KEY;
@@ -107,8 +108,8 @@ public class PositionEventEndpoint {
                 data.add("positions", JsonConverter.arrayToJson(positionUpdates));
                 result.add("data", data.build());
             }
-deviceUpdates.clear();
-positionUpdates.clear();
+            deviceUpdates.clear();
+            positionUpdates.clear();
             try {
                 session.getRemote().sendString(result.build().toString());
             } catch (IOException e) {
@@ -124,8 +125,13 @@ positionUpdates.clear();
     @OnWebSocketConnect
     public void onConnect(Session session) {
         synchronized (SESSIONS) {
-            HttpSession httpSession = (HttpSession) session.getUpgradeRequest().getSession();
-            Long userId = 3L;//(Long) httpSession.getAttribute(USER_KEY);
+            Long userId = null;
+            List<HttpCookie> cookies = session.getUpgradeRequest().getCookies();
+            for(HttpCookie cookie :cookies) {
+                if (cookie.getName().equals("JSESSIONID")) {
+                    userId = MainResource.sessions.get(cookie.getValue());
+                }
+            }
 
             Collection<Long> devices = Context.getPermissionsManager().allowedDevices(userId);
             if (!SESSIONS.containsKey(userId)) {
@@ -142,7 +148,8 @@ positionUpdates.clear();
 
     @OnWebSocketMessage
     public void onWebSocketText(String message) {
-        throw new RuntimeException("not implemented");
+
+
     }
 
     @OnWebSocketClose

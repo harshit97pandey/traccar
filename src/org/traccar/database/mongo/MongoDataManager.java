@@ -10,7 +10,7 @@ import org.bson.Document;
 import org.traccar.Config;
 import org.traccar.helper.Log;
 import org.traccar.model.*;
-import org.traccar.web.AsyncServlet;
+import org.traccar.rest.PositionEventEndpoint;
 import org.traccar.web.JsonConverter;
 
 import java.sql.SQLException;
@@ -385,7 +385,7 @@ public class MongoDataManager extends org.traccar.database.DataManager {
 
     public void removeDevice(Device device) throws SQLException {
         database.getCollection(CollectionName.device).findOneAndDelete(new Document("id", device.getId()));
-        AsyncServlet.sessionRefreshDevice(device.getId());
+        PositionEventEndpoint.sessionRefreshDevice(device.getId());
     }
 
     public void linkDevice(long userId, long deviceId) throws SQLException {
@@ -394,14 +394,14 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 .append("userId", userId)
                 .append("deviceId", deviceId);
         collection.insertOne(doc);
-        AsyncServlet.sessionRefreshUser(userId);
+        PositionEventEndpoint.sessionRefreshUser(userId);
     }
 
     public void unlinkDevice(long userId, long deviceId) throws SQLException {
         database.getCollection(CollectionName.userDevice)
                 .findOneAndDelete(new BasicDBObject("userId", userId)
                 .append("deviceId", deviceId));
-        AsyncServlet.sessionRefreshUser(userId);
+        PositionEventEndpoint.sessionRefreshUser(userId);
     }
 
     public Collection<Position> getPositions(long userId, long deviceId, java.util.Date from, java.util.Date to) throws SQLException {

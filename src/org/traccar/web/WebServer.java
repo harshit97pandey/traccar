@@ -141,16 +141,14 @@ public class WebServer {
         WebSocketHandler webSocketHandler = new WebSocketHandler() {
             @Override
             public void configure(WebSocketServletFactory webSocketServletFactory) {
-                webSocketServletFactory.getPolicy().setIdleTimeout(180000);
+                webSocketServletFactory.getPolicy().setIdleTimeout(0);
                 webSocketServletFactory.register(PositionEventEndpoint.class);
             }
         };
 
-        servletHandler.addServlet(new ServletHolder(new AsyncServlet()), "/async/*");
-
         servletHandler.addServlet(servletHolder, "/*");
-        handlers.addHandler(servletHandler);
         handlers.addHandler(webSocketHandler);
+        handlers.addHandler(servletHandler);
     }
 
     private void initConsole() {
