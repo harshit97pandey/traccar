@@ -86,21 +86,25 @@ Ext.define('Traccar.controller.Root', {
         } else {
             Ext.create('widget.main');
         }
-        //this.asyncUpdate(true);
         this.startWebSocket();
     },
 
     startWebSocket: function() {
-        var wsUri = "ws://localhost:8082/api/ws/positions/";
+        var wsUri;
+        if (location.protocol === "https:") {
+            wsUri = "wss:";
+        } else {
+            wsUri = "ws:";
+        }
+        wsUri += "//" + location.host;
+        wsUri += location.pathname + "api/ws/positions/";
         
         websocket = new WebSocket(wsUri);
         websocket.onopen = function(evt) {
-            console.log("OPEN:");
-            console.log(evt);
+            Ext.toast("Connection to server established")
         };
         websocket.onclose = function(evt) {
-            console.log("CLOSE:");
-            console.log(evt);
+            Ext.toast("Connection to server closed")
         };
         websocket.onmessage = function(evt) {
             var i, deviceStore, positionStore, data, devices, positions, device, position;
@@ -132,8 +136,7 @@ Ext.define('Traccar.controller.Root', {
             }
         };
         websocket.onerror = function(evt) {
-            console.log("ERROR:")
-            console.log(evt) 
+            Ext.toast("Server connection error: " +evt.data) 
         };
     },
 
