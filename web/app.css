@@ -1,13 +1,13 @@
 .ol-rotate{
   right: auto;
   left: .5em;
-  top: 303px;
+  top: 333px;
 }
 
 .ol-full-screen{
   right: auto;
   left: .5em;
-  top: 270px;
+  top: 267px;
 }
 
 .ol-mouse-position{
@@ -69,7 +69,7 @@
     position:absolute;
     right: auto;
 	  left: .5em;
-	  top: 336px;
+	  top: 300px;
 }
 
 .ol-save-button {
