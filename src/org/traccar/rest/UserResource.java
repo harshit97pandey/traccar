@@ -72,10 +72,10 @@ public class UserResource {
     @Path("location/update")
     @POST
     public Response updateLocation(
-            @QueryParam("map") String map,
-            @QueryParam("zoom") Integer zoom,
-            @QueryParam("latitude") Double latitude,
-            @QueryParam("longitude") Double longitude) throws Exception {
+            @FormParam("map") String map,
+            @FormParam("zoom") int zoom,
+            @FormParam("latitude") double latitude,
+            @FormParam("longitude") double longitude) throws Exception {
         long userId = SessionUtil.getUserId(req);
         Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), userId);
         DataManager dataManager = Context.getDataManager();
@@ -89,7 +89,7 @@ public class UserResource {
 
     @Path("language/update")
     @POST
-    public Response updateLocation(@QueryParam("language") String language) throws Exception {
+    public Response updateLocation(@FormParam("language") String language) throws Exception {
         long userId = SessionUtil.getUserId(req);
         Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), userId);
         DataManager dataManager = Context.getDataManager();
