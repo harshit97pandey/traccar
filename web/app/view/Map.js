@@ -53,6 +53,10 @@ Ext.define('Traccar.view.Map', {
             
             bingKey = 'Atabw4WpqrmFXz8yRA9yxMzk2u--7Znu5POGdRsivAkyFw-6QAeOtwgMU8Upcb-W';
 
+            var coordinateFormat = function(coords){
+                return coords[0].toFixed(6) + ' ' + coords[1].toFixed(6)
+            }
+
             var createTileLayer = function(url, projection) {
                 return new ol.layer.Tile({
                     source: new ol.source.XYZ({
@@ -63,7 +67,7 @@ Ext.define('Traccar.view.Map', {
                     }),
                     projection: projection,
                     visible: false
-                });                
+                });
             }
             
             var createBingLayer = function(imagerySet) {
@@ -113,6 +117,43 @@ Ext.define('Traccar.view.Map', {
                 name: 'ArcGis Imagery',
                 layer: arcgisImage
             }];
+
+            var saveControl= function(map) {
+                var save = document.createElement('button');
+                    save.className = 'ol-save-button fa-floppy-o';
+                    
+                var handleClick = function(e) {
+                    var currentLayer;
+                    for (var i = 0; i < layersData.length; ++i) {
+                        if (layersData[i].layer.getVisible()) {
+                            currentLayer = layersData[i].name; 
+                        }
+                    }
+                    Ext.Ajax.request({
+                        scope: this,
+                        url: '/api/user/location/update',
+                        method: 'POST',
+                        params: {
+                            map: currentLayer,
+                            zoom: map.getView().getZoom(),
+                            latitude: ol.proj.toLonLat(map.getView().getCenter())[0],
+                            longitude: ol.proj.toLonLat(map.getView().getCenter())[1]
+                        },
+                        callback: function(){Ext.toast('Location saved');}
+                    });
+                }
+                save.addEventListener('click', handleClick, false);
+
+                var element = document.createElement('div');
+                element.className = 'ol-unselectable ol-control ol-save-div';
+                element.appendChild(save);
+
+                ol.control.Control.call(this, {
+                    element: element
+                })
+            }
+            ol.inherits(saveControl, ol.control.Control);
+            
             
             var layerControl= function(map) {
                 var select = document.createElement('select');
@@ -126,20 +167,20 @@ Ext.define('Traccar.view.Map', {
                         selectedIndex = i;
                         layersData[i].layer.setVisible(true);
                     }
-                    select.add(option)
+                    select.add(option);
                 }
-                    select.selectedIndex = selectedIndex;
+                select.selectedIndex = selectedIndex;
 
                 var handleChange = function(e) {
                     for (var i = 0; i < layersData.length; ++i) {
                         layersData[i].layer.setVisible(select.value === layersData[i].name);
                     }
                 }
-                select.addEventListener('change', handleChange, false)
+                select.addEventListener('change', handleChange, false);
 
-                var element = document.createElement('div')
-                element.className = 'ol-unselectable ol-control ol-layers-div'
-                element.appendChild(select)
+                var element = document.createElement('div');
+                element.className = 'ol-unselectable ol-control ol-layers-div';
+                element.appendChild(select);
 
                 ol.control.Control.call(this, {
                     element: element
@@ -189,12 +230,28 @@ Ext.define('Traccar.view.Map', {
             this.map = new ol.Map({
                 target: this.body.dom.id,
                 layers: layers,
-                view: this.mapView
+                view: this.mapView,
+                interactions: ol.interaction.defaults().extend([
+                    new ol.interaction.DragRotateAndZoom()
+                ])
             });
 
             var layerControl = new layerControl(this.map)
             this.map.addControl(layerControl)
-
+            var scaleLine = new ol.control.ScaleLine()
+            this.map.addControl(scaleLine)
+            var zoomslider = new ol.control.ZoomSlider()
+            this.map.addControl(zoomslider)
+            var position = new ol.control.MousePosition({
+                    projection: ol.proj.get('EPSG:4326'),
+                    coordinateFormat: coordinateFormat
+                });
+            this.map.addControl(position)
+            var fullScreen = new ol.control.FullScreen()
+            this.map.addControl(fullScreen);
+            var saveControl = new saveControl(this.map)
+            this.map.addControl(saveControl);
+            
             target = this.map.getTarget();
             if (typeof target === 'string') {
                 target = Ext.get(target).dom;

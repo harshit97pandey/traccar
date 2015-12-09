@@ -78,6 +78,13 @@ Ext.define('Traccar.view.MapController', {
         });
     },
 
+    saveLocation: function(map, zoom, longitude, latitude) {
+        console.log(map)
+        console.log(zoom)
+        console.log(longitude)
+        console.log(latitude)
+    },
+    
     updateDevice: function (store, data) {
         var i, device, deviceId;
 
