@@ -87,4 +87,18 @@ public class UserResource {
         return Response.status(Response.Status.NOT_IMPLEMENTED).build();
     }
 
+    @Path("language/update")
+    @POST
+    public Response updateLocation(@QueryParam("language") String language) throws Exception {
+        long userId = SessionUtil.getUserId(req);
+        Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), userId);
+        DataManager dataManager = Context.getDataManager();
+        if (dataManager instanceof MongoDataManager) {
+            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
+            mongoDataManager.updateLanguage(userId, language);
+            return Response.ok().build();
+        }
+        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+    }
+
 }

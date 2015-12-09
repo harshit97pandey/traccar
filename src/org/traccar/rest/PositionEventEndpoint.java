@@ -125,16 +125,7 @@ public class PositionEventEndpoint {
     @OnWebSocketConnect
     public void onConnect(Session session) {
         synchronized (SESSIONS) {
-            Long userId = null;
-            List<HttpCookie> cookies = session.getUpgradeRequest().getCookies();
-            for(HttpCookie cookie :cookies) {
-                if (cookie.getName().equals("JSESSIONID")) {
-                    userId = MainResource.sessions.get(cookie.getValue());
-                    if (userId != null) {
-                        break;
-                    }
-                }
-            }
+            Long userId = getUserId(session);
 
             Collection<Long> devices = Context.getPermissionsManager().allowedDevices(userId);
             if (!SESSIONS.containsKey(userId)) {
@@ -149,6 +140,20 @@ public class PositionEventEndpoint {
         }
     }
 
+    private Long getUserId(Session session) {
+        Long userId = null;
+        List<HttpCookie> cookies = session.getUpgradeRequest().getCookies();
+        for(HttpCookie cookie :cookies) {
+            if (cookie.getName().equals("JSESSIONID")) {
+                userId = MainResource.sessions.get(cookie.getValue());
+                if (userId != null) {
+                    break;
+                }
+            }
+        }
+        return userId;
+    }
+
     @OnWebSocketMessage
     public void onWebSocketText(String message) {
 
@@ -158,8 +163,7 @@ public class PositionEventEndpoint {
     @OnWebSocketClose
     public void onWebSocketClose(Session session, int status, String reason) {
         synchronized (SESSIONS) {
-            HttpSession httpSession = (HttpSession) session.getUpgradeRequest().getSession();
-            Long userId = (Long) httpSession.getAttribute(USER_KEY);
+            Long userId = getUserId(session);
             Map<Session, AsyncSession> asyncSession = SESSIONS.get(userId);
             if (asyncSession.containsKey(session)) {
                 asyncSession.remove(session).removeListener();

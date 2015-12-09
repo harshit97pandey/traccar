@@ -297,6 +297,12 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                         .append("latitude", latitude)
                         .append("longitude",longitude));
     }
+
+    public void updateLanguage(long userId, String language) {
+        database.getCollection(CollectionName.user).updateOne(new Document("id", userId),
+                new Document("$set", new Document("language", language)));
+    }
+
     public void removeUser(User user) throws SQLException {
         database.getCollection(CollectionName.user).findOneAndDelete(new BasicDBObject("id", user.getId()));
     }
