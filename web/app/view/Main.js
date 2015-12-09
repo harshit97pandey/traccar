@@ -37,19 +37,24 @@ Ext.define('Traccar.view.Main', {
         region: 'west',
         layout: 'border',
         width: Traccar.Style.deviceWidth,
-        title: 'devicesAndState',
-
+        title: Strings.deviceTitle,
+        header: true,
+        collapsed: true,
         defaults: {
-            split: true,
-            flex: 1
+            split: true
         },
 
         items: [{
             region: 'center',
-            xtype: 'devicesView'
+            header: false,
+            xtype: 'devicesView',
+            flex: 1
         }, {
             region: 'south',
-            xtype: 'stateView'
+            xtype: 'stateView',
+            flex: 1,
+            header: false,
+            collapsible: true
         }]
     }, {
         region: 'south',
@@ -61,7 +66,7 @@ Ext.define('Traccar.view.Main', {
     }, {
         region: 'center',
         xtype: 'mapView',
-        header: true,
+        header: false,
         collapsible: false
     }]
 });

@@ -55,7 +55,7 @@ Ext.define('Traccar.view.UserDialog', {
             fieldLabel: Strings.mapLayer,
             store: 'MapTypes',
             displayField: 'name',
-            valueField: 'key'
+            valueField: 'name'
         }, {
             xtype: 'combobox',
             name: 'distanceUnit',

@@ -37,15 +37,7 @@ Ext.define('Traccar.view.ServerDialog', {
             fieldLabel: Strings.mapLayer,
             store: 'MapTypes',
             displayField: 'name',
-            valueField: 'key'
-        }, {
-            xtype: 'textfield',
-            name: 'bingKey',
-            fieldLabel: Strings.mapBingKey
-        }, {
-            xtype: 'textfield',
-            name: 'mapUrl',
-            fieldLabel: Strings.mapCustom
+            valueField: 'name'
         }, {
             xtype: 'combobox',
             name: 'distanceUnit',
