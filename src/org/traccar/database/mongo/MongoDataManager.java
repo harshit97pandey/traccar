@@ -290,6 +290,13 @@ public class MongoDataManager extends org.traccar.database.DataManager {
         }
     }
 
+    public void updateLocation(long userId, String map, Integer zoom, Double latitude, Double longitude) {
+        database.getCollection(CollectionName.user).updateOne(new Document("id", userId),
+                new Document("$set", new Document("map", map))
+                        .append("zoom", zoom)
+                        .append("latitude", latitude)
+                        .append("longitude",longitude));
+    }
     public void removeUser(User user) throws SQLException {
         database.getCollection(CollectionName.user).findOneAndDelete(new BasicDBObject("id", user.getId()));
     }

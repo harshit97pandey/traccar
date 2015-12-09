@@ -1,15 +1,14 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
+import org.traccar.database.DataManager;
+import org.traccar.database.mongo.MongoDataManager;
 import org.traccar.model.User;
 import org.traccar.rest.utils.SessionUtil;
 import org.traccar.web.JsonConverter;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.StringReader;
@@ -19,7 +18,7 @@ import java.io.StringReader;
  */
 @Path("user")
 @Produces(MediaType.APPLICATION_JSON)
-public class UsrResource {
+public class UserResource {
 
     @javax.ws.rs.core.Context
     HttpServletRequest req;
@@ -69,4 +68,23 @@ public class UsrResource {
 
         return ResponseBuilder.getResponse(true);
     }
+
+    @Path("location/update")
+    @POST
+    public Response updateLocation(
+            @QueryParam("map") String map,
+            @QueryParam("zoom") Integer zoom,
+            @QueryParam("latitude") Double latitude,
+            @QueryParam("longitude") Double longitude) throws Exception {
+        long userId = SessionUtil.getUserId(req);
+        Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), userId);
+        DataManager dataManager = Context.getDataManager();
+        if (dataManager instanceof MongoDataManager) {
+            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
+            mongoDataManager.updateLocation(userId, map, zoom, latitude, longitude);
+            return Response.ok().build();
+        }
+        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+    }
+
 }

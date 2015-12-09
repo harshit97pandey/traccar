@@ -130,6 +130,9 @@ public class PositionEventEndpoint {
             for(HttpCookie cookie :cookies) {
                 if (cookie.getName().equals("JSESSIONID")) {
                     userId = MainResource.sessions.get(cookie.getValue());
+                    if (userId != null) {
+                        break;
+                    }
                 }
             }
 
