@@ -49,7 +49,7 @@ public class PositionEventEndpoint {
             }
         }
     }
-    public static class AsyncSession {
+    public class AsyncSession {
 
         private final Set<Long> devices = new HashSet<>();
         private final Set<Device> deviceUpdates = new HashSet<>();
@@ -114,6 +114,7 @@ public class PositionEventEndpoint {
                 session.getRemote().sendString(result.build().toString());
             } catch (IOException e) {
                 e.printStackTrace();
+                PositionEventEndpoint.this.onWebSocketClose(session, 1001, "Communication Error");
             }
         }
 
