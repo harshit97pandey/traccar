@@ -121,7 +121,7 @@ Ext.define('Traccar.view.Map', {
             var saveControl= function(map) {
                 var save = document.createElement('button');
                     save.className = 'ol-save-button fa-floppy-o';
-                    
+                    save.title = 'Save location';
                 var handleClick = function(e) {
                     var currentLayer;
                     for (var i = 0; i < layersData.length; ++i) {
@@ -136,8 +136,8 @@ Ext.define('Traccar.view.Map', {
                         params: {
                             map: currentLayer,
                             zoom: map.getView().getZoom(),
-                            latitude: ol.proj.toLonLat(map.getView().getCenter())[0],
-                            longitude: ol.proj.toLonLat(map.getView().getCenter())[1]
+                            longitude: ol.proj.toLonLat(map.getView().getCenter())[0],
+                            latitude: ol.proj.toLonLat(map.getView().getCenter())[1]
                         },
                         callback: function(){Ext.toast('Location saved');}
                     });
