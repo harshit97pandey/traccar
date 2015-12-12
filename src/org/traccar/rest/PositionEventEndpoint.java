@@ -10,13 +10,10 @@ import org.traccar.web.JsonConverter;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
-import javax.servlet.http.HttpSession;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.util.*;
-
-import static org.traccar.web.BaseServlet.USER_KEY;
 
 /**
  * Created by Niko on 12/4/2015.
@@ -49,7 +46,7 @@ public class PositionEventEndpoint {
             }
         }
     }
-    public class AsyncSession {
+    public static class AsyncSession {
 
         private final Set<Long> devices = new HashSet<>();
         private final Set<Device> deviceUpdates = new HashSet<>();
@@ -114,7 +111,7 @@ public class PositionEventEndpoint {
                 session.getRemote().sendString(result.build().toString());
             } catch (IOException e) {
                 e.printStackTrace();
-                PositionEventEndpoint.this.onWebSocketClose(session, 1001, "Communication Error");
+                session.close(1001, "Communication Error");
             }
         }
 
@@ -172,6 +169,8 @@ public class PositionEventEndpoint {
             if (asyncSession.isEmpty()) {
                 SESSIONS.remove(userId);
             }
+            System.out.println("##### Close Web Socket");
+            System.out.println(SESSIONS.size());
         }
     }
 
