@@ -9,10 +9,7 @@ import org.traccar.rest.utils.SessionUtil;
 import org.traccar.web.JsonConverter;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Date;
@@ -33,19 +30,24 @@ public class PositionResource {
 
     @Path("ws")
     @GET
-    public Response wsTest(@QueryParam("deviceId") long deviceId) throws Exception {
+    public Response wsTest(
+            @QueryParam("deviceId") long deviceId,
+            @DefaultValue("false")@QueryParam("insert") boolean insert) throws Exception {
         Position position = new Position();
         position.setDeviceId(deviceId);
 
-        position.setTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
+        position.setTime(new Date());
         position.setServerTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
         position.setLatitude(-36.8785803);
         x=x-1.1;
         position.setLongitude(x);
         position.setSpeed(1311.234123);
 
-        Context.getConnectionManager().updatePosition(position);
 
+        Context.getConnectionManager().updatePosition(position);
+        if (insert) {
+            Context.getDataManager().addPosition(position);
+        }
         return Response.ok().build();
     }
 

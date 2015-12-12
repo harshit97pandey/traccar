@@ -441,6 +441,9 @@ public class MongoDataManager extends org.traccar.database.DataManager {
             position.setCourse(next.getDouble("course"));
             position.setAddress(next.getString("address"));
 
+            if (next.containsKey("calculatedDistance")) {
+                position.setCalculatedDistance(next.getDouble("calculatedDistance"));
+            }
             positions.add(position);
         }
         return positions;
@@ -448,7 +451,36 @@ public class MongoDataManager extends org.traccar.database.DataManager {
 
     public void addPosition(Position position) throws SQLException {
 
+
         MongoCollection<Document> collection = database.getCollection(CollectionName.position);
+        Document lastPosition = collection.find(
+                new BasicDBObject("deviceId", position.getDeviceId())
+                        .append("fixTime", new BasicDBObject("$lte", position.getFixTime()))).sort(new BasicDBObject("fixTime", -1)).limit(1).first();
+        double calculatedDistance = 0D;
+        if (lastPosition != null) {
+            if (lastPosition.containsKey("calculatedDistance")) {
+                //calculatedDistance = lastPosition.getDouble("calculatedDistance");
+
+                //TODO altitude
+                //Get last position coordinates
+                Double lastLongitude = lastPosition.getDouble("longitude");
+                Double lastLatitude = lastPosition.getDouble("latitude");
+                Double lastAltitude = lastPosition.getDouble("altitude");
+
+                Long earthRadius = 6371000L; // metres
+                double φ1 = Math.toRadians(lastLatitude);
+                double φ2 = Math.toRadians(position.getLatitude());
+                double Δφ = Math.toRadians(position.getLatitude() - lastLatitude);
+                double Δλ = Math.toRadians(position.getLongitude() - lastLongitude);
+
+                double a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                        Math.cos(φ1) * Math.cos(φ2) *
+                                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+                double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+                calculatedDistance = earthRadius * c;
+            }
+        }
 
         long id = getId(CollectionName.position);
         position.setId(id);
@@ -466,8 +498,11 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 .append("speed", position.getSpeed())
                 .append("course", position.getCourse())
                 .append("address", position.getAddress())
+                .append("calculatedDistance", calculatedDistance)
                 .append("attributes", position.getAttributes());
 
+        //Set calculated distance
+        position.setCalculatedDistance(calculatedDistance);
         collection.insertOne(doc);
     }
 
@@ -509,6 +544,9 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 position.setSpeed(next.getDouble("speed"));
                 position.setCourse(next.getDouble("course"));
                 position.setAddress(next.getString("address"));
+                if (next.containsKey("calculatedDistance")) {
+                    position.setCalculatedDistance(next.getDouble("calculatedDistance"));
+                }
                 positions.add(position);
             }
             return positions;

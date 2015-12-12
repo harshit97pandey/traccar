@@ -127,4 +127,13 @@ public class Position extends Event implements Factory {
         this.address = address;
     }
 
+    private double calculatedDistance;
+
+    public double getCalculatedDistance() {
+        return calculatedDistance;
+    }
+
+    public void setCalculatedDistance(double calculatedDistance) {
+        this.calculatedDistance = calculatedDistance;
+    }
 }

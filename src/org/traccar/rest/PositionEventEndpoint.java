@@ -169,8 +169,6 @@ public class PositionEventEndpoint {
             if (asyncSession.isEmpty()) {
                 SESSIONS.remove(userId);
             }
-            System.out.println("##### Close Web Socket");
-            System.out.println(SESSIONS.size());
         }
     }
 
