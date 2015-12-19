@@ -218,6 +218,27 @@ Ext.define('Traccar.view.Map', {
                 maxZoom: Traccar.Style.mapMaxZoom
             });
 
+            var source = new ol.source.Vector({wrapX: false});
+
+            var vector = new ol.layer.Vector({
+              source: source,
+              style: new ol.style.Style({
+                fill: new ol.style.Fill({
+                  color: 'rgba(255, 255, 255, 0.2)'
+                }),
+                stroke: new ol.style.Stroke({
+                  color: '#ffcc33',
+                  width: 2
+                }),
+                image: new ol.style.Circle({
+                  radius: 7,
+                  fill: new ol.style.Fill({
+                    color: '#ffcc33'
+                  })
+                })
+              })
+            });
+            
             var layers = [];
             
             for (var i = 0; i < layersData.length; ++i) {
@@ -226,13 +247,14 @@ Ext.define('Traccar.view.Map', {
             layers.push(routeLayer);
             layers.push(reportLayer);
             layers.push(latestLayer);
+            layers.push(vector);
             
             this.map = new ol.Map({
                 target: this.body.dom.id,
                 layers: layers,
                 view: this.mapView,
                 interactions: ol.interaction.defaults().extend([
-                    new ol.interaction.DragRotateAndZoom()
+                    //new ol.interaction.DragRotateAndZoom()
                 ])
             });
 
@@ -267,7 +289,67 @@ Ext.define('Traccar.view.Map', {
                     target.style.cursor = '';
                 }
             });
-
+            
+            var draw; // global so we can remove it later
+            function addInteraction(map) {
+              var value = 'MultiPolygon';//typeSelect.value;
+              if (value !== 'None') {
+                var geometryFunction, maxPoints;
+                if (value === 'Square') {
+                  value = 'Circle';
+                  geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
+                } else if (value === 'Box') {
+                  value = 'LineString';
+                  maxPoints = 2;
+                  geometryFunction = function(coordinates, geometry) {
+                    if (!geometry) {
+                      geometry = new ol.geom.Polygon(null);
+                    }
+                    var start = coordinates[0];
+                    var end = coordinates[1];
+                    geometry.setCoordinates([
+                      [start, [start[0], end[1]], end, [end[0], start[1]], start]
+                    ]);
+                    return geometry;
+                  };
+                }
+                draw = new ol.interaction.Draw({
+                  source: source,
+                  type: /** @type {ol.geom.GeometryType} */ (value),
+                  geometryFunction: geometryFunction,
+                  maxPoints: maxPoints,
+                });
+                map.addInteraction(draw);
+                draw.on('drawend', function(event) {
+                    var coordinates = event.feature.getGeometry().getCoordinates()[0][0];
+                    console.log(coordinates);
+                    var result = [];
+                    for (var i =0; i<coordinates.length; i++) {
+                        result.push({
+                            longitude:coordinates[i][0],
+                            latitude:coordinates[i][1]
+                        });
+                    }
+                    
+                    var polygon = {
+                        type:'Polygon',
+                        name:'Test',
+                        coordinates:result
+                    };
+                    
+                    Ext.Ajax.request({
+                        scope: this,
+                        url: '/api/polygon/add',
+                        method: 'POST',
+                        jsonData: polygon,
+                        callback: function(){Ext.toast('Polygon saved');}
+                    });
+                    
+                    console.log(JSON.stringify(polygon));
+                });
+              }
+            }
+            addInteraction(this.map);
             this.map.on('click', function (e) {
                 this.map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
                     this.fireEvent('selectFeature', feature);
