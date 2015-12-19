@@ -586,4 +586,57 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                         .append("longitude", server.getLongitude())
                         .append("zoom", server.getZoom())));
     }
+
+    public void addPolygon(Polygon polygon) throws SQLException {
+
+        MongoCollection<Document> collection = database.getCollection(CollectionName.polygon);
+
+        long id = getId(CollectionName.polygon);
+        polygon.setId(id);
+
+        List<Document> coordinates = new ArrayList<>();
+        for (Point point : polygon.getCoordinates()){
+            Document pointDocument = new Document()
+                    .append("latitude", point.getLatitude())
+                    .append("longitude", point.getLongitude());
+            coordinates.add(pointDocument);
+        }
+        Document doc = new Document()
+                .append("id", polygon.getId())
+                .append("type", polygon.getType())
+                .append("name", polygon.getName())
+                .append("coordinates", coordinates);
+
+        collection.insertOne(doc);
+    }
+
+    public List<Polygon> getPolygons(){
+        List<Polygon> polygons = new ArrayList<>();
+        MongoCollection<Document> collection = database.getCollection(CollectionName.polygon);
+
+        MongoCursor<Document> iterator = collection.find().iterator();
+        while (iterator.hasNext()) {
+            Document next = iterator.next();
+            Polygon polygon = new Polygon();
+            polygon.setId(next.getLong("id"));
+            polygon.setType(next.getString("type"));
+            polygon.setName(next.getString("name"));
+
+            List<Document> coordinates = (List<Document>)next.get("coordinates");
+            List<Point> points = new ArrayList<>();
+            for(Document document : coordinates) {
+                Point point = new Point();
+                point.setLatitude(document.getDouble("latitude"));
+                point.setLongitude(document.getDouble("longitude"));
+
+                points.add(point);
+            }
+            polygon.setCoordinates(points);
+
+
+            polygons.add(polygon);
+        }
+
+        return polygons;
+    }
 }

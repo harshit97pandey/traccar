@@ -10,5 +10,6 @@ public interface CollectionName {
     String userDevice = "user_device";
     String user = "user";
     String idGenerators = "id_generators";
+    String polygon = "polygons";
 
 }
