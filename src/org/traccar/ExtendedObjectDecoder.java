@@ -16,13 +16,15 @@
 package org.traccar;
 
 import java.net.SocketAddress;
-import java.util.Collection;
+import java.util.*;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
+import org.traccar.model.Position;
 
 public abstract class ExtendedObjectDecoder implements ChannelUpstreamHandler {
 
@@ -42,7 +44,20 @@ public abstract class ExtendedObjectDecoder implements ChannelUpstreamHandler {
             ctx.sendUpstream(evt);
         } else if (decodedMessage != null) {
             if (decodedMessage instanceof Collection) {
-                for (Object o : (Collection) decodedMessage) {
+                List messages = new ArrayList((Collection) decodedMessage);
+                Collections.sort(messages, new Comparator<Object>() {
+                    @Override
+                    public int compare(Object o1, Object o2) {
+                        if (o1 instanceof Position && o2 instanceof Position) {
+                            Position p1 = (Position)o1;
+                            Position p2 = (Position)o2;
+
+                            return p1.getDeviceTime().compareTo(p2.getDeviceTime());
+                        }
+                        return 0;
+                    }
+                });
+                for (Object o : messages) {
                     Channels.fireMessageReceived(ctx, o, e.getRemoteAddress());
                 }
             } else {
