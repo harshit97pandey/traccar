@@ -1,18 +1,25 @@
 Ext.define('Traccar.view.Polygons', {
-    extend: 'Ext.form.Panel',
+    extend: 'Ext.grid.Panel',
     xtype: 'polygonsView',
-    header: false,
     requires: [
         'Traccar.view.PolygonsController'
     ],
     controller: 'polygons',
-
+    store: 'Polygons',
     title: 'Polygons',
     layout: 'fit',
-    
+    tbar: {
+        xtype: 'editToolbar',
+        items: [{
+            xtype: 'settingsMenu'
+        }]
+    },
     listeners: {
-        afterrender: function () {
-            
-        }
-    }
+
+    },
+    columns: [{
+        text: Strings.deviceName,
+        dataIndex: 'name',
+        flex: 1
+    }]
 });

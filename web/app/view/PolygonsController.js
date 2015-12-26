@@ -1,4 +1,4 @@
-Ext.define('Traccar.view.MapController', {
+Ext.define('Traccar.view.PolygonsController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.polygons'
 });

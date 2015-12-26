@@ -20,6 +20,7 @@ Ext.define('Traccar.view.Main', {
 
     requires: [
         'Traccar.view.Devices',
+        'Traccar.view.Polygons',
         'Traccar.view.State',
         'Traccar.view.Report',
         'Traccar.view.Map'
@@ -55,6 +56,11 @@ Ext.define('Traccar.view.Main', {
             flex: 1,
             header: false,
             collapsible: true
+        }, {
+            region: 'north',
+            header: false,
+            xtype: 'polygonsView',
+            flex: 1
         }]
     }, {
         region: 'south',
