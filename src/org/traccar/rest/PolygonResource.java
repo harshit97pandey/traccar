@@ -51,12 +51,12 @@ public class PolygonResource {
 
     @Path("remove")
     @POST
-    public Response remove(@FormParam("polygonId") long polygonId) throws Exception {
+    public Response remove(Polygon polygon) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
         DataManager dataManager = Context.getDataManager();
         if (dataManager instanceof MongoDataManager) {
             MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
-            mongoDataManager.removePolygon(polygonId);
+            mongoDataManager.removePolygon(polygon.getId());
             return ResponseBuilder.getResponse(true);
         }
         return Response.status(Response.Status.NOT_IMPLEMENTED).build();
