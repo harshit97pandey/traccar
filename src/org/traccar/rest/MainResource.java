@@ -33,11 +33,24 @@ public class MainResource {
     public Response session() throws SQLException, IOException {
         Long userId = (Long) req.getSession().getAttribute(USER_ID_KEY);
         if (userId != null) {
-
-            return ResponseBuilder.getResponse(JsonConverter.objectToJson(
-                    Context.getDataManager().getUser(userId)));
+            return Response.ok().entity(Context.getDataManager().getUser(userId)).build();
+        } else {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
         }
-        return ResponseBuilder.getResponse(false);
+    }
+
+    @Path("session")
+    @POST
+    public Response session(
+            @FormParam("email") String email,
+            @FormParam("password") String password) throws SQLException, IOException {
+        User user = Context.getDataManager().login(email, password);
+        if (user != null) {
+            req.getSession().setAttribute(USER_ID_KEY, user.getId());
+            return Response.ok().entity(user).build();
+        } else {
+            throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
+        }
     }
 
     @Path("login")
