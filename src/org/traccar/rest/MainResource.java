@@ -15,7 +15,7 @@ import java.text.ParseException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.traccar.web.BaseServlet.USER_KEY;
+import static org.traccar.web.BaseServlet.USER_ID_KEY;
 
 /**
  * Created by niko on 11/26/15.
@@ -31,7 +31,7 @@ public class MainResource {
     @Path("session")
     @GET
     public Response session() throws SQLException, IOException {
-        Long userId = (Long) req.getSession().getAttribute(USER_KEY);
+        Long userId = (Long) req.getSession().getAttribute(USER_ID_KEY);
         if (userId != null) {
 
             return ResponseBuilder.getResponse(JsonConverter.objectToJson(
@@ -47,7 +47,7 @@ public class MainResource {
         User user = Context.getDataManager().login(
                 email, password);
         if (user != null) {
-            req.getSession().setAttribute(USER_KEY, user.getId());
+            req.getSession().setAttribute(USER_ID_KEY, user.getId());
             sessions.put(req.getSession().getId(), user.getId());
             return ResponseBuilder.getResponse(JsonConverter.objectToJson(user));
         }
@@ -57,16 +57,14 @@ public class MainResource {
     @Path("logout")
     @GET
     public Response logout() throws IOException {
-        req.getSession().removeAttribute(USER_KEY);
+        req.getSession().removeAttribute(USER_ID_KEY);
         sessions.remove(req.getSession().getId());
         return ResponseBuilder.getResponse(true);
     }
 
     @Path("register")
     @POST
-    public Response register(String u) throws IOException, ParseException, SQLException {
-
-        User user = JsonConverter.objectFromJson(new StringReader(u), new User());
+    public Response register(User user) throws IOException, ParseException, SQLException {
         Context.getDataManager().addUser(user);
         return ResponseBuilder.getResponse(true);
     }

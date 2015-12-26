@@ -1,8 +1,6 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
-import org.traccar.database.ConnectionManager;
-import org.traccar.model.Device;
 import org.traccar.model.MiscFormatter;
 import org.traccar.model.Position;
 import org.traccar.rest.utils.SessionUtil;
@@ -58,8 +56,7 @@ public class PositionResource {
         Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), deviceId);
 
         return ResponseBuilder.getResponse(JsonConverter.arrayToJson(
-                Context.getDataManager().getPositions(
-                        SessionUtil.getUserId(req), deviceId,
+                Context.getDataManager().getPositions(deviceId,
                         JsonConverter.parseDate(req.getParameter("from")),
                         JsonConverter.parseDate(req.getParameter("to")))));
     }

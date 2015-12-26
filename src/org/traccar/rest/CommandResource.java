@@ -4,7 +4,6 @@ import org.traccar.Context;
 import org.traccar.model.Command;
 import org.traccar.rest.utils.SessionUtil;
 import org.traccar.web.CommandServlet;
-import org.traccar.web.JsonConverter;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -28,8 +27,7 @@ public class CommandResource {
 
     @Path("send")
     @POST
-    public Response send(String commandJson) throws Exception {
-        Command command = JsonConverter.objectFromJson(new StringReader(commandJson), new Command());
+    public Response send(Command command) throws Exception {
         Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), command.getDeviceId());
         new CommandServlet().getActiveDevice(command.getDeviceId()).sendCommand(command);
 

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by niko on 12/19/15.
  */
-public class Polygon implements Factory{
+public class Polygon{
     private long id;
 
     public long getId() {
@@ -44,10 +44,5 @@ public class Polygon implements Factory{
 
     public void setCoordinates(List<Point> coordinates) {
         this.coordinates = coordinates;
-    }
-
-    @Override
-    public Polygon create() {
-        return new Polygon();
     }
 }

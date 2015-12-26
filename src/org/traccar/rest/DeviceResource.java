@@ -13,19 +13,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.StringReader;
 
 /**
  * Created by niko on 11/28/15.
  */
-@Path("device")
+@Path("devices")
 @Produces(MediaType.APPLICATION_JSON)
 public class DeviceResource {
 
     @javax.ws.rs.core.Context
     HttpServletRequest req;
 
-    @Path("get")
     @GET
     public Response get() throws Exception {
         if (Boolean.parseBoolean(req.getParameter("all"))) {
@@ -50,8 +48,7 @@ public class DeviceResource {
 
     @Path("add")
     @POST
-    public Response add(String deviceJson) throws Exception {
-        Device device = JsonConverter.objectFromJson(new StringReader(deviceJson), new Device());
+    public Response add(Device device) throws Exception {
         long userId = SessionUtil.getUserId(req);
         Context.getDataManager().addDevice(device);
         Context.getDataManager().linkDevice(userId, device.getId());
@@ -62,8 +59,7 @@ public class DeviceResource {
 
     @Path("update")
     @POST
-    public Response update(String deviceJson) throws Exception {
-        Device device = JsonConverter.objectFromJson(new StringReader(deviceJson), new Device());
+    public Response update(Device device) throws Exception {
         Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), device.getId());
         Context.getDataManager().updateDevice(device);
 
@@ -72,8 +68,7 @@ public class DeviceResource {
 
     @Path("remove")
     @POST
-    public Response remove(String deviceJson) throws Exception {
-        Device device = JsonConverter.objectFromJson(new StringReader(deviceJson), new Device());
+    public Response remove(Device device) throws Exception {
         Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), device.getId());
         Context.getDataManager().removeDevice(device);
         Context.getPermissionsManager().refresh();

@@ -449,7 +449,7 @@ public class MongoDataManager extends org.traccar.database.DataManager {
             }
         }
     }
-    public Collection<Position> getPositions(long userId, long deviceId, java.util.Date from, java.util.Date to) throws SQLException {
+    public Collection<Position> getPositions(long deviceId, java.util.Date from, java.util.Date to) throws SQLException {
         MongoCursor<Document> cursor = database.getCollection(CollectionName.position).find(
                 new BasicDBObject("deviceId", deviceId)
                 .append("fixTime", new BasicDBObject("$gte", from).append("$lte", to))).sort(new BasicDBObject("fixTime", -1)).iterator();

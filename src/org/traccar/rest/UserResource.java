@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.StringReader;
 
 /**
  * Created by niko on 11/28/15.
@@ -34,8 +33,7 @@ public class UserResource {
 
     @Path("add")
     @POST
-    public Response add(String userJson) throws Exception {
-        User user = JsonConverter.objectFromJson(new StringReader(userJson), new User());
+    public Response add(User user) throws Exception {
         Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), user.getId());
         Context.getDataManager().addUser(user);
         Context.getPermissionsManager().refresh();
@@ -45,8 +43,7 @@ public class UserResource {
 
     @Path("update")
     @POST
-    public Response update(String userJson) throws Exception {
-        User user = JsonConverter.objectFromJson(new StringReader(userJson), new User());
+    public Response update(User user) throws Exception {
         if (user.getAdmin()) {
             Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
         } else {
@@ -60,8 +57,7 @@ public class UserResource {
 
     @Path("remove")
     @POST
-    public Response remove(String userJson) throws Exception {
-        User user = JsonConverter.objectFromJson(new StringReader(userJson), new User());
+    public Response remove(User user) throws Exception {
         Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), user.getId());
         Context.getDataManager().removeUser(user);
         Context.getPermissionsManager().refresh();

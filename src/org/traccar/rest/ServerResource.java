@@ -26,7 +26,6 @@ public class ServerResource {
     @javax.ws.rs.core.Context
     HttpServletRequest req;
 
-    @Path("get")
     @GET
     public Response get() throws SQLException, IOException {
         return ResponseBuilder.getResponse(JsonConverter.objectToJson(
@@ -35,8 +34,7 @@ public class ServerResource {
 
     @Path("update")
     @POST
-    public Response update(String serverJson) throws Exception {
-        Server server = JsonConverter.objectFromJson(new StringReader(serverJson), new Server());
+    public Response update(Server server) throws Exception {
         Context.getPermissionsManager().checkAdmin(new ServerServlet().getUserId(req));
         Context.getDataManager().updateServer(server);
         return ResponseBuilder.getResponse(true);
