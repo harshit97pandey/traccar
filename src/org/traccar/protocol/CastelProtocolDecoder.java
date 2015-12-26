@@ -65,7 +65,7 @@ public class CastelProtocolDecoder extends BaseProtocolDecoder {
 
         double lat = buf.readUnsignedInt() / 3600000.0;
         double lon = buf.readUnsignedInt() / 3600000.0;
-        position.setSpeed(UnitsConverter.knotsFromKph(buf.readUnsignedShort()));
+        position.setSpeed(UnitsConverter.knotsFromCps(buf.readUnsignedShort()));
         position.setCourse(buf.readUnsignedShort() % 360);
 
         int flags = buf.readUnsignedByte();
@@ -99,6 +99,9 @@ public class CastelProtocolDecoder extends BaseProtocolDecoder {
             response.writeByte(version);
             response.writeBytes(id);
             response.writeShort(ChannelBuffers.swapShort(type));
+            if (content != null) {
+                response.writeBytes(content);
+            }
             response.writeShort(
                     Checksum.crc16(Checksum.CRC16_X25, response.toByteBuffer(0, response.writerIndex())));
             response.writeByte(0x0D); response.writeByte(0x0A);

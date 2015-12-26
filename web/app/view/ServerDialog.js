@@ -31,6 +31,11 @@ Ext.define('Traccar.view.ServerDialog', {
             name: 'registration',
             fieldLabel: Strings.serverRegistration,
             allowBlank: false
+        },{
+            xtype: 'checkboxfield',
+            name: 'readonly',
+            fieldLabel: Strings.serverReadonly,
+            allowBlank: false
         }, {
             xtype: 'combobox',
             name: 'map',
@@ -55,11 +60,13 @@ Ext.define('Traccar.view.ServerDialog', {
         }, {
             xtype: 'numberfield',
             name: 'latitude',
-            fieldLabel: Strings.positionLatitude
+            fieldLabel: Strings.positionLatitude,
+            decimalPrecision: Traccar.Style.coordinatePrecision
         }, {
             xtype: 'numberfield',
             name: 'longitude',
-            fieldLabel: Strings.positionLongitude
+            fieldLabel: Strings.positionLongitude,
+            decimalPrecision: Traccar.Style.coordinatePrecision
         }, {
             xtype: 'numberfield',
             name: 'zoom',

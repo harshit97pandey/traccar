@@ -42,7 +42,8 @@ Ext.define('Traccar.view.Main', {
         header: true,
         collapsed: true,
         defaults: {
-            split: true
+            split: true,
+            flex: 1
         },
 
         items: [{

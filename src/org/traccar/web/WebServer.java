@@ -15,10 +15,16 @@
  */
 package org.traccar.web;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.net.InetSocketAddress;
 import javax.naming.InitialContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
+
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -28,6 +34,18 @@ import org.eclipse.jetty.websocket.server.WebSocketHandler;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.traccar.Config;
+import org.traccar.api.AsyncSocketServlet;
+import org.traccar.api.CorsResponseFilter;
+import org.traccar.api.ObjectMapperProvider;
+import org.traccar.api.ResourceErrorHandler;
+import org.traccar.api.SecurityRequestFilter;
+import org.traccar.api.resource.CommandResource;
+import org.traccar.api.resource.DeviceResource;
+import org.traccar.api.resource.PermissionResource;
+import org.traccar.api.resource.PositionResource;
+import org.traccar.api.resource.ServerResource;
+import org.traccar.api.resource.SessionResource;
+import org.traccar.api.resource.UserResource;
 import org.traccar.helper.Log;
 import org.traccar.rest.PositionEventEndpoint;
 
@@ -59,7 +77,7 @@ public class WebServer {
         initServer();
         switch (config.getString("web.type", "new")) {
             case "api":
-                initApi();
+                initOldApi();
                 break;
             case "new":
                 initApi();
@@ -77,6 +95,15 @@ public class WebServer {
                 break;
         }
         server.setHandler(handlers);
+
+        server.addBean(new ErrorHandler() {
+            @Override
+            protected void handleErrorPage(
+                    HttpServletRequest request, Writer writer, int code, String message) throws IOException {
+                writer.write("<!DOCTYPE<html><head><title>Error</title></head><html><body>"
+                        + code + " - " + HttpStatus.getMessage(code) + "</body></html>");
+            }
+        });
     }
 
     private void initWebApp() {

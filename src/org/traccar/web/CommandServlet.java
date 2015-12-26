@@ -49,15 +49,13 @@ public class CommandServlet extends BaseServlet {
     }
 
     private void send(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-
-        Command command = JsonConverter.objectFromJson(req.getReader(), new Command());
+        Command command = JsonConverter.objectFromJson(req.getReader(), Command.class);
         Context.getPermissionsManager().checkDevice(getUserId(req), command.getDeviceId());
         getActiveDevice(command.getDeviceId()).sendCommand(command);
         sendResponse(resp.getWriter(), true);
     }
 
     private void raw(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-
         JsonObject json = Json.createReader(req.getReader()).readObject();
         long deviceId = json.getJsonNumber("deviceId").longValue();
         String command = json.getString("command");
