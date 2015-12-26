@@ -417,6 +417,38 @@ public class MongoDataManager extends org.traccar.database.DataManager {
         PositionEventEndpoint.sessionRefreshUser(userId);
     }
 
+    public void linkPolygon(long polygonId, long deviceId) {
+        MongoCollection<Document> collection = database.getCollection(CollectionName.device);
+        Document device = collection.find(new Document("id", deviceId)).first();
+        List<Long> polygons;
+        if (device.containsKey("polygons")) {
+            polygons = device.get("polygons", List.class);
+            if ( ! polygons.contains(polygonId)) {
+                polygons.add(polygonId);
+            }
+
+        } else {
+            polygons = new ArrayList<>();
+            polygons.add(polygonId);
+        }
+        database.getCollection(CollectionName.device).updateOne(new Document("id", deviceId),
+                new Document("$set", new Document("polygons", polygons)));
+        //TODO refresh device
+    }
+
+    public void unlinkPolygon(long polygonId, long deviceId) {
+        MongoCollection<Document> collection = database.getCollection(CollectionName.device);
+        Document device = collection.find(new Document("id", deviceId)).first();
+        if (device.containsKey("polygons")) {
+            List<Long> polygons = device.get("polygons", List.class);
+            if (polygons.contains(polygonId)) {
+                polygons.remove(polygonId);
+                database.getCollection(CollectionName.device).updateOne(new Document("id", deviceId),
+                        new Document("$set", new Document("polygons", polygons)));
+                //TODO refresh device
+            }
+        }
+    }
     public Collection<Position> getPositions(long userId, long deviceId, java.util.Date from, java.util.Date to) throws SQLException {
         MongoCursor<Document> cursor = database.getCollection(CollectionName.position).find(
                 new BasicDBObject("deviceId", deviceId)
@@ -610,6 +642,41 @@ public class MongoDataManager extends org.traccar.database.DataManager {
         collection.insertOne(doc);
     }
 
+    public void updatePolygon(Polygon polygon) throws Exception {
+        List<Document> coordinates = new ArrayList<>();
+        for (Point point : polygon.getCoordinates()){
+            Document pointDocument = new Document()
+                    .append("latitude", point.getLatitude())
+                    .append("longitude", point.getLongitude());
+            coordinates.add(pointDocument);
+        }
+        Document doc = new Document()
+                .append("type", polygon.getType())
+                .append("name", polygon.getName())
+                .append("coordinates", coordinates);
+
+        database.getCollection(CollectionName.polygon).updateOne(new BasicDBObject("id", polygon.getId()),
+                new Document("$set", new Document("type", polygon.getType())
+                        .append("name", polygon.getName())
+                        .append("coordinates", coordinates)));
+
+        //TODO update device
+    }
+
+    public void removePolygon(long polygonId) throws Exception {
+        database.getCollection(CollectionName.polygon).findOneAndDelete(new BasicDBObject("id", polygonId));
+
+        MongoCollection<Document> collection = database.getCollection(CollectionName.device);
+        MongoCursor<Document> iterator = collection.find(new Document("polygons", polygonId)).iterator();
+        while (iterator.hasNext()) {
+            Document device = iterator.next();
+            List<Long> polygons = device.get("polygons", List.class);
+            polygons.remove(polygonId);
+            database.getCollection(CollectionName.device).updateOne(new Document("id", device.getLong("id")),
+                    new Document("$set", new Document("polygons", polygons)));
+            //TODO update device
+        }
+    }
     public List<Polygon> getPolygons(){
         List<Polygon> polygons = new ArrayList<>();
         MongoCollection<Document> collection = database.getCollection(CollectionName.polygon);
