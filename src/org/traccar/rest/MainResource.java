@@ -9,7 +9,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.io.StringReader;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Map;
@@ -47,12 +46,14 @@ public class MainResource {
         User user = Context.getDataManager().login(email, password);
         if (user != null) {
             req.getSession().setAttribute(USER_ID_KEY, user.getId());
+            sessions.put(req.getSession().getId(), user.getId());
             return Response.ok().entity(user).build();
         } else {
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }
     }
 
+    //TODO remove
     @Path("login")
     @POST
     public Response logOn(@FormParam("email") String email,
