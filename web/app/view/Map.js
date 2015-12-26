@@ -47,6 +47,10 @@ Ext.define('Traccar.view.Map', {
         return this.reportSource;
     },
 
+    getVectorSource: function () {
+        return this.vectorSource;
+    },
+
     listeners: {
         afterrender: function () {
             var user, server, layer, type, bingKey, latestLayer, routeLayer, reportLayer, lat, lon, zoom, target;
@@ -218,10 +222,10 @@ Ext.define('Traccar.view.Map', {
                 maxZoom: Traccar.Style.mapMaxZoom
             });
 
-            var source = new ol.source.Vector({wrapX: false});
+            this.vectorSource = new ol.source.Vector({wrapX: false});
 
             var vector = new ol.layer.Vector({
-              source: source,
+              source: this.vectorSource,
               style: new ol.style.Style({
                 fill: new ol.style.Fill({
                   color: 'rgba(255, 255, 255, 0.2)'
@@ -290,65 +294,7 @@ Ext.define('Traccar.view.Map', {
                 }
             });
             
-            var draw; // global so we can remove it later
-            function addInteraction(map) {
-              var value = 'MultiPolygon';//typeSelect.value;
-              if (value !== 'None') {
-                var geometryFunction, maxPoints;
-                if (value === 'Square') {
-                  value = 'Circle';
-                  geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
-                } else if (value === 'Box') {
-                  value = 'LineString';
-                  maxPoints = 2;
-                  geometryFunction = function(coordinates, geometry) {
-                    if (!geometry) {
-                      geometry = new ol.geom.Polygon(null);
-                    }
-                    var start = coordinates[0];
-                    var end = coordinates[1];
-                    geometry.setCoordinates([
-                      [start, [start[0], end[1]], end, [end[0], start[1]], start]
-                    ]);
-                    return geometry;
-                  };
-                }
-                draw = new ol.interaction.Draw({
-                  source: source,
-                  type: /** @type {ol.geom.GeometryType} */ (value),
-                  geometryFunction: geometryFunction,
-                  maxPoints: maxPoints,
-                });
-                map.addInteraction(draw);
-                draw.on('drawend', function(event) {
-                    var coordinates = event.feature.getGeometry().getCoordinates()[0][0];
-                    console.log(coordinates);
-                    var result = [];
-                    for (var i =0; i<coordinates.length; i++) {
-                        result.push({
-                            longitude:coordinates[i][0],
-                            latitude:coordinates[i][1]
-                        });
-                    }
-                    
-                    var polygon = {
-                        type:'Polygon',
-                        name:'Test',
-                        coordinates:result
-                    };
-                    
-                    Ext.Ajax.request({
-                        scope: this,
-                        url: '/api/polygon/add',
-                        method: 'POST',
-                        jsonData: polygon,
-                        callback: function(){Ext.toast('Polygon saved');}
-                    });
-                    
-                    console.log(JSON.stringify(polygon));
-                });
-              }
-            }
+            
             this.map.on('click', function (e) {
                 this.map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
                     this.fireEvent('selectFeature', feature);

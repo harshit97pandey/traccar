@@ -13,6 +13,10 @@ Ext.define('Traccar.view.PolygonsController', {
         //}
     },
 
+    onAddClick: function () {
+        this.fireEvent('drawArea');
+    },
+    
     onRemoveClick: function () {
         var polygon = this.getView().getSelectionModel().getSelection()[0];
         store = Ext.getStore('Polygons');

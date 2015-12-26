@@ -9,13 +9,13 @@ Ext.define('Traccar.view.Polygons', {
     tbar : {
         items : [ {
             xtype : 'button',
-            handler : 'onAddClick',
             reference : 'toolbarAddButton',
             glyph : 'xf067@FontAwesome',
             tooltip : Strings.sharedAdd,
             tooltipType : 'title',
             menu : [ {
-                text : 'Polygon'
+                text : 'Polygon',
+                handler : 'onAddClick'
             }, {
                 text : 'Line'
             }, {
@@ -62,5 +62,9 @@ Ext.define('Traccar.view.Polygons', {
         text : Strings.deviceName,
         dataIndex : 'name',
         flex : 1
-    } ]
+    }, {
+        text : Strings.deviceName,
+        dataIndex : 'type',
+        flex : 1
+    }]
 });
