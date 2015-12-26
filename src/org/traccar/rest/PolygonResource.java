@@ -5,6 +5,7 @@ import org.traccar.database.DataManager;
 import org.traccar.database.mongo.MongoDataManager;
 import org.traccar.model.Point;
 import org.traccar.model.Polygon;
+import org.traccar.rest.utils.PolygonUtil;
 import org.traccar.rest.utils.SessionUtil;
 import org.traccar.web.JsonConverter;
 
@@ -42,7 +43,6 @@ public class PolygonResource {
     @Path("add")
     @POST
     public Response add(Polygon polygon) throws Exception {
-        //Polygon polygon = JsonConverter.objectFromJson(new StringReader(polygonJson), new Polygon());
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
         DataManager dataManager = Context.getDataManager();
         if (dataManager instanceof MongoDataManager) {
@@ -51,5 +51,16 @@ public class PolygonResource {
             return ResponseBuilder.getResponse(true);
         }
         return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+    }
+
+    @Path("contains")
+    @GET
+    public Response contains(@QueryParam("polygonId")long polygonId,
+                             @QueryParam("latitude") Double latitude,
+                             @QueryParam("longitude") Double longitude) throws Exception {
+        Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
+        Boolean contains = PolygonUtil.contains(polygonId, latitude, longitude);
+
+        return Response.ok().entity(contains).build();
     }
 }

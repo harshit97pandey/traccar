@@ -639,4 +639,30 @@ public class MongoDataManager extends org.traccar.database.DataManager {
 
         return polygons;
     }
+
+    public Polygon getPolygon(long polygonId){
+        MongoCollection<Document> collection = database.getCollection(CollectionName.polygon);
+
+        Document document = collection.find(new Document("id", polygonId)).limit(1).first();
+        if (document != null) {
+            Polygon polygon = new Polygon();
+            polygon.setId(document.getLong("id"));
+            polygon.setType(document.getString("type"));
+            polygon.setName(document.getString("name"));
+
+            List<Document> coordinates = (List<Document>)document.get("coordinates");
+            List<Point> points = new ArrayList<>();
+            for(Document c : coordinates) {
+                Point point = new Point();
+                point.setLatitude(c.getDouble("latitude"));
+                point.setLongitude(c.getDouble("longitude"));
+
+                points.add(point);
+            }
+            polygon.setCoordinates(points);
+            return polygon;
+        }
+
+        return null;
+    }
 }
