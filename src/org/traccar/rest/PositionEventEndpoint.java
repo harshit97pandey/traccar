@@ -143,7 +143,7 @@ public class PositionEventEndpoint {
         List<HttpCookie> cookies = session.getUpgradeRequest().getCookies();
         for(HttpCookie cookie :cookies) {
             if (cookie.getName().equals("JSESSIONID")) {
-                userId = MainResource.sessions.get(cookie.getValue());
+                userId = SessionResource.sessions.get(cookie.getValue());
                 if (userId != null) {
                     break;
                 }

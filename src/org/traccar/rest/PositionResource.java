@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ import java.util.Map;
 /**
  * Created by niko on 11/28/15.
  */
-@Path("position")
+@Path("positions")
 @Produces(MediaType.APPLICATION_JSON)
 public class PositionResource {
 
@@ -49,16 +50,17 @@ public class PositionResource {
         return Response.ok().build();
     }
 
-    @Path("get")
     @GET
-    public Response get() throws Exception {
-        long deviceId = Long.parseLong(req.getParameter("deviceId"));
-        Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), deviceId);
+    public Response get(
+            @QueryParam("deviceId") long deviceId,
+            @QueryParam("from") String from,
+            @QueryParam("to") String to) throws Exception {
 
-        return ResponseBuilder.getResponse(JsonConverter.arrayToJson(
-                Context.getDataManager().getPositions(deviceId,
-                        JsonConverter.parseDate(req.getParameter("from")),
-                        JsonConverter.parseDate(req.getParameter("to")))));
+        Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), deviceId);
+        Collection<Position> positions = Context.getDataManager().getPositions(
+                deviceId, JsonConverter.parseDate(from), JsonConverter.parseDate(to));
+
+        return Response.ok().entity(positions).build();
     }
 
     @Path("devices")

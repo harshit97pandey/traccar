@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.sql.SQLException;
 
 /**
  * Created by niko on 11/28/15.
@@ -38,34 +39,34 @@ public class DeviceResource {
         }
     }
 
-    @Path("add")
+
     @POST
     public Response add(Device device) throws Exception {
-        long userId = SessionUtil.getUserId(req);
+        Context.getPermissionsManager().checkReadonly(SessionUtil.getUserId(req));
         Context.getDataManager().addDevice(device);
-        Context.getDataManager().linkDevice(userId, device.getId());
+        Context.getDataManager().linkDevice(SessionUtil.getUserId(req), device.getId());
         Context.getPermissionsManager().refresh();
 
-        return ResponseBuilder.getResponse(JsonConverter.objectToJson(device));
+        return Response.ok(device).build();
     }
 
-    @Path("update")
-    @POST
-    public Response update(Device device) throws Exception {
-        Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), device.getId());
-        Context.getDataManager().updateDevice(device);
-
-        return ResponseBuilder.getResponse(true);
+    @Path("{id}")
+    @PUT
+    public Response update(@PathParam("id") long id, Device entity) throws Exception {
+        Context.getPermissionsManager().checkReadonly(SessionUtil.getUserId(req));
+        Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), id);
+        Context.getDataManager().updateDevice(entity);
+        return Response.ok(entity).build();
     }
 
-    @Path("remove")
-    @POST
-    public Response remove(Device device) throws Exception {
-        Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), device.getId());
-        Context.getDataManager().removeDevice(device);
+    @Path("{id}")
+    @DELETE
+    public Response remove(@PathParam("id") long id) throws Exception {
+        Context.getPermissionsManager().checkReadonly(SessionUtil.getUserId(req));
+        Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), id);
+        Context.getDataManager().removeDevice(id);
         Context.getPermissionsManager().refresh();
-
-        return ResponseBuilder.getResponse(true);
+        return Response.noContent().build();
     }
 
     @Path("link")

@@ -15,54 +15,49 @@ import javax.ws.rs.core.Response;
 /**
  * Created by niko on 11/28/15.
  */
-@Path("user")
+@Path("users")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
     @javax.ws.rs.core.Context
     HttpServletRequest req;
 
-    @Path("get")
     @GET
     public Response get() throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
 
-        return ResponseBuilder.getResponse(JsonConverter.arrayToJson(
-                Context.getDataManager().getUsers()));
+        return Response.ok().entity(Context.getDataManager().getUsers()).build();
     }
 
-    @Path("add")
     @POST
     public Response add(User user) throws Exception {
-        Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), user.getId());
+        Context.getPermissionsManager().checkRegistration(SessionUtil.getUserId(req));
         Context.getDataManager().addUser(user);
         Context.getPermissionsManager().refresh();
+        return Response.ok(user).build();
 
-        return ResponseBuilder.getResponse(JsonConverter.objectToJson(user));
     }
 
-    @Path("update")
-    @POST
-    public Response update(User user) throws Exception {
-        if (user.getAdmin()) {
+    @Path("{id}")
+    @PUT
+    public Response update(@PathParam("id") long id, User entity) throws Exception {
+        if (entity.getAdmin()) {
             Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
         } else {
-            Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), user.getId());
+            Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), entity.getId());
         }
-        Context.getDataManager().updateUser(user);
+        Context.getDataManager().updateUser(entity);
         Context.getPermissionsManager().refresh();
-
-        return ResponseBuilder.getResponse(true);
+        return Response.ok(entity).build();
     }
 
-    @Path("remove")
-    @POST
-    public Response remove(User user) throws Exception {
-        Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), user.getId());
-        Context.getDataManager().removeUser(user);
+    @Path("{id}")
+    @DELETE
+    public Response remove(@PathParam("id") long id) throws Exception {
+        Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), id);
+        Context.getDataManager().removeUser(id);
         Context.getPermissionsManager().refresh();
-
-        return ResponseBuilder.getResponse(true);
+        return Response.noContent().build();
     }
 
     @Path("location/update")
