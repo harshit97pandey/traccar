@@ -74,6 +74,7 @@ Ext.define('Traccar.controller.Root', {
 
     loadApp: function () {
         Ext.getStore('Devices').load();
+        //TODO check administration rights
         Ext.getStore('Polygons').load();
         Ext.get('attribution').remove();
         if (this.isPhone) {
@@ -132,45 +133,6 @@ Ext.define('Traccar.controller.Root', {
         };
         websocket.onerror = function(evt) {
             Ext.toast("Server connection error: " +evt.data) 
-        };
-    },
-
-    asyncUpdate: function (first) {
-        var socket = new WebSocket('ws://' + window.location.host + '/api/socket');
-
-        socket.onmessage = function (event) {
-            var i, store, data, array, entity;
-
-            data = Ext.decode(event.data);
-
-            if (data.devices) {
-                array = data.devices;
-                store = Ext.getStore('Devices');
-                for (i = 0; i < array.length; i++) {
-                    entity = store.findRecord('id', array[i].id, 0, false, false, true);
-                    if (entity) {
-                        entity.set({
-                            status: array[i].status,
-                            lastUpdate: array[i].lastUpdate
-                        }, {
-                            dirty: false
-                        });
-                    }
-                }
-            }
-
-            if (data.positions) {
-                array = data.positions;
-                store = Ext.getStore('LatestPositions');
-                for (i = 0; i < array.length; i++) {
-                    entity = store.findRecord('deviceId', array[i].deviceId, 0, false, false, true);
-                    if (entity) {
-                        entity.set(array[i]);
-                    } else {
-                        store.add(Ext.create('Traccar.model.Position', array[i]));
-                    }
-                }
-            }
         };
     }
 });

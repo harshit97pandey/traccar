@@ -254,7 +254,7 @@ Ext.define('Traccar.view.Map', {
                 layers: layers,
                 view: this.mapView,
                 interactions: ol.interaction.defaults().extend([
-                    //new ol.interaction.DragRotateAndZoom()
+                    new ol.interaction.DragRotateAndZoom()
                 ])
             });
 
@@ -349,7 +349,6 @@ Ext.define('Traccar.view.Map', {
                 });
               }
             }
-            addInteraction(this.map);
             this.map.on('click', function (e) {
                 this.map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
                     this.fireEvent('selectFeature', feature);

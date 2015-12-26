@@ -6,6 +6,8 @@ Ext.define('Traccar.view.PolygonsController', {
         var empty = selected.getCount() === 0;
         this.lookupReference('toolbarEditButton').setDisabled(empty);
         this.lookupReference('toolbarRemoveButton').setDisabled(empty);
+        this.lookupReference('toolbarLinkButton').setDisabled(empty);
+        this.lookupReference('toolbarUnlinkButton').setDisabled(empty);
         //if (!empty) {
         //    this.fireEvent('selectDevice', selected.getLastSelected(), true);
         //}
@@ -24,6 +26,21 @@ Ext.define('Traccar.view.PolygonsController', {
         Ext.Ajax.request({
             scope: this,
             url: '/api/polygon/link',
+            method: 'POST',
+            params: {
+                polygonId: polygon.id,
+                deviceId: devices.getAt(0).getData().id
+            },
+            callback: function(){Ext.toast('Link applied');}
+        });
+    },
+    
+    onUnlinkClick: function() {
+        var polygon = this.getView().getSelectionModel().getSelection()[0];
+        var devices = Ext.getStore('Devices');
+        Ext.Ajax.request({
+            scope: this,
+            url: '/api/polygon/unlink',
             method: 'POST',
             params: {
                 polygonId: polygon.id,
