@@ -12,10 +12,13 @@ Ext.define('Traccar.view.Polygons', {
         xtype: 'editToolbar',
         items: [{
             xtype: 'settingsMenu'
+        }, {
+            text: 'Link',
+            handler: 'onLinkClick',
         }]
     },
     listeners: {
-
+        selectionchange: 'onSelectionChange'
     },
     columns: [{
         text: Strings.deviceName,
