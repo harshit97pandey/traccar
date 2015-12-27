@@ -15,11 +15,13 @@ Ext.define('Traccar.view.Polygons', {
             tooltipType : 'title',
             menu : [ {
                 text : 'Polygon',
-                handler : 'onAddClick'
+                handler : 'onAddPolygonClick'
             }, {
-                text : 'Line'
+                text : 'Line',
+                handler : 'onAddLineClick'
             }, {
-                text : 'Circle'
+                text : 'Circle',
+                handler : 'onAddCircleClick'
             } ]
         }, {
             xtype : 'button',

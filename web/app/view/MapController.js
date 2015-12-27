@@ -313,9 +313,8 @@ Ext.define('Traccar.view.MapController', {
         }
     },
     
-    drawArea: function(){
+    drawArea: function(value){
       var draw; // global so we can remove it later
-      var value = 'MultiPolygon';//typeSelect.value;
       if (value !== 'None') {
         var geometryFunction, maxPoints;
         if (value === 'Square') {
