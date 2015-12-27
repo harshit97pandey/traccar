@@ -339,9 +339,9 @@ Ext.define('Traccar.view.MapController', {
         }
         draw = new ol.interaction.Draw({
           source: this.getView().getVectorSource(),
-          type: /** @type {ol.geom.GeometryType} */ (value),
+          type: value,
           geometryFunction: geometryFunction,
-          maxPoints: maxPoints,
+          maxPoints: maxPoints
         });
         this.getView().getMap().addInteraction(draw);
         draw.on('drawend', function(event) {
@@ -355,9 +355,9 @@ Ext.define('Traccar.view.MapController', {
             }
             
             var polygon = {
-                type:'Polygon',
-                name:'Test',
-                coordinates:result
+                type: value,
+                name: 'Test',
+                coordinates: result
             };
             
             Ext.Ajax.request({

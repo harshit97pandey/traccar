@@ -212,16 +212,6 @@ Ext.define('Traccar.view.Map', {
                 source: this.reportSource
             });
 
-            lat = user.get('latitude') || server.get('latitude') || Traccar.Style.mapDefaultLat;
-            lon = user.get('longitude') || server.get('longitude') || Traccar.Style.mapDefaultLon;
-            zoom = user.get('zoom') || server.get('zoom') || Traccar.Style.mapDefaultZoom;
-
-            this.mapView = new ol.View({
-                center: ol.proj.fromLonLat([lon, lat]),
-                zoom: zoom,
-                maxZoom: Traccar.Style.mapMaxZoom
-            });
-
             this.vectorSource = new ol.source.Vector({wrapX: false});
 
             var vector = new ol.layer.Vector({
@@ -242,7 +232,17 @@ Ext.define('Traccar.view.Map', {
                 })
               })
             });
-            
+
+            lat = user.get('latitude') || server.get('latitude') || Traccar.Style.mapDefaultLat;
+            lon = user.get('longitude') || server.get('longitude') || Traccar.Style.mapDefaultLon;
+            zoom = user.get('zoom') || server.get('zoom') || Traccar.Style.mapDefaultZoom;
+
+            this.mapView = new ol.View({
+                center: ol.proj.fromLonLat([lon, lat]),
+                zoom: zoom,
+                maxZoom: Traccar.Style.mapMaxZoom
+            });
+
             var layers = [];
             
             for (var i = 0; i < layersData.length; ++i) {
