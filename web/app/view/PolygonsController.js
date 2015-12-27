@@ -8,9 +8,11 @@ Ext.define('Traccar.view.PolygonsController', {
         this.lookupReference('toolbarRemoveButton').setDisabled(empty);
         this.lookupReference('toolbarLinkButton').setDisabled(empty);
         this.lookupReference('toolbarUnlinkButton').setDisabled(empty);
-        //if (!empty) {
-        //    this.fireEvent('selectDevice', selected.getLastSelected(), true);
-        //}
+        
+        
+        if (!empty) {
+            //this.fireEvent('selectPolygon', selected, true);
+        }
     },
 
     onAddPolygonClick: function () {

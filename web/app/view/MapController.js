@@ -354,18 +354,22 @@ Ext.define('Traccar.view.MapController', {
                 });
             }
             
-            var polygon = {
-                type: value,
-                name: 'Test',
-                coordinates: result
-            };
             
-            Ext.Ajax.request({
-                scope: this,
-                url: '/api/polygon/add',
-                method: 'POST',
-                jsonData: polygon,
-                callback: function(){Ext.toast('Polygon saved');}
+            Ext.Msg.prompt('Name', 'Please enter your name:', function(btn, text){
+                if (btn == 'ok' && text){
+                    Ext.Ajax.request({
+                        scope: this,
+                        url: '/api/polygon/add',
+                        method: 'POST',
+                        jsonData: {
+                            type: value,
+                            name: text,
+                            coordinates: result
+                        },
+                        callback: function(){Ext.toast('Polygon saved');}
+                    });
+                    
+                }
             });
         });
       }
