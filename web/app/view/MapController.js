@@ -24,7 +24,8 @@ Ext.define('Traccar.view.MapController', {
                 '*': {
                     selectDevice: 'selectDevice',
                     selectReport: 'selectReport',
-                    drawArea: 'drawArea'
+                    drawArea: 'drawArea',
+                    showArea: 'showArea'
                 }
             },
             store: {
@@ -313,8 +314,24 @@ Ext.define('Traccar.view.MapController', {
         }
     },
     
+    showArea: function(polygon){
+        var source = this.getView().getVectorSource();
+        var ring = [];
+        for (var i=0; i < polygon.coordinates.length; i++) {
+            var coords = polygon.coordinates[i];
+            ring.push([coords.longitude, coords.latitude]);
+        }
+        var area = new ol.geom.Polygon([ring]);
+        var feature = new ol.Feature(area);
+        source.clear();
+        source.addFeature(feature);
+    },
+
     drawArea: function(value){
-      var draw; // global so we can remove it later
+      var source = this.getView().getVectorSource();
+          source.clear();
+      var map = this.getView().getMap();
+      var draw;
       if (value !== 'None') {
         var geometryFunction, maxPoints;
         if (value === 'Circle') {
@@ -322,30 +339,16 @@ Ext.define('Traccar.view.MapController', {
         } else if (value === 'Square') {
           value = 'Circle';
           geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
-        } else if (value === 'Box') {
-          value = 'LineString';
-          maxPoints = 2;
-          geometryFunction = function(coordinates, geometry) {
-            if (!geometry) {
-              geometry = new ol.geom.Polygon(null);
-            }
-            var start = coordinates[0];
-            var end = coordinates[1];
-            geometry.setCoordinates([
-              [start, [start[0], end[1]], end, [end[0], start[1]], start]
-            ]);
-            return geometry;
-          };
         }
         draw = new ol.interaction.Draw({
-          source: this.getView().getVectorSource(),
+          source: source,
           type: value,
           geometryFunction: geometryFunction,
           maxPoints: maxPoints
         });
-        this.getView().getMap().addInteraction(draw);
+        map.addInteraction(draw);
         draw.on('drawend', function(event) {
-            var coordinates = event.feature.getGeometry().getCoordinates()[0][0];
+            var coordinates = event.feature.getGeometry().getCoordinates()[0];
             var result = [];
             for (var i =0; i<coordinates.length; i++) {
                 result.push({
@@ -353,24 +356,22 @@ Ext.define('Traccar.view.MapController', {
                     latitude:coordinates[i][1]
                 });
             }
-            
-            
-            Ext.Msg.prompt('Name', 'Please enter your name:', function(btn, text){
+
+            Ext.Msg.prompt('Name', 'Area name:', function(btn, text){
                 if (btn == 'ok' && text){
-                    Ext.Ajax.request({
-                        scope: this,
-                        url: '/api/polygon/add',
-                        method: 'POST',
-                        jsonData: {
-                            type: value,
-                            name: text,
-                            coordinates: result
-                        },
-                        callback: function(){Ext.toast('Polygon saved');}
-                    });
-                    
+                    var polygon = {
+                        type: value,
+                        name: text,
+                        coordinates: result
+                    };
+                    store = Ext.getStore('Polygons');
+                    store.add(polygon);
+                    Ext.toast('Polygon saved');
+                    store.sync();
                 }
+                map.removeInteraction(draw);
             });
+            
         });
       }
     }

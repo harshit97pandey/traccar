@@ -269,9 +269,9 @@ Ext.define('Traccar.view.Map', {
             var zoomslider = new ol.control.ZoomSlider()
             this.map.addControl(zoomslider)
             var position = new ol.control.MousePosition({
-                    projection: ol.proj.get('EPSG:4326'),
-                    coordinateFormat: coordinateFormat
-                });
+                projection: ol.proj.get('EPSG:4326'),
+                coordinateFormat: coordinateFormat
+            });
             this.map.addControl(position)
             var fullScreen = new ol.control.FullScreen()
             this.map.addControl(fullScreen);
