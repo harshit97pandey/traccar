@@ -22,6 +22,9 @@ Ext.define('Traccar.view.Polygons', {
             }, {
                 text : 'Circle',
                 handler : 'onAddCircleClick'
+            }, {
+                text : 'Square',
+                handler : 'onAddSquareClick'
             } ]
         }, {
             xtype : 'button',

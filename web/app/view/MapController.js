@@ -317,7 +317,9 @@ Ext.define('Traccar.view.MapController', {
       var draw; // global so we can remove it later
       if (value !== 'None') {
         var geometryFunction, maxPoints;
-        if (value === 'Square') {
+        if (value === 'Circle') {
+            geometryFunction = ol.interaction.Draw.createRegularPolygon(32);
+        } else if (value === 'Square') {
           value = 'Circle';
           geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
         } else if (value === 'Box') {

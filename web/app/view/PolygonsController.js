@@ -25,6 +25,10 @@ Ext.define('Traccar.view.PolygonsController', {
         this.fireEvent('drawArea', 'LineString');
     },
 
+    onAddSquareClick: function () {
+        this.fireEvent('drawArea', 'Square');
+    },
+
     onRemoveClick: function () {
         var polygon = this.getView().getSelectionModel().getSelection()[0];
         store = Ext.getStore('Polygons');
