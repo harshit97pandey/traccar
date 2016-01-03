@@ -109,7 +109,11 @@ public class WebServer {
     private void initWebApp() {
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setResourceBase(config.getString("web.path"));
-        resourceHandler.setWelcomeFiles(new String[] {"index.html"});
+        if (config.getBoolean("web.debug")) {
+            resourceHandler.setWelcomeFiles(new String[] {"debug.html"});
+        } else {
+            resourceHandler.setWelcomeFiles(new String[] {"index.html"});
+        }
         handlers.addHandler(resourceHandler);
     }
 
