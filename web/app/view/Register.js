@@ -31,6 +31,15 @@ Ext.define('Traccar.view.Register', {
         jsonSubmit: true,
 
         items: [{
+            xtype: 'combobox',
+            name: 'language',
+            fieldLabel: Strings.loginLanguage,
+            store: 'Languages',
+            displayField: 'name',
+            valueField: 'code',
+            submitValue: false,
+            reference: 'languageField'
+        },{
             xtype: 'textfield',
             name: 'name',
             fieldLabel: Strings.userName,
