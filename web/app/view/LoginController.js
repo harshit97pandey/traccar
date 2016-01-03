@@ -18,14 +18,11 @@ Ext.define('Traccar.view.LoginController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.login',
 
-    //requires: [
-    //    'Traccar.view.Register'
-    //],
+    requires: [
+        'Traccar.view.Register'
+    ],
 
     init: function () {
-        this.lookupReference('registerButton').setDisabled(
-            !Traccar.app.getServer().get('registration'));
-        this.lookupReference('languageField').setValue(Locale.language);
     },
 
     login: function () {
@@ -40,7 +37,6 @@ Ext.define('Traccar.view.LoginController', {
                 callback: function (options, success, response) {
                     Ext.getBody().unmask();
                     if (success) {
-                        Traccar.app.setUser(Ext.decode(response.responseText));
                         this.fireViewEvent('login');
                     } else {
                         Traccar.app.showError(Strings.loginFailed);

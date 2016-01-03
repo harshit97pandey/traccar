@@ -40,18 +40,6 @@ Ext.define('Traccar.view.Login', {
         },
 
         items: [{
-            xtype: 'combobox',
-            name: 'language',
-            fieldLabel: Strings.loginLanguage,
-            store: 'Languages',
-            displayField: 'name',
-            valueField: 'code',
-            submitValue: false,
-            listeners: {
-                select: 'onSelectLanguage'
-            },
-            reference: 'languageField'
-        }, {
             xtype: 'textfield',
             name: 'email',
             fieldLabel: Strings.userEmail,
