@@ -1,5 +1,6 @@
 package org.traccar.rest.utils;
 
+import org.traccar.model.Server;
 import org.traccar.model.User;
 
 /**
@@ -10,6 +11,8 @@ public class UserPassport {
     private boolean valid;
 
     private User user;
+
+    private Server server;
 
     public boolean isValid() {
         return valid;
@@ -25,5 +28,13 @@ public class UserPassport {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Server getServer() {
+        return server;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
     }
 }

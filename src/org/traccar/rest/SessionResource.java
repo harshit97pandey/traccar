@@ -33,6 +33,7 @@ public class SessionResource {
         Long userId = (Long) req.getSession().getAttribute(USER_ID_KEY);
         if (userId != null) {
             userPassport.setUser(Context.getDataManager().getUser(userId));
+            userPassport.setServer(Context.getDataManager().getServer());
             userPassport.setValid(Boolean.TRUE);
         }
 
