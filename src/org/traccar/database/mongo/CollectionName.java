@@ -11,5 +11,7 @@ public interface CollectionName {
     String user = "user";
     String idGenerators = "id_generators";
     String polygon = "polygons";
+    String notifications = "notifications";
+
 
 }

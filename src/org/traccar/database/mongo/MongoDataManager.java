@@ -2,12 +2,17 @@ package org.traccar.database.mongo;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.BsonDouble;
 import org.bson.Document;
 import org.traccar.Config;
+import org.traccar.geofence.Notification;
+import org.traccar.geofence.Restriction;
+import org.traccar.geofence.RestrictionType;
+import org.traccar.geofence.RestrictionUnit;
 import org.traccar.helper.Log;
 import org.traccar.model.*;
 import org.traccar.rest.PositionEventEndpoint;
@@ -369,6 +374,29 @@ public class MongoDataManager extends org.traccar.database.DataManager {
         return devices;
     }
 
+    public List<RestrictionUnit> getDeviceRestrictions(long deviceId) {
+        MongoCollection<Document> collection = database.getCollection(CollectionName.device);
+
+        List<RestrictionUnit> restrictions = new ArrayList<>();
+
+        Document device = collection.find(new Document("id", deviceId)).first();
+        List<Long> polygons;
+        if (device.containsKey("polygons")) {
+            polygons = device.get("polygons", List.class);
+        } else {
+            polygons = new ArrayList<>();
+        }
+
+        for (Long polygon : polygons) {
+            RestrictionUnit r = new RestrictionUnit();
+            r.setPolygonId(polygon);
+            r.setRestrictionType(RestrictionType.INTO_AREA);
+
+            restrictions.add(r);
+        }
+        return restrictions;
+    }
+
     public void addDevice(Device device) throws SQLException {
         MongoCollection<Document> collection = database.getCollection(CollectionName.device);
         long id = getId(CollectionName.device);
@@ -534,6 +562,9 @@ public class MongoDataManager extends org.traccar.database.DataManager {
         //Set calculated distance
         position.setCalculatedDistance(calculatedDistance);
         collection.insertOne(doc);
+
+        //check restrictions
+        new Restriction(position).apply();
     }
 
     public void updateLatestPosition(Position position) throws SQLException {
@@ -729,5 +760,73 @@ public class MongoDataManager extends org.traccar.database.DataManager {
         }
 
         return null;
+    }
+
+    public void addNotification(RestrictionUnit restrictionUnit, Polygon polygon, Position position) throws SQLException {
+        MongoCollection<Document> collection = database.getCollection(CollectionName.notifications);
+
+        long id = getId(CollectionName.notifications);
+
+
+        Document doc = new Document()
+                    .append("id", id)
+                    .append("restrictionUnit",
+                            new Document("polygonId", restrictionUnit.getPolygonId())
+                                    .append("restrictionType", restrictionUnit.getRestrictionType()));
+
+        doc.append("deviceId", position.getDeviceId());
+        doc.append("creationDate", new Date());
+        doc.append("positionId", position.getId());
+        doc.append("polygonId", polygon.getId());
+        doc.append("polygonName", polygon.getName());
+        doc.append("seen", false);
+        collection.insertOne(doc);
+    }
+
+    public List<Notification> getNotifications(boolean all) throws SQLException {
+
+        List<Notification> notifications = new ArrayList<>();
+
+        MongoCollection<Document> collection = database.getCollection(CollectionName.notifications);
+        FindIterable<Document> iterable;
+        if (all) {
+            iterable = collection.find();
+        } else {
+            iterable = collection.find(new Document("seen", false));
+        }
+
+        iterable.sort(new Document("creationDate", -1));
+
+        MongoCursor<Document> iterator = iterable.iterator();
+
+
+        while (iterator.hasNext()) {
+            Document document = iterator.next();
+
+            Notification notification = new Notification();
+            notification.setId(document.getLong("id"));
+            notification.setPolygonId(document.getLong("polygonId"));
+            notification.setCreationDate(document.getDate("creationDate"));
+            notification.setPolygonName(document.getString("polygonName"));
+            notification.setPositionId(document.getLong("positionId"));
+            notification.setDeviceId(document.getLong("deviceId"));
+            notification.setSeen(document.getBoolean("seen"));
+
+            Document r = (Document) document.get("restrictionUnit");
+            RestrictionUnit restrictionUnit = new RestrictionUnit();
+            restrictionUnit.setPolygonId(r.getLong("polygonId"));
+            restrictionUnit.setRestrictionType(r.getInteger("restrictionType"));
+
+            notification.setRestrictionUnit(restrictionUnit);
+            notifications.add(notification);
+        }
+
+        return notifications;
+    }
+
+    public void markNotificationAsSeen(long notificationId) throws SQLException {
+
+        database.getCollection(CollectionName.notifications).updateOne(new Document("id", notificationId),
+                new Document("$set", new Document("seen", Boolean.TRUE)));
     }
 }

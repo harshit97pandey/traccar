@@ -2,6 +2,7 @@ package org.traccar.geofence;
 
 import org.traccar.model.Polygon;
 import org.traccar.model.Position;
+import org.traccar.rest.utils.PolygonUtil;
 
 /**
  * Created by niko on 12/26/15.
@@ -19,7 +20,7 @@ public class RestrictionUnit {
     private Integer interval;
 
     public Boolean check(Polygon polygon, Position position) {
-        return true;
+        return PolygonUtil.contains(polygon.getId(), position.getLatitude(), position.getLongitude());
     }
     public long getPolygonId() {
         return polygonId;

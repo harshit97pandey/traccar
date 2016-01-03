@@ -5,6 +5,7 @@ import org.traccar.database.mongo.MongoDataManager;
 import org.traccar.model.Polygon;
 import org.traccar.model.Position;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,16 +20,16 @@ public class Restriction {
         this.position = position;
     }
 
-    public Boolean apply() {
+    public void apply() throws SQLException {
+
         MongoDataManager mongoDataManager = (MongoDataManager)Context.getDataManager();
-        for (RestrictionUnit restrictionUnit : getDeviceRestrictions()) {
+        for (RestrictionUnit restrictionUnit : mongoDataManager.getDeviceRestrictions(position.getDeviceId())) {
             Polygon polygon = mongoDataManager.getPolygon(restrictionUnit.getPolygonId());
             Boolean check = restrictionUnit.check(polygon, position);
             if (!check) {
-                return Boolean.FALSE;
+                mongoDataManager.addNotification(restrictionUnit, polygon, position);
             }
         }
-        return Boolean.FALSE;
     }
 
     private List<RestrictionUnit> getDeviceRestrictions() {
