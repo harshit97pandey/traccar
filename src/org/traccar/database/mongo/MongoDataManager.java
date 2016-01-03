@@ -345,7 +345,6 @@ public class MongoDataManager extends org.traccar.database.DataManager {
         device.setStatus(document.getString("status"));
         device.setLastUpdate(document.getDate("lastUpdate"));
         device.setPositionId(document.getLong("positionId"));
-        device.setDataId(document.getLong("dataId"));
 
         return device;
     }
@@ -379,8 +378,7 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 .append("uniqueId", device.getUniqueId())
                 .append("status", device.getStatus())
                 .append("lastUpdate", device.getLastUpdate())
-                .append("positionId", device.getPositionId())
-                .append("dataId", device.getDataId());
+                .append("positionId", device.getPositionId());
         collection.insertOne(doc);
     }
 
