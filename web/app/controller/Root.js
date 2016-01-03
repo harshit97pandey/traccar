@@ -30,34 +30,26 @@ Ext.define('Traccar.controller.Root', {
     },
 
     onLaunch: function () {
+        Ext.get('spinner').remove();
         Ext.Ajax.request({
             scope: this,
-            url: '/api/server',
-            callback: this.onServerReturn
+            url: '/api/session',
+            callback: this.onSessionReturn
         });
     },
 
-    onServerReturn: function (options, success, response) {
-        Ext.get('spinner').remove();
+    onSessionReturn: function (options, success, response) {
         if (success) {
-            Traccar.app.setServer(Ext.decode(response.responseText));
-            Ext.Ajax.request({
-                scope: this,
-                url: '/api/session',
-                callback: this.onSessionReturn
-            });
+            var data = Ext.decode(response.responseText)
+            if (data.valid) {
+                Traccar.app.setServer(data.server);
+                Traccar.app.setUser(data.user);
+                this.loadApp();
+            } else {
+                location.href = 'login.html'
+            }
         } else {
             Traccar.app.showError(response);
-        }
-    },
-
-    onSessionReturn: function (options, success, response) {
-        var data = Ext.decode(response.responseText)
-        if (data.valid) {
-            Traccar.app.setUser(data.user);
-            this.loadApp();
-        } else {
-            location.href = 'login.html'
         }
     },
 
