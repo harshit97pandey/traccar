@@ -1,9 +1,12 @@
 package org.traccar.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.traccar.Context;
 import org.traccar.model.User;
 import org.traccar.web.JsonConverter;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -33,7 +36,9 @@ public class SessionResource {
         if (userId != null) {
             return Response.ok().entity(Context.getDataManager().getUser(userId)).build();
         } else {
-            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
+            JsonObject jsonObject = Json.createObjectBuilder()
+                    .add("success", Boolean.FALSE).build();
+            return Response.ok().entity(jsonObject).build();
         }
     }
 
