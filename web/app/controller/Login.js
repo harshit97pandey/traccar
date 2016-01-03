@@ -15,7 +15,7 @@ Ext.define('Traccar.controller.Login', {
     onSessionReturn: function (options, success, response) {
         var data = Ext.decode(response.responseText)
         if (data.valid) {
-            location.href='/';
+            location.href='./';
         } else {
             this.login = Ext.create('widget.login', {
                 listeners: {
@@ -28,6 +28,6 @@ Ext.define('Traccar.controller.Login', {
     },
 
     onLogin: function () {
-        location.href='/';
+        location.href='./';
     },
 });

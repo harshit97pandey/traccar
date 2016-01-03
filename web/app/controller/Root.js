@@ -18,7 +18,6 @@ Ext.define('Traccar.controller.Root', {
     extend: 'Ext.app.Controller',
 
     requires: [
-        'Traccar.view.Login',
         'Traccar.view.Main',
         'Traccar.view.MainMobile'
     ],
@@ -60,11 +59,6 @@ Ext.define('Traccar.controller.Root', {
         } else {
             location.href = 'login.html'
         }
-    },
-
-    onLogin: function () {
-        this.login.close();
-        this.loadApp();
     },
 
     loadApp: function () {
