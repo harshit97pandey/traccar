@@ -53,17 +53,12 @@ Ext.define('Traccar.controller.Root', {
     },
 
     onSessionReturn: function (options, success, response) {
-        if (success) {
-            Traccar.app.setUser(Ext.decode(response.responseText));
+        var data = Ext.decode(response.responseText)
+        if (data.valid) {
+            Traccar.app.setUser(data.user);
             this.loadApp();
         } else {
-            this.login = Ext.create('widget.login', {
-                listeners: {
-                    scope: this,
-                    login: this.onLogin
-                }
-            });
-            this.login.show();
+            location.href = 'login.html'
         }
     },
 

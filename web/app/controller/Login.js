@@ -7,36 +7,15 @@ Ext.define('Traccar.controller.Login', {
     onLaunch: function () {
         Ext.Ajax.request({
             scope: this,
-            url: '/api/server',
-            callback: this.onServerReturn
+            url: '/api/session',
+            callback: this.onSessionReturn
         });
-    },
-    
-    onServerReturn: function (options, success, response) {
-        Ext.get('spinner').remove();
-        if (success) {
-            //Traccar.app.setServer(Ext.decode(response.responseText));
-            Ext.Ajax.request({
-                scope: this,
-                url: '/api/session',
-                callback: this.onSessionReturn
-            });
-        } else {
-            Traccar.app.showError(response);
-        }
     },
 
     onSessionReturn: function (options, success, response) {
-        if (success) {
-            this.login = Ext.create('widget.login', {
-                listeners: {
-                    scope: this,
-                    login: this.onLogin
-                }
-            });
-            this.login.show();
-            //Traccar.app.setUser(Ext.decode(response.responseText));
-            //this.loadApp();
+        var data = Ext.decode(response.responseText)
+        if (data.valid) {
+            location.href='/';
         } else {
             this.login = Ext.create('widget.login', {
                 listeners: {
