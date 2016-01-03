@@ -19,9 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 @Provider
 public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
@@ -29,11 +27,8 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
     private ObjectMapper mapper = new ObjectMapper();
 
     public ObjectMapperProvider() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        mapper.setConfig(mapper.getSerializationConfig().with(dateFormat));
-        mapper.setConfig(mapper.getDeserializationConfig().with(dateFormat));
+        mapper.setConfig(mapper.getSerializationConfig().with(
+                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")));
     }
 
     @Override
