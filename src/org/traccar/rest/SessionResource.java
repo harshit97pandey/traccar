@@ -1,19 +1,15 @@
 package org.traccar.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.traccar.Context;
 import org.traccar.model.User;
-import org.traccar.web.JsonConverter;
+import org.traccar.rest.utils.UserPassport;
 
-import javax.json.Json;
-import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,14 +28,15 @@ public class SessionResource {
 
     @GET
     public Response session() throws SQLException, IOException {
+        UserPassport userPassport = new UserPassport();
+
         Long userId = (Long) req.getSession().getAttribute(USER_ID_KEY);
         if (userId != null) {
-            return Response.ok().entity(Context.getDataManager().getUser(userId)).build();
-        } else {
-            JsonObject jsonObject = Json.createObjectBuilder()
-                    .add("success", Boolean.FALSE).build();
-            return Response.ok().entity(jsonObject).build();
+            userPassport.setUser(Context.getDataManager().getUser(userId));
+            userPassport.setValid(Boolean.TRUE);
         }
+
+        return Response.ok().entity(userPassport).build();
     }
 
     @POST
