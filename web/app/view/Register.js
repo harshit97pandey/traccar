@@ -56,6 +56,14 @@ Ext.define('Traccar.view.Register', {
             fieldLabel: Strings.userPassword,
             inputType: 'password',
             allowBlank: false
+        }, {
+            xtype: 'checkbox',
+            fieldLabel: 'Personal',
+            checked: true
+        }, {
+            xtype: 'textfield',
+            fieldLabel: 'Company name',
+            disabled: true
         }]
     },
 

@@ -24,7 +24,7 @@ Ext.define('Traccar.controller.Login', {
                     login: this.onLogin
                 }
             });
-            this.login.show();
+            //this.login.show();
         }
     },
 

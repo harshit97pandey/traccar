@@ -15,8 +15,9 @@
  */
 
 Ext.define('Traccar.view.Login', {
-    extend: 'Traccar.view.BaseDialog',
+    extend: 'Ext.window.Window',
     alias: 'widget.login',
+    autoShow: true,
 
     requires: [
         'Traccar.view.LoginController'
@@ -26,6 +27,8 @@ Ext.define('Traccar.view.Login', {
 
     title: Strings.loginTitle,
     closable: false,
+    bodyPadding: Traccar.Style.panelPadding,
+    resizable: false,
     modal: false,
 
     items: {
