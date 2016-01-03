@@ -18,9 +18,9 @@ Ext.define('Traccar.view.LoginController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.login',
 
-    requires: [
-        'Traccar.view.Register'
-    ],
+    //requires: [
+    //    'Traccar.view.Register'
+    //],
 
     init: function () {
         this.lookupReference('registerButton').setDisabled(
