@@ -13,6 +13,7 @@ Ext.define('Traccar.controller.Login', {
     },
 
     onSessionReturn: function (options, success, response) {
+        Ext.get('spinner').remove();
         var data = Ext.decode(response.responseText)
         if (data.valid) {
             location.href='./';

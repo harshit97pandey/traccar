@@ -5,5 +5,8 @@ Ext.define('Traccar.Login', {
     ],
     controllers: [
         'Login'
+    ],
+    stores: [
+        'Languages'
     ]
 });
