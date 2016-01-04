@@ -783,6 +783,41 @@ public class MongoDataManager extends org.traccar.database.DataManager {
         collection.insertOne(doc);
     }
 
+    public Notification getLastNotification(RestrictionUnit restrictionUnit, Position position){
+        MongoCollection<Document> collection = database.getCollection(CollectionName.notifications);
+
+        Document document = collection.find(new Document("deviceId", position.getDeviceId())
+                .append("polygonId", restrictionUnit.getPolygonId())
+                .append("restrictionUnit", new Document("polygonId", restrictionUnit.getPolygonId())
+                        .append("restrictionType", restrictionUnit.getRestrictionType())))
+                .sort(new Document("creationDate", -1)).first();
+
+
+        if (document ==null || document.isEmpty()) {
+            return null;
+        }
+
+        Notification notification = new Notification();
+        notification.setId(document.getLong("id"));
+        notification.setPolygonId(document.getLong("polygonId"));
+        notification.setCreationDate(document.getDate("creationDate"));
+        notification.setPolygonName(document.getString("polygonName"));
+        notification.setPositionId(document.getLong("positionId"));
+        notification.setDeviceId(document.getLong("deviceId"));
+        notification.setSeen(document.getBoolean("seen"));
+        if (document.containsKey("canceled")) {
+            notification.setCanceled(document.getBoolean("canceled"));
+            notification.setCancelDate(document.getDate("cancelDate"));
+        }
+
+        Document rd = (Document) document.get("restrictionUnit");
+        RestrictionUnit r = new RestrictionUnit();
+        r.setPolygonId(rd.getLong("polygonId"));
+        r.setRestrictionType(rd.getInteger("restrictionType"));
+
+        return notification;
+    }
+
     public List<Notification> getNotifications(boolean all) throws SQLException {
 
         List<Notification> notifications = new ArrayList<>();
@@ -825,8 +860,14 @@ public class MongoDataManager extends org.traccar.database.DataManager {
     }
 
     public void markNotificationAsSeen(long notificationId) throws SQLException {
-
         database.getCollection(CollectionName.notifications).updateOne(new Document("id", notificationId),
                 new Document("$set", new Document("seen", Boolean.TRUE)));
+    }
+
+    public void markNotificationAsCanceled(long notificationId) throws SQLException {
+        database.getCollection(CollectionName.notifications)
+                .updateOne(new Document("id", notificationId),
+                new Document("$set", new Document("canceled", Boolean.TRUE)
+                        .append("cancelDate", new Date())));
     }
 }

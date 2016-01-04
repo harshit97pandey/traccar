@@ -22,6 +22,10 @@ public class Notification {
 
     private boolean seen;
 
+    private boolean canceled;
+
+    private Date cancelDate;
+
     public long getId() {
         return id;
     }
@@ -84,5 +88,21 @@ public class Notification {
 
     public void setSeen(boolean seen) {
         this.seen = seen;
+    }
+
+    public boolean isCanceled() {
+        return canceled;
+    }
+
+    public void setCanceled(boolean canceled) {
+        this.canceled = canceled;
+    }
+
+    public Date getCancelDate() {
+        return cancelDate;
+    }
+
+    public void setCancelDate(Date cancelDate) {
+        this.cancelDate = cancelDate;
     }
 }
