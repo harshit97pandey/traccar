@@ -319,7 +319,7 @@ Ext.define('Traccar.view.MapController', {
         var ring = [];
         for (var i=0; i < polygon.coordinates.length; i++) {
             var coords = polygon.coordinates[i];
-            ring.push([coords.longitude, coords.latitude]);
+            ring.push(ol.proj.fromLonLat([coords.longitude, coords.latitude]));
         }
         var area = new ol.geom.Polygon([ring]);
         var feature = new ol.Feature(area);
@@ -351,9 +351,11 @@ Ext.define('Traccar.view.MapController', {
             var coordinates = event.feature.getGeometry().getCoordinates()[0];
             var result = [];
             for (var i =0; i<coordinates.length; i++) {
+                var coords = coordinates[i];
+                var lonLat = ol.proj.toLonLat([coords[0],coords[1]]);
                 result.push({
-                    longitude:coordinates[i][0],
-                    latitude:coordinates[i][1]
+                    longitude:lonLat[0],
+                    latitude:lonLat[1]
                 });
             }
 
