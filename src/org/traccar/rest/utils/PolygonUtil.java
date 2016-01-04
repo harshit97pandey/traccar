@@ -12,6 +12,7 @@ import org.traccar.model.Polygon;
 public class PolygonUtil {
 
     public static Boolean contains(Polygon polygon, Double latitude, Double longitude) {
+        /*
         double a = 6378137.0d;
         double b = 6356752.3142d;
         double e = 0.00669437999014;
@@ -20,14 +21,14 @@ public class PolygonUtil {
                  (180 * Math.pow(1 - e * Math.pow(Math.sin(Math.toRadians(latitude)), 2),3/2));
         double lo  = (Math.PI * a * Math.cos(Math.toRadians(longitude))) /
                 (180 * Math.pow(1 - e * Math.pow(Math.sin(Math.toRadians(longitude)), 2),1/2));
-
+        */
         java.awt.Polygon shape = new java.awt.Polygon();
 
         for (Point point : polygon.getCoordinates()) {
             shape.addPoint(point.getLatitude().intValue(), point.getLongitude().intValue());
         }
 
-        boolean contains = shape.contains(lat, lo);
+        boolean contains = shape.contains(latitude, longitude);
         return contains;
     }
 
