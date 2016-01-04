@@ -6,7 +6,6 @@ import org.traccar.model.Polygon;
 import org.traccar.model.Position;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,28 +15,37 @@ public class Restriction {
 
     private Position position;
 
+    private MongoDataManager mongoDataManager;
+
     public Restriction(Position position) {
         this.position = position;
+        mongoDataManager = (MongoDataManager)Context.getDataManager();
     }
 
     public void apply() throws SQLException {
 
-        MongoDataManager mongoDataManager = (MongoDataManager)Context.getDataManager();
-        for (RestrictionUnit restrictionUnit : mongoDataManager.getDeviceRestrictions(position.getDeviceId())) {
-            Polygon polygon = mongoDataManager.getPolygon(restrictionUnit.getPolygonId());
-            Boolean check = restrictionUnit.check(polygon, position);
-            if (!check) {
-                mongoDataManager.addNotification(restrictionUnit, polygon, position);
-            }
+        for (RestrictionUnit restrictionUnit : getDeviceRestrictions()) {
+            checkRestriction(restrictionUnit);
         }
     }
 
     private List<RestrictionUnit> getDeviceRestrictions() {
-        return new ArrayList<>();
-        //TODO return restrictions
+        return mongoDataManager.getDeviceRestrictions(position.getDeviceId());
     }
 
-    private void checkConditions() {
+    private void checkRestriction(RestrictionUnit restrictionUnit) throws SQLException {
+        Polygon polygon = mongoDataManager.getPolygon(restrictionUnit.getPolygonId());
+        Notification lastNotification = mongoDataManager.getLastNotification(restrictionUnit, position);
 
+        Boolean check = restrictionUnit.check(polygon, position);
+        System.out.println(check);
+        System.out.println(lastNotification);
+        if (lastNotification == null && !check) {
+            mongoDataManager.addNotification(restrictionUnit, polygon, position);
+        } else if (lastNotification.isCanceled() && !check) {
+            mongoDataManager.addNotification(restrictionUnit, polygon, position);
+        } else if (!lastNotification.isCanceled() && check) {
+            mongoDataManager.markNotificationAsCanceled(lastNotification.getId());
+        }
     }
 }
