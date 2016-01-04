@@ -4,8 +4,10 @@ import org.traccar.Context;
 import org.traccar.database.mongo.MongoDataManager;
 import org.traccar.model.Polygon;
 import org.traccar.model.Position;
+import org.traccar.rest.PositionEventEndpoint;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,14 +40,29 @@ public class Restriction {
         Notification lastNotification = mongoDataManager.getLastNotification(restrictionUnit, position);
 
         Boolean check = restrictionUnit.check(polygon, position);
-        System.out.println(check);
-        System.out.println(lastNotification);
         if (lastNotification == null && !check) {
-            mongoDataManager.addNotification(restrictionUnit, polygon, position);
+            saveNotification(restrictionUnit, polygon);
         } else if (lastNotification.isCanceled() && !check) {
-            mongoDataManager.addNotification(restrictionUnit, polygon, position);
+            saveNotification(restrictionUnit, polygon);
         } else if (!lastNotification.isCanceled() && check) {
             mongoDataManager.markNotificationAsCanceled(lastNotification.getId());
         }
+    }
+
+    private void saveNotification(RestrictionUnit restrictionUnit, Polygon polygon) throws SQLException {
+        mongoDataManager.addNotification(restrictionUnit, polygon, position);
+
+        Notification notification = new Notification();
+        notification.setCreationDate(new Date());
+        notification.setPolygonId(polygon.getId());
+        notification.setPolygonName(polygon.getName());
+        notification.setSeen(false);
+        notification.setDeviceId(position.getDeviceId());
+
+        notification.setRestrictionUnit(restrictionUnit);
+        notification.setPositionId(position.getId());
+
+        Alert alert = new Alert("OUT_OF_AREA", notification);
+        PositionEventEndpoint.showAlert(alert);
     }
 }
