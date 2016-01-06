@@ -34,7 +34,8 @@ Ext.define('Traccar.view.Alert', {
         reference: 'seenButton'
     }, {
         xtype: 'checkbox',
-        handler: 'onAllChange'
+        handler: 'onAllChange',
+        reference: 'seenCheck'
     }],
 
     listeners: {

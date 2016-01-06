@@ -19,9 +19,24 @@ Ext.define('Traccar.view.AlertController', {
     alias: 'controller.alert',
 
     onSeenClick: function () {
+        var selected = this.getView().getSelectionModel();
         if (selected.getCount() > 0) {
-            var id = selected.getLastSelected().getData('id')
-            console.log(id)
+            var id = selected.getSelection()[0].getData().id;
+            Ext.Ajax.request({
+                scope: this,
+                url: '/api/notifications/seen',
+                params: {
+                    notificationId: id
+                },
+                method: 'POST',
+                callback: function() {
+                    var seenChecked = this.lookupReference('seenCheck').getValue();
+                    console.log(seenChecked)
+                    Ext.getStore('Alerts').load({params: {all: seenChecked}});
+                    
+                    Ext.toast('Alert marked as seen');
+                }
+            });
         }
     },
 
@@ -32,7 +47,7 @@ Ext.define('Traccar.view.AlertController', {
 
     onSelectionChange: function (selected) {
         if (selected.getCount() > 0) {
-            seen = selected.getLastSelected().getData().seen
+            seen = selected.getLastSelected().getData().seen;
             this.lookupReference('seenButton').setDisabled(seen);
         }
     }
