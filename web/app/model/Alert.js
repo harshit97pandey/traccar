@@ -9,43 +9,20 @@ Ext.define('Traccar.model.Alert', {
     },{
         name: 'deviceId',
         type: 'int'
-    }/*, {
-        name: 'protocol',
+    },{
+        name: 'deviceName',
         type: 'string'
     }, {
-        name: 'deviceId',
+        name: 'polygonId',
         type: 'int'
     }, {
-        name: 'serverTime',
-        type: 'date'
-    }, {
-        name: 'deviceTime',
-        type: 'date'
-    }, {
-        name: 'fixTime',
-        type: 'date'
-    }, {
-        name: 'valid',
-        type: 'boolean'
-    }, {
-        name: 'latitude',
-        type: 'float'
-    }, {
-        name: 'longitude',
-        type: 'float'
-    }, {
-        name: 'altitude',
-        type: 'float'
-    }, {
-        name: 'speed',
-        type: 'float'
-    }, {
-        name: 'course',
-        type: 'float'
-    }, {
-        name: 'address',
+        name: 'polygonName',
         type: 'string'
     }, {
-        name: 'attributes'
-    }*/]
+        name: 'creationDate',
+        type: 'date'
+    }, {
+        name: 'cancelDate',
+        type: 'date'
+    }]
 });

@@ -26,107 +26,31 @@ Ext.define('Traccar.view.Alert', {
     store: 'Alerts',
 
     title: 'Alerts',
-/*
-    tbar: [{
-        xtype: 'tbtext',
-        html: Strings.reportDevice
-    }, {
-        xtype: 'combobox',
-        reference: 'deviceField',
-        store: 'Devices',
-        valueField: 'id',
-        displayField: 'name',
-        typeAhead: true,
-        queryMode: 'local',
-        allowBlank: false 
-    }, '-', {
-        xtype: 'tbtext',
-        html: Strings.reportFrom
-    }, {
-        xtype: 'datefield',
-        reference: 'fromDateField',
-        startDay: Traccar.Style.weekStartDay,
-        format: Traccar.Style.dateFormat,
-        value: new Date(new Date().getTime() - 30 * 60 * 1000)
-    }, {
-        xtype: 'timefield',
-        reference: 'fromTimeField',
-        maxWidth: Traccar.Style.reportTime,
-        format: Traccar.Style.timeFormat,
-        value: new Date(new Date().getTime() - 30 * 60 * 1000)
-    }, '-', {
-        xtype: 'tbtext',
-        html: Strings.reportTo
-    }, {
-        xtype: 'datefield',
-        reference: 'toDateField',
-        startDay: Traccar.Style.weekStartDay,
-        format: Traccar.Style.dateFormat,
-        value: new Date()
-    }, {
-        xtype: 'timefield',
-        reference: 'toTimeField',
-        maxWidth: Traccar.Style.reportTime,
-        format: Traccar.Style.timeFormat,
-        value: new Date()
-    }, '-', {
-        text: Strings.reportShow,
-        handler: 'onShowClick'
-    }, {
-        href : '#',
-        text: 'Export',
-        hrefTarget: '_blank',
-        reference: 'exportButton',
-        disabled: true
-    }, {
-        text: Strings.reportClear,
-        handler: 'onClearClick'
-    }],
 
-    listeners: {
-        selectionchange: 'onSelectionChange'
-    },
-*/
     columns: [{
-        text: 'Device ID',
-        dataIndex: 'deviceId',
-        flex: 1
-    }/*, {
+        text: 'polygonName',
+        dataIndex: 'polygonName',
+        flex: 1,
+        renderer: Traccar.AttributeFormatter.getFormatter('polygonName')
+    },{
+        text: 'deviceName',
+        dataIndex: 'deviceName',
+        flex: 1,
+        renderer: Traccar.AttributeFormatter.getFormatter('deviceName')
+    }, {
         text: Strings.positionFixTime,
-        dataIndex: 'fixTime',
+        dataIndex: 'creationDate',
         flex: 1.5,
         xtype: 'datecolumn',
         align:'right',
-        renderer: Traccar.AttributeFormatter.getFormatter('fixTime')
+        renderer: Traccar.AttributeFormatter.getFormatter('creationDate')
     }, {
-        text: Strings.positionLatitude,
-        dataIndex: 'latitude',
-        flex: 1,
+        text: Strings.positionFixTime,
+        dataIndex: 'cancelDate',
+        flex: 1.5,
+        xtype: 'datecolumn',
         align:'right',
-        renderer: Traccar.AttributeFormatter.getFormatter('latitude')
-    }, {
-        text: Strings.positionLongitude,
-        dataIndex: 'longitude',
-        flex: 1,
-        align:'right',
-        renderer: Traccar.AttributeFormatter.getFormatter('latitude')
-    }, {
-        text: Strings.positionAltitude,
-        dataIndex: 'altitude',
-        flex: 1,
-        align:'right',
-        renderer: Traccar.AttributeFormatter.getFormatter('altitude')
-    }, {
-        text: Strings.positionSpeed,
-        dataIndex: 'speed',
-        flex: 1,
-        align:'right',
-        renderer: Traccar.AttributeFormatter.getFormatter('speed')
-    }, {
-        text: Strings.positionAddress,
-        dataIndex: 'address',
-        flex: 3,
-        renderer: Traccar.AttributeFormatter.getFormatter('address')
-    }*/]
+        renderer: Traccar.AttributeFormatter.getFormatter('cancelDate')
+    }]
     
 });
