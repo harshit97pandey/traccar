@@ -3,6 +3,7 @@ package org.traccar.rest.reports;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.traccar.model.Position;
+import org.traccar.rest.utils.DateTimeFormatter;
 import org.traccar.rest.utils.SessionUtil;
 import org.traccar.web.JsonConverter;
 
@@ -56,7 +57,7 @@ public class PositionReportResource {
         for (Position position : positions) {
             List positionRecord = new ArrayList();
             positionRecord.add(String.valueOf(position.getValid()));
-            positionRecord.add(position.getDeviceTime().toString());
+            positionRecord.add(DateTimeFormatter.EXPORT.format(position.getDeviceTime()));
             positionRecord.add(String.valueOf(position.getLatitude()));
             positionRecord.add(String.valueOf(position.getLongitude()));
             positionRecord.add(String.valueOf(position.getAltitude()));

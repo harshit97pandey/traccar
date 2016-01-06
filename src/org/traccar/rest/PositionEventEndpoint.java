@@ -9,6 +9,7 @@ import org.traccar.geofence.Alert;
 import org.traccar.geofence.Notification;
 import org.traccar.model.Device;
 import org.traccar.model.Position;
+import org.traccar.rest.utils.DateTimeFormatter;
 import org.traccar.web.JsonConverter;
 
 import javax.json.Json;
@@ -16,6 +17,7 @@ import javax.json.JsonObjectBuilder;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.HttpCookie;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -25,6 +27,13 @@ import java.util.*;
 @ServerEndpoint(value = "/ws/positions")
 public class PositionEventEndpoint {
     private static final Map<Long, Map<Session, AsyncSession>> SESSIONS = new HashMap<>();
+
+    private static ObjectMapper mapper = new ObjectMapper();
+
+    {
+        mapper.setConfig(mapper.getSerializationConfig().with(
+                new SimpleDateFormat(DateTimeFormatter.FORMAT)));
+    }
 
     public static void sessionRefreshUser(long userId) {
         synchronized (SESSIONS) {
@@ -120,7 +129,7 @@ public class PositionEventEndpoint {
 
         private synchronized void response(Alert alert) {
             try {
-                ObjectMapper mapper = new ObjectMapper();
+
                 String m = mapper.writeValueAsString(alert);
                 session.getRemote().sendString(m);
             } catch (IOException e) {
