@@ -33,7 +33,6 @@ Ext.define('Traccar.view.AlertController', {
                     var seenChecked = this.lookupReference('seenCheck').getValue();
                     console.log(seenChecked)
                     Ext.getStore('Alerts').load({params: {all: seenChecked}});
-                    
                     Ext.toast('Alert marked as seen');
                 }
             });
