@@ -86,30 +86,33 @@ Ext.define('Traccar.controller.Root', {
         };
         websocket.onmessage = function(evt) {
             var i, deviceStore, positionStore, data, devices, positions, device, position;
-            deviceStore = Ext.getStore('Devices');
-            positionStore = Ext.getStore('LatestPositions');
             data = Ext.decode(evt.data).data;
-            devices = data.devices;
-            positions = data.positions;
+            if (data.type == 'position') {
+                message = data.message;
+                devices = message.devices;
+                positions = message.positions;
 
-            for (i = 0; i < devices.length; i++) {
-                device = deviceStore.findRecord('id', devices[i].id, 0, false, false, true);
-                if (device) {
-                    device.set({
-                        status: devices[i].status,
-                        lastUpdate: devices[i].lastUpdate
-                    }, {
-                        dirty: false
-                    });
+                deviceStore = Ext.getStore('Devices');
+                positionStore = Ext.getStore('LatestPositions');
+                for (i = 0; i < devices.length; i++) {
+                    device = deviceStore.findRecord('id', devices[i].id, 0, false, false, true);
+                    if (device) {
+                        device.set({
+                            status: devices[i].status,
+                            lastUpdate: devices[i].lastUpdate
+                        }, {
+                            dirty: false
+                        });
+                    }
                 }
-            }
-
-            for (i = 0; i < positions.length; i++) {
-                position = positionStore.findRecord('deviceId', positions[i].deviceId, 0, false, false, true);
-                if (position) {
-                    position.set(positions[i]);
-                } else {
-                    positionStore.add(Ext.create('Traccar.model.Position', positions[i]));
+    
+                for (i = 0; i < positions.length; i++) {
+                    position = positionStore.findRecord('deviceId', positions[i].deviceId, 0, false, false, true);
+                    if (position) {
+                        position.set(positions[i]);
+                    } else {
+                        positionStore.add(Ext.create('Traccar.model.Position', positions[i]));
+                    }
                 }
             }
         };
