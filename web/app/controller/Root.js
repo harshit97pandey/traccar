@@ -54,8 +54,9 @@ Ext.define('Traccar.controller.Root', {
     },
 
     loadApp: function () {
-        Ext.getStore('Devices').load();
         //TODO check administration rights
+        Ext.getStore('Devices').load();
+        Ext.getStore('Alerts').load();
         Ext.getStore('Polygons').load();
         Ext.get('attribution').remove();
         if (this.isPhone) {

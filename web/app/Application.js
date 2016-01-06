@@ -30,7 +30,8 @@ Ext.define('Traccar.Application', {
         'Position',
         'Attribute',
         'Command',
-        'Polygon'
+        'Polygon',
+        'Alert'
     ],
 
     stores: [
@@ -46,7 +47,8 @@ Ext.define('Traccar.Application', {
         'CommandTypes',
         'TimeUnits',
         'Languages',
-        'Polygons'
+        'Polygons',
+        'Alerts'
     ],
 
     controllers: [
