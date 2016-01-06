@@ -168,6 +168,8 @@ public class WebServer {
         servletHandler.addServlet(servletHolder, "/*");
         FilterHolder filterHolder = new FilterHolder(GzipFilter.class);
         filterHolder.getInitParameters().put("checkGzExists", "true");
+        filterHolder.getInitParameters().put("includedPaths", "/*");
+        filterHolder.getInitParameters().put("minGzipSize", "1");
         filterHolder.getInitParameters().put("mimeTypes",
                 "text/html,text/css,application/javascript,application/json");
         servletHandler.addFilter(filterHolder, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST));
