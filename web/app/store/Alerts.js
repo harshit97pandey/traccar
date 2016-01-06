@@ -20,6 +20,6 @@ Ext.define('Traccar.store.Alerts', {
 
     proxy: {
         type: 'rest',
-        url: '/api/notifications/list?all=true'
+        url: '/api/notifications/list'
     }
 });

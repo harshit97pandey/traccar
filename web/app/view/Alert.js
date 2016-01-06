@@ -27,12 +27,31 @@ Ext.define('Traccar.view.Alert', {
 
     title: 'Alerts',
 
+    tbar: [{
+        text: 'Mark as read',
+        handler: 'onSeenClick',
+        disabled: true,
+        reference: 'seenButton'
+    }, {
+        xtype: 'checkbox',
+        handler: 'onAllChange'
+    }],
+
+    listeners: {
+        selectionchange: 'onSelectionChange'
+    },
+
     columns: [{
+        text: 'seen',
+        dataIndex: 'seen',
+        flex: 1,
+        renderer: Traccar.AttributeFormatter.getFormatter('seen')
+    }, {
         text: 'polygonName',
         dataIndex: 'polygonName',
         flex: 1,
         renderer: Traccar.AttributeFormatter.getFormatter('polygonName')
-    },{
+    }, {
         text: 'deviceName',
         dataIndex: 'deviceName',
         flex: 1,

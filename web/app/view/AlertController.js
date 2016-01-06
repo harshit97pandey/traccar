@@ -18,89 +18,22 @@ Ext.define('Traccar.view.AlertController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.alert',
 
-    /*config: {
-        listen: {
-            controller: {
-                '*': {
-                    selectDevice: 'selectDevice',
-                    selectReport: 'selectReport'
-                }
-            }
+    onSeenClick: function () {
+        if (selected.getCount() > 0) {
+            var id = selected.getLastSelected().getData('id')
+            console.log(id)
         }
     },
 
-    onShowClick: function () {
-        
-        var deviceId, fromDate, fromTime, from, toDate, toTime, to, store, params;
-
-        var serialize = function (obj) {
-            var str = [];
-            for(var p in obj)
-                if (obj.hasOwnProperty(p)) {
-                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                }
-            return str.join("&");
-        }
-
-        exportButton = this.lookupReference('exportButton');
-        exportButton.setDisabled(true);
-        if (! this.lookupReference('deviceField').isValid()) {
-            Ext.toast('Fill required fields');
-            return;
-        }
-
-        deviceId = this.lookupReference('deviceField').getValue();
-
-        fromDate = this.lookupReference('fromDateField').getValue();
-        fromTime = this.lookupReference('fromTimeField').getValue();
-
-        from = new Date(
-            fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(),
-            fromTime.getHours(), fromTime.getMinutes(), fromTime.getSeconds(), fromTime.getMilliseconds());
-
-        toDate = this.lookupReference('toDateField').getValue();
-        toTime = this.lookupReference('toTimeField').getValue();
-
-        to = new Date(
-            toDate.getFullYear(), toDate.getMonth(), toDate.getDate(),
-            toTime.getHours(), toTime.getMinutes(), toTime.getSeconds(), toTime.getMilliseconds());
-
-        params = {
-            deviceId: deviceId,
-            from: from.toISOString(),
-            to: to.toISOString()
-        }
-
-        store = Ext.getStore('Positions');
-        store.load({
-            params: params,
-            callback: function(records, operation, success) {
-                if (success && records.length > 0) {
-                    exportButton.setHref('api/report/csv?' + serialize(params));
-                    exportButton.setDisabled(false);
-                } 
-            }
-        });
-
-    },
-
-    onClearClick: function () {
-        Ext.getStore('Positions').removeAll();
+    onAllChange: function(checkbox, checked){
+        var store = Ext.getStore('Alerts');
+        store.load({params: {all: checked}});
     },
 
     onSelectionChange: function (selected) {
         if (selected.getCount() > 0) {
-            this.fireEvent('selectReport', selected.getLastSelected(), true);
+            seen = selected.getLastSelected().getData().seen
+            this.lookupReference('seenButton').setDisabled(seen);
         }
-    },
-
-    selectDevice: function (device) {
-        if (device) {
-            this.getView().getSelectionModel().deselectAll();
-        }
-    },
-
-    selectReport: function (position, center) {
-        this.getView().getSelectionModel().select([position], false, true);
-    }*/
+    }
 });
