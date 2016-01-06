@@ -23,6 +23,7 @@ Ext.define('Traccar.view.Main', {
         'Traccar.view.Polygons',
         'Traccar.view.State',
         'Traccar.view.Report',
+        'Traccar.view.Alert',
         'Traccar.view.Map'
     ],
 
@@ -64,12 +65,19 @@ Ext.define('Traccar.view.Main', {
             flex: 1
         }]
     }, {
+        xtype: 'panel',
         region: 'south',
-        xtype: 'reportView',
         height: Traccar.Style.reportHeight,
         collapsed: true,
         titleCollapse: true,
-        floatable: false
+        floatable: false,
+        title: 'Alerts & Reports',
+        layout: 'accordion',
+        items: [{
+            xtype: 'alertView'
+        }, {
+            xtype: 'reportView'
+        }]
     }, {
         region: 'center',
         xtype: 'mapView',
