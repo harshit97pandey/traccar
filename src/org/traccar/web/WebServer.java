@@ -15,39 +15,31 @@
  */
 package org.traccar.web;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.net.InetSocketAddress;
-import javax.naming.InitialContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.sql.DataSource;
-
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.GzipFilter;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.websocket.server.WebSocketHandler;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.traccar.Config;
-import org.traccar.api.AsyncSocketServlet;
-import org.traccar.api.CorsResponseFilter;
-import org.traccar.api.ObjectMapperProvider;
-import org.traccar.api.ResourceErrorHandler;
-import org.traccar.api.SecurityRequestFilter;
-import org.traccar.api.resource.CommandResource;
-import org.traccar.api.resource.DeviceResource;
-import org.traccar.api.resource.PermissionResource;
-import org.traccar.api.resource.PositionResource;
-import org.traccar.api.resource.ServerResource;
-import org.traccar.api.resource.SessionResource;
-import org.traccar.api.resource.UserResource;
 import org.traccar.helper.Log;
 import org.traccar.rest.PositionEventEndpoint;
+
+import javax.naming.InitialContext;
+import javax.servlet.DispatcherType;
+import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.Writer;
+import java.net.InetSocketAddress;
+import java.util.EnumSet;
 
 /**
  * Integrated HTTP server
@@ -174,8 +166,15 @@ public class WebServer {
         };
 
         servletHandler.addServlet(servletHolder, "/*");
+        FilterHolder filterHolder = new FilterHolder(GzipFilter.class);
+        filterHolder.getInitParameters().put("checkGzExists", "true");
+        filterHolder.getInitParameters().put("mimeTypes",
+                "text/html,text/css,application/javascript,application/json");
+        servletHandler.addFilter(filterHolder, "/*", EnumSet.of(DispatcherType.INCLUDE, DispatcherType.REQUEST));
+
         handlers.addHandler(webSocketHandler);
         handlers.addHandler(servletHandler);
+
     }
 
     private void initConsole() {
