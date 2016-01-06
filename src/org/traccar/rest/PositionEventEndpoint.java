@@ -1,11 +1,15 @@
 package org.traccar.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.traccar.Context;
 import org.traccar.database.ConnectionManager;
+import org.traccar.geofence.Alert;
+import org.traccar.geofence.Notification;
 import org.traccar.model.Device;
 import org.traccar.model.Position;
+import org.traccar.rest.utils.DateTimeFormatter;
 import org.traccar.web.JsonConverter;
 
 import javax.json.Json;
@@ -13,6 +17,7 @@ import javax.json.JsonObjectBuilder;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.HttpCookie;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -22,6 +27,13 @@ import java.util.*;
 @ServerEndpoint(value = "/ws/positions")
 public class PositionEventEndpoint {
     private static final Map<Long, Map<Session, AsyncSession>> SESSIONS = new HashMap<>();
+
+    private static ObjectMapper mapper = new ObjectMapper();
+
+    {
+        mapper.setConfig(mapper.getSerializationConfig().with(
+                new SimpleDateFormat(DateTimeFormatter.FORMAT)));
+    }
 
     public static void sessionRefreshUser(long userId) {
         synchronized (SESSIONS) {
@@ -115,6 +127,17 @@ public class PositionEventEndpoint {
             }
         }
 
+        private synchronized void response(Alert alert) {
+            try {
+
+                String m = mapper.writeValueAsString(alert);
+                session.getRemote().sendString(m);
+            } catch (IOException e) {
+                e.printStackTrace();
+                session.close(1001, "Communication Error");
+            }
+        }
+
         public synchronized void removeListener(){
             Context.getConnectionManager().removeListener(devices, dataListener);
         }
@@ -158,6 +181,24 @@ public class PositionEventEndpoint {
 
     }
 
+    public static void showAlert(Alert alert){
+        Notification message = (Notification)alert.getMessage();
+        synchronized (SESSIONS) {
+            Iterator<Map.Entry<Long, Map<Session, AsyncSession>>> iterator = SESSIONS.entrySet().iterator();
+
+            while (iterator.hasNext()) {
+                Map.Entry<Long, Map<Session, AsyncSession>> session = iterator.next();
+                Iterator<Map.Entry<Session, AsyncSession>> asyncSessions = session.getValue().entrySet().iterator();
+
+                while (asyncSessions.hasNext()) {
+                    Map.Entry<Session, AsyncSession> asyncSession = asyncSessions.next();
+                    if (asyncSession.getValue().hasDevice(message.getDeviceId())) {
+                        asyncSession.getValue().response(alert);
+                    }
+                }
+            }
+        }
+    }
     @OnWebSocketClose
     public void onWebSocketClose(Session session, int status, String reason) {
         synchronized (SESSIONS) {
