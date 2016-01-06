@@ -63,6 +63,7 @@ public class Restriction {
         notification.setPositionId(position.getId());
 
         Alert alert = new Alert("OUT_OF_AREA", notification);
-        PositionEventEndpoint.showAlert(alert);
+        Message message = new Message("alert", alert);
+        PositionEventEndpoint.showAlert(message);
     }
 }

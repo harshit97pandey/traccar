@@ -6,14 +6,12 @@ import org.eclipse.jetty.websocket.api.annotations.*;
 import org.traccar.Context;
 import org.traccar.database.ConnectionManager;
 import org.traccar.geofence.Alert;
+import org.traccar.geofence.Message;
 import org.traccar.geofence.Notification;
 import org.traccar.model.Device;
 import org.traccar.model.Position;
 import org.traccar.rest.utils.DateTimeFormatter;
-import org.traccar.web.JsonConverter;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.HttpCookie;
@@ -106,31 +104,28 @@ public class PositionEventEndpoint {
         }
 
         private synchronized void response() {
-            JsonObjectBuilder result = Json.createObjectBuilder();
-            result.add("success", true);
-
-            if (Context.getConfig().getBoolean("web.oldAsyncFormat")) {
-                result.add("data", JsonConverter.arrayToJson(positionUpdates));
-            } else {
-                JsonObjectBuilder data = Json.createObjectBuilder();
-                data.add("devices", JsonConverter.arrayToJson(deviceUpdates));
-                data.add("positions", JsonConverter.arrayToJson(positionUpdates));
-                result.add("data", data.build());
-            }
-            deviceUpdates.clear();
-            positionUpdates.clear();
             try {
-                session.getRemote().sendString(result.build().toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-                session.close(1001, "Communication Error");
-            }
+                Map<String, Object> data = new HashMap<>();
+                data.put("devices", deviceUpdates);
+                data.put("positions", positionUpdates);
+
+                Message message = new Message("position", data);
+                String m = mapper.writeValueAsString(message);
+
+                deviceUpdates.clear();
+                positionUpdates.clear();
+
+                session.getRemote().sendString(m);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    session.close(1001, "Communication Error");
+                }
         }
 
-        private synchronized void response(Alert alert) {
+        private synchronized void response(Message message) {
             try {
 
-                String m = mapper.writeValueAsString(alert);
+                String m = mapper.writeValueAsString(message);
                 session.getRemote().sendString(m);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -181,8 +176,9 @@ public class PositionEventEndpoint {
 
     }
 
-    public static void showAlert(Alert alert){
-        Notification message = (Notification)alert.getMessage();
+    public static void showAlert(Message message){
+        Alert body = (Alert)message.getBody();
+        Notification notification = (Notification)body.getMessage();
         synchronized (SESSIONS) {
             Iterator<Map.Entry<Long, Map<Session, AsyncSession>>> iterator = SESSIONS.entrySet().iterator();
 
@@ -192,8 +188,8 @@ public class PositionEventEndpoint {
 
                 while (asyncSessions.hasNext()) {
                     Map.Entry<Session, AsyncSession> asyncSession = asyncSessions.next();
-                    if (asyncSession.getValue().hasDevice(message.getDeviceId())) {
-                        asyncSession.getValue().response(alert);
+                    if (asyncSession.getValue().hasDevice(notification.getDeviceId())) {
+                        asyncSession.getValue().response(message);
                     }
                 }
             }
