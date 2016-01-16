@@ -21,7 +21,7 @@ public class Restriction {
 
     public Restriction(Position position) {
         this.position = position;
-        mongoDataManager = (MongoDataManager)Context.getDataManager();
+        mongoDataManager = (MongoDataManager) Context.getDataManager();
     }
 
     public void apply() throws SQLException {
@@ -35,23 +35,30 @@ public class Restriction {
         return mongoDataManager.getDeviceRestrictions(position.getDeviceId());
     }
 
-    private void checkRestriction(RestrictionUnit restrictionUnit) throws SQLException {
-        Polygon polygon = mongoDataManager.getPolygon(restrictionUnit.getPolygonId());
-        Notification lastNotification = mongoDataManager.getLastNotification(restrictionUnit, position);
-        if (polygon != null){
+    private void checkRestriction(RestrictionUnit restrictionUnit)
+            throws SQLException {
+        Polygon polygon = mongoDataManager.getPolygon(restrictionUnit
+                .getPolygonId());
+        Notification lastNotification = mongoDataManager.getLastNotification(
+                restrictionUnit, position);
+        if (polygon != null) {
             Boolean check = restrictionUnit.check(polygon, position);
-            if (lastNotification == null && !check) {
-                saveNotification(restrictionUnit, polygon);
+            if (lastNotification == null) {
+                if (!check) {
+                    saveNotification(restrictionUnit, polygon);
+                }
             } else if (lastNotification.isCanceled() && !check) {
                 saveNotification(restrictionUnit, polygon);
             } else if (!lastNotification.isCanceled() && check) {
-                mongoDataManager.markNotificationAsCanceled(lastNotification.getId());
+                mongoDataManager.markNotificationAsCanceled(lastNotification
+                        .getId());
             }
         }
 
     }
 
-    private void saveNotification(RestrictionUnit restrictionUnit, Polygon polygon) throws SQLException {
+    private void saveNotification(RestrictionUnit restrictionUnit,
+            Polygon polygon) throws SQLException {
         mongoDataManager.addNotification(restrictionUnit, polygon, position);
 
         Notification notification = new Notification();
