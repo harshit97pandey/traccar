@@ -574,46 +574,46 @@ public class MongoDataManager extends org.traccar.database.DataManager {
     }
 
     public Collection<Position> getLatestPositions() throws SQLException {
-        List<Long> positionIds = new ArrayList<>();
+        List<Long> deviceIds = new ArrayList<>();
         MongoCollection<Document> device = database.getCollection(CollectionName.device);
         MongoCursor<Document> iterator = device.find().projection(new Document("_id", 0).append("id", 1)).iterator();
         while (iterator.hasNext()) {
             Document next = iterator.next();
 
-            positionIds.add(next.getLong("id"));
+            deviceIds.add(next.getLong("id"));
         }
 
         MongoCollection<Document> collection = database.getCollection(CollectionName.position);
-        MongoCursor<Document> cursor = collection.find(new BasicDBObject("deviceId", new BasicDBObject("$in", positionIds.toArray()))).iterator();
+        List<Position> positions = new ArrayList<>();
+        for (Long deviceId : deviceIds) {
 
-        try {
-            List<Position> positions = new ArrayList<>();
-            while (cursor.hasNext()) {
-                Document next = cursor.next();
+            Document document = collection
+                    .find(new BasicDBObject("deviceId", deviceId))
+                    .sort(new BasicDBObject("fixTime", -1)).first();
+
+            if (document != null && !document.isEmpty()) {
                 Position position = new Position();
-                position.setId(next.getLong("id"));
-                position.setDeviceId(next.getLong("deviceId"));
-                position.setProtocol(next.getString("protocol"));
-                position.setServerTime(next.getDate("serverTime"));
-                position.setDeviceTime(next.getDate("deviceTime"));
-                position.setFixTime(next.getDate("fixTime"));
-                position.setOutdated(next.getBoolean("outdated", false));
-                position.setValid(next.getBoolean("valid"));
-                position.setLatitude(next.getDouble("latitude"));
-                position.setLongitude(next.getDouble("longitude"));
-                position.setAltitude(next.getDouble("altitude"));
-                position.setSpeed(next.getDouble("speed"));
-                position.setCourse(next.getDouble("course"));
-                position.setAddress(next.getString("address"));
-                if (next.containsKey("calculatedDistance")) {
-                    position.setCalculatedDistance(next.getDouble("calculatedDistance"));
+                position.setId(document.getLong("id"));
+                position.setDeviceId(document.getLong("deviceId"));
+                position.setProtocol(document.getString("protocol"));
+                position.setServerTime(document.getDate("serverTime"));
+                position.setDeviceTime(document.getDate("deviceTime"));
+                position.setFixTime(document.getDate("fixTime"));
+                position.setOutdated(document.getBoolean("outdated", false));
+                position.setValid(document.getBoolean("valid"));
+                position.setLatitude(document.getDouble("latitude"));
+                position.setLongitude(document.getDouble("longitude"));
+                position.setAltitude(document.getDouble("altitude"));
+                position.setSpeed(document.getDouble("speed"));
+                position.setCourse(document.getDouble("course"));
+                position.setAddress(document.getString("address"));
+                if (document.containsKey("calculatedDistance")) {
+                    position.setCalculatedDistance(document.getDouble("calculatedDistance"));
                 }
                 positions.add(position);
             }
-            return positions;
-        } finally {
-            cursor.close();
         }
+        return positions;
     }
 
     public Server getServer() throws SQLException {
