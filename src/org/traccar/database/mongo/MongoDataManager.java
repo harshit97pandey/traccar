@@ -25,6 +25,7 @@ import java.util.*;
  * Created by Niko on 11/30/2015.
  */
 public class MongoDataManager extends org.traccar.database.DataManager {
+    private Map<Long, Position> parkingDevices = new HashMap<>();
     private static final long DEFAULT_REFRESH_DELAY = 300;
 
     private final Config config;
@@ -502,6 +503,9 @@ public class MongoDataManager extends org.traccar.database.DataManager {
             if (next.containsKey("calculatedDistance")) {
                 position.setCalculatedDistance(next.getDouble("calculatedDistance"));
             }
+            if (next.containsKey("calculatedStopTime")) {
+                position.setCalculatedStopTime(next.getLong("calculatedStopTime"));
+            }
             positions.add(position);
         }
         return positions;
@@ -540,6 +544,9 @@ public class MongoDataManager extends org.traccar.database.DataManager {
             }
         }
 
+        //
+        calculateStopTime(position);
+
         long id = getId(CollectionName.position);
         position.setId(id);
         Document doc = new Document()
@@ -557,16 +564,40 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 .append("course", position.getCourse())
                 .append("address", position.getAddress())
                 .append("calculatedDistance", calculatedDistance)
+                .append("calculatedStopTime", position.getCalculatedStopTime())
                 .append("attributes", position.getAttributes());
 
         //Set calculated distance
         position.setCalculatedDistance(calculatedDistance);
         collection.insertOne(doc);
 
+
+
         //check restrictions
         new Restriction(position).apply();
     }
 
+    private void calculateStopTime(Position position){
+        Double speed = position.getSpeed();
+        if(speed.equals(0)) {
+            synchronized (parkingDevices){
+                if(parkingDevices.containsKey(position.getDeviceId())) {
+                    Position last = parkingDevices.get(position.getDeviceId());
+                    long calculateStopTime = (position.getDeviceTime().getTime() - last.getDeviceTime().getTime()) / 1000;
+                    position.setCalculatedStopTime(calculateStopTime);
+                    parkingDevices.put(position.getDeviceId(), position);
+                } else {
+                    parkingDevices.put(position.getDeviceId(), position);
+                }
+            }
+        } else {
+            synchronized (parkingDevices) {
+                if(parkingDevices.containsKey(position.getDeviceId())) {
+                    parkingDevices.remove(position.getDeviceId());
+                }
+            }
+        }
+    }
     public void updateLatestPosition(Position position) throws SQLException {
         database.getCollection(CollectionName.device)
                 .findOneAndUpdate(new BasicDBObject("id", position.getDeviceId()),
@@ -610,6 +641,9 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 if (document.containsKey("calculatedDistance")) {
                     position.setCalculatedDistance(document.getDouble("calculatedDistance"));
                 }
+                if (document.containsKey("calculatedStopTime")) {
+                    position.setCalculatedStopTime(document.getLong("calculatedStopTime"));
+                }
                 positions.add(position);
             }
         }
@@ -648,7 +682,7 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                         .append("zoom", server.getZoom())));
     }
 
-    public void addPolygon(Polygon polygon) throws SQLException {
+    public Polygon addPolygon(Polygon polygon) throws SQLException {
 
         MongoCollection<Document> collection = database.getCollection(CollectionName.polygon);
 
@@ -669,9 +703,10 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                 .append("coordinates", coordinates);
 
         collection.insertOne(doc);
+        return polygon;
     }
 
-    public void updatePolygon(Polygon polygon) throws Exception {
+    public Polygon updatePolygon(Polygon polygon) throws Exception {
         List<Document> coordinates = new ArrayList<>();
         for (Point point : polygon.getCoordinates()){
             Document pointDocument = new Document()
@@ -689,6 +724,7 @@ public class MongoDataManager extends org.traccar.database.DataManager {
                         .append("name", polygon.getName())
                         .append("coordinates", coordinates)));
 
+        return polygon;
         //TODO update device
     }
 
