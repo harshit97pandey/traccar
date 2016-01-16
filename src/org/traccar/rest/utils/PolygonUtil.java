@@ -10,7 +10,7 @@ import org.traccar.model.Polygon;
  * Created by niko on 12/24/15.
  */
 public class PolygonUtil {
-
+    private static Integer PRESISSTION =1_000_000;
     public static Boolean contains(Polygon polygon, Double latitude, Double longitude) {
         /*
         double a = 6378137.0d;
@@ -25,10 +25,12 @@ public class PolygonUtil {
         java.awt.Polygon shape = new java.awt.Polygon();
 
         for (Point point : polygon.getCoordinates()) {
-            shape.addPoint(point.getLatitude().intValue(), point.getLongitude().intValue());
+            Double pointLatitude = point.getLatitude() * PRESISSTION;
+            Double pointLongitude = point.getLongitude() * PRESISSTION;
+            shape.addPoint(pointLatitude.intValue(), pointLongitude.intValue());
         }
 
-        boolean contains = shape.contains(latitude, longitude);
+        boolean contains = shape.contains(latitude * PRESISSTION, longitude * PRESISSTION);
         return contains;
     }
 
