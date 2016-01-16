@@ -31,7 +31,7 @@ public class PolygonResource {
         if (dataManager instanceof MongoDataManager) {
             MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
             mongoDataManager.addPolygon(polygon);
-            return ResponseBuilder.getResponse(true);
+            return Response.ok().entity(polygon).build();
         }
         return Response.status(Response.Status.NOT_IMPLEMENTED).build();
     }
@@ -44,7 +44,7 @@ public class PolygonResource {
         if (dataManager instanceof MongoDataManager) {
             MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
             mongoDataManager.updatePolygon(polygon);
-            return ResponseBuilder.getResponse(true);
+            return Response.ok().entity(polygon).build();
         }
         return Response.status(Response.Status.NOT_IMPLEMENTED).build();
     }
