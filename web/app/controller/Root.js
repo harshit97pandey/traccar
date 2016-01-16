@@ -87,8 +87,8 @@ Ext.define('Traccar.controller.Root', {
         websocket.onmessage = function(evt) {
             var i, deviceStore, positionStore, data, devices, positions, device, position;
             message = Ext.decode(evt.data);
+            data = message.body;
             if (message.type == 'position') {
-                data = message.body;
                 devices = data.devices;
                 positions = data.positions;
 
@@ -114,6 +114,9 @@ Ext.define('Traccar.controller.Root', {
                         positionStore.add(Ext.create('Traccar.model.Position', positions[i]));
                     }
                 }
+            } else if (message.type == 'alert') {
+                alertsStore = Ext.getStore('Alerts');
+                alertsStore.add(Ext.create('Traccar.model.Alert', data.message));
             }
         };
         websocket.onerror = function(evt) {
