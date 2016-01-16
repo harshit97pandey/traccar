@@ -30,5 +30,5 @@ Ext.define('Traccar.controller.Login', {
 
     onLogin: function () {
         location.href='./';
-    },
+    }
 });
