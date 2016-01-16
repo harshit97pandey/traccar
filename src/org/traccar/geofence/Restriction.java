@@ -38,15 +38,17 @@ public class Restriction {
     private void checkRestriction(RestrictionUnit restrictionUnit) throws SQLException {
         Polygon polygon = mongoDataManager.getPolygon(restrictionUnit.getPolygonId());
         Notification lastNotification = mongoDataManager.getLastNotification(restrictionUnit, position);
-
-        Boolean check = restrictionUnit.check(polygon, position);
-        if (lastNotification == null && !check) {
-            saveNotification(restrictionUnit, polygon);
-        } else if (lastNotification.isCanceled() && !check) {
-            saveNotification(restrictionUnit, polygon);
-        } else if (!lastNotification.isCanceled() && check) {
-            mongoDataManager.markNotificationAsCanceled(lastNotification.getId());
+        if (polygon != null){
+            Boolean check = restrictionUnit.check(polygon, position);
+            if (lastNotification == null && !check) {
+                saveNotification(restrictionUnit, polygon);
+            } else if (lastNotification.isCanceled() && !check) {
+                saveNotification(restrictionUnit, polygon);
+            } else if (!lastNotification.isCanceled() && check) {
+                mongoDataManager.markNotificationAsCanceled(lastNotification.getId());
+            }
         }
+
     }
 
     private void saveNotification(RestrictionUnit restrictionUnit, Polygon polygon) throws SQLException {
