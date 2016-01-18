@@ -1,9 +1,9 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
+import org.traccar.database.ActiveDevice;
 import org.traccar.model.Command;
 import org.traccar.rest.utils.SessionUtil;
-import org.traccar.web.CommandServlet;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -29,9 +29,16 @@ public class CommandResource {
     @POST
     public Response send(Command command) throws Exception {
         Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), command.getDeviceId());
-        new CommandServlet().getActiveDevice(command.getDeviceId()).sendCommand(command);
 
+        Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), command.getDeviceId());
+        ActiveDevice activeDevice = Context.getConnectionManager().getActiveDevice(command.getDeviceId());
+
+        if (activeDevice == null) {
+            throw new RuntimeException("The device is not registered on the server");
+        }
+        activeDevice.sendCommand(command);
         return ResponseBuilder.getResponse(true);
+
     }
 
     @Path("raw")
@@ -41,7 +48,12 @@ public class CommandResource {
         long deviceId = json.getJsonNumber("deviceId").longValue();
         String command = json.getString("command");
         Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), deviceId);
-        new CommandServlet().getActiveDevice(deviceId).write(command);
+        ActiveDevice activeDevice = Context.getConnectionManager().getActiveDevice(deviceId);
+
+        if (activeDevice == null) {
+            throw new RuntimeException("The device is not registered on the server");
+        }
+        activeDevice.write(command);
 
         return ResponseBuilder.getResponse(true);
 

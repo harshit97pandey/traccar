@@ -2,6 +2,7 @@ package org.traccar.rest;
 
 import org.traccar.Context;
 import org.traccar.model.User;
+import org.traccar.rest.utils.SessionUtil;
 import org.traccar.rest.utils.UserPassport;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,9 +13,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static org.traccar.web.BaseServlet.USER_ID_KEY;
-
+import static org.traccar.rest.utils.SessionUtil.USER_ID_KEY;
 /**
  * Created by niko on 11/26/15.
  */

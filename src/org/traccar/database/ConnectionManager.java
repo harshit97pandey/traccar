@@ -33,6 +33,7 @@ import org.jboss.netty.util.TimerTask;
 import org.traccar.Context;
 import org.traccar.GlobalTimer;
 import org.traccar.Protocol;
+import org.traccar.database.mongo.MongoDataManager;
 import org.traccar.helper.Log;
 import org.traccar.model.Device;
 import org.traccar.model.Position;
@@ -48,7 +49,7 @@ public class ConnectionManager {
     private final Map<Long, Set<UpdateListener>> listeners = new HashMap<>();
     private final Map<Long, Timeout> timeouts = new HashMap<>();
 
-    public ConnectionManager(DataManager dataManager) {
+    public ConnectionManager(MongoDataManager dataManager) {
         deviceTimeout = Context.getConfig().getLong("status.timeout", DEFAULT_TIMEOUT) * 1000;
         if (dataManager != null) {
             try {

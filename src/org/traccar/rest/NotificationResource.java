@@ -1,7 +1,6 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
-import org.traccar.database.DataManager;
 import org.traccar.database.mongo.MongoDataManager;
 import org.traccar.geofence.Notification;
 import org.traccar.rest.utils.SessionUtil;
@@ -27,14 +26,10 @@ public class NotificationResource {
     public Response getNotifications(@QueryParam("all") boolean all) throws Exception {
 
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        DataManager dataManager = Context.getDataManager();
-        if (dataManager instanceof MongoDataManager) {
-            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
-            List<Notification> notifications = mongoDataManager.getNotifications(all);
+        MongoDataManager dataManager = Context.getDataManager();
+        List<Notification> notifications = dataManager.getNotifications(all);
 
-            return Response.ok().entity(notifications).build();
-        }
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        return Response.ok().entity(notifications).build();
 
     }
 
@@ -42,13 +37,9 @@ public class NotificationResource {
     @POST
     public Response seen(@FormParam("notificationId") long notificationId) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        DataManager dataManager = Context.getDataManager();
-        if (dataManager instanceof MongoDataManager) {
-            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
-            mongoDataManager.markNotificationAsSeen(notificationId);
+        MongoDataManager dataManager = Context.getDataManager();
+        dataManager.markNotificationAsSeen(notificationId);
 
-            return Response.ok().build();
-        }
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        return Response.ok().build();
     }
 }

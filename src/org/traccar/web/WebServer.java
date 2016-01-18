@@ -48,7 +48,6 @@ public class WebServer {
 
     private Server server;
     private final Config config;
-    private final DataSource dataSource;
     private final HandlerList handlers = new HandlerList();
 
     private void initServer() {
@@ -62,25 +61,16 @@ public class WebServer {
         }
     }
 
-    public WebServer(Config config, DataSource dataSource) {
+    public WebServer(Config config) {
         this.config = config;
-        this.dataSource = dataSource;
-
         initServer();
         switch (config.getString("web.type", "new")) {
-            case "api":
-                initOldApi();
-                break;
             case "new":
                 initApi();
                 if (config.getBoolean("web.console")) {
                     initConsole();
                 }
                 initWebApp();
-                break;
-            case "old":
-                initApi();
-                initOldWebApp();
                 break;
             default:
                 Log.error("Unsupported web application type: " + config.getString("web.type"));
@@ -109,25 +99,8 @@ public class WebServer {
         handlers.addHandler(resourceHandler);
     }
 
-    private void initOldWebApp() {
-        try {
-            javax.naming.Context context = new InitialContext();
-            context.bind("java:/DefaultDS", dataSource);
-        } catch (Exception error) {
-            Log.warning(error);
-        }
-
-        WebAppContext webapp = new WebAppContext();
-        webapp.setContextPath("/");
-        webapp.setWar(config.getString("web.application"));
-        handlers.addHandler(webapp);
-    }
-
     private void initApi() {
         switch (config.getString("api.provider", "old")) {
-            case "old":
-                initOldApi();
-                break;
             case "rest":
                 initRestApi();
                 break;
@@ -136,18 +109,6 @@ public class WebServer {
                 break;
         }
 
-    }
-    private void initOldApi() {
-        ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        servletHandler.setContextPath("/api");
-        servletHandler.addServlet(new ServletHolder(new AsyncServlet()), "/async/*");
-        servletHandler.addServlet(new ServletHolder(new ServerServlet()), "/server/*");
-        servletHandler.addServlet(new ServletHolder(new UserServlet()), "/user/*");
-        servletHandler.addServlet(new ServletHolder(new DeviceServlet()), "/device/*");
-        servletHandler.addServlet(new ServletHolder(new PositionServlet()), "/position/*");
-        servletHandler.addServlet(new ServletHolder(new CommandServlet()), "/command/*");
-        servletHandler.addServlet(new ServletHolder(new MainServlet()), "/*");
-        handlers.addHandler(servletHandler);
     }
 
     private void initRestApi() {

@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.traccar.database.mongo.MongoDataManager;
 import org.traccar.helper.Log;
 import org.traccar.model.Permission;
 import org.traccar.model.Server;
@@ -28,7 +30,7 @@ import org.traccar.model.User;
 
 public class PermissionsManager {
 
-    private final DataManager dataManager;
+    private final MongoDataManager dataManager;
 
     private Server server;
 
@@ -43,7 +45,7 @@ public class PermissionsManager {
         return permissions.get(userId);
     }
 
-    public PermissionsManager(DataManager dataManager) {
+    public PermissionsManager(MongoDataManager dataManager) {
         this.dataManager = dataManager;
         refresh();
     }

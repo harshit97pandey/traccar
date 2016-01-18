@@ -17,18 +17,10 @@ package org.traccar;
 
 import com.ning.http.client.AsyncHttpClient;
 import org.traccar.database.ConnectionManager;
-import org.traccar.database.DataManager;
 import org.traccar.database.IdentityManager;
 import org.traccar.database.PermissionsManager;
 import org.traccar.database.mongo.MongoDataManager;
-import org.traccar.geocode.BingMapsReverseGeocoder;
-import org.traccar.geocode.FactualReverseGeocoder;
-import org.traccar.geocode.GisgraphyReverseGeocoder;
-import org.traccar.geocode.GoogleReverseGeocoder;
-import org.traccar.geocode.MapQuestReverseGeocoder;
-import org.traccar.geocode.NominatimReverseGeocoder;
-import org.traccar.geocode.OpenCageReverseGeocoder;
-import org.traccar.geocode.ReverseGeocoder;
+import org.traccar.geocode.*;
 import org.traccar.helper.Log;
 import org.traccar.location.LocationProvider;
 import org.traccar.location.MozillaLocationProvider;
@@ -58,9 +50,9 @@ public final class Context {
         return identityManager;
     }
 
-    private static DataManager dataManager;
+    private static MongoDataManager dataManager;
 
-    public static DataManager getDataManager() {
+    public static MongoDataManager getDataManager() {
         return dataManager;
     }
 
@@ -125,7 +117,7 @@ public final class Context {
                 break;
             case "rdbms":
                 if (config.hasKey("database.url")) {
-                    dataManager = new DataManager(config);
+                    dataManager = new MongoDataManager(config);
                 }
                 break;
         }
@@ -182,7 +174,7 @@ public final class Context {
                     || config.getString("web.type", "new").equals("api")) {
                 permissionsManager = new PermissionsManager(dataManager);
             }
-            webServer = new WebServer(config, dataManager.getDataSource());
+            webServer = new WebServer(config);
         }
 
         connectionManager = new ConnectionManager(dataManager);

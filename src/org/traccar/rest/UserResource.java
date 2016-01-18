@@ -1,11 +1,9 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
-import org.traccar.database.DataManager;
 import org.traccar.database.mongo.MongoDataManager;
 import org.traccar.model.User;
 import org.traccar.rest.utils.SessionUtil;
-import org.traccar.web.JsonConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -55,7 +53,10 @@ public class UserResource {
     @DELETE
     public Response remove(@PathParam("id") long id) throws Exception {
         Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), id);
-        Context.getDataManager().removeUser(id);
+        User user = new User();
+        user.setId(id);
+
+        Context.getDataManager().removeUser(user);
         Context.getPermissionsManager().refresh();
         return Response.noContent().build();
     }
@@ -69,13 +70,11 @@ public class UserResource {
             @FormParam("longitude") double longitude) throws Exception {
         long userId = SessionUtil.getUserId(req);
         Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), userId);
-        DataManager dataManager = Context.getDataManager();
-        if (dataManager instanceof MongoDataManager) {
-            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
-            mongoDataManager.updateLocation(userId, map, zoom, latitude, longitude);
-            return Response.ok().build();
-        }
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+
+        MongoDataManager dataManager = Context.getDataManager();
+        dataManager.updateLocation(userId, map, zoom, latitude, longitude);
+
+        return Response.ok().build();
     }
 
     @Path("language/update")
@@ -83,13 +82,10 @@ public class UserResource {
     public Response updateLocation(@FormParam("language") String language) throws Exception {
         long userId = SessionUtil.getUserId(req);
         Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), userId);
-        DataManager dataManager = Context.getDataManager();
-        if (dataManager instanceof MongoDataManager) {
-            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
-            mongoDataManager.updateLanguage(userId, language);
-            return Response.ok().build();
-        }
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        MongoDataManager dataManager = Context.getDataManager();
+
+        dataManager.updateLanguage(userId, language);
+        return Response.ok().build();
     }
 
 }

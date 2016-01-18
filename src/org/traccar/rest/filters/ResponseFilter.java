@@ -11,13 +11,18 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
-import static org.traccar.web.BaseServlet.*;
 
 /**
  * Created by niko on 11/27/15.
  */
 @Provider
 public class ResponseFilter implements ContainerResponseFilter {
+    public static final String USER_ID_KEY = "userId";
+    public static final String ALLOW_ORIGIN_VALUE = "*";
+    public static final String ALLOW_HEADERS_VALUE = "Origin, X-Requested-With, Content-Type, Accept";
+    public static final String ALLOW_METHODS_VALUE = "GET, POST, PUT, DELETE";
+    public static final String APPLICATION_JSON = "application/json";
+
     @Override
     public void filter(ContainerRequestContext requestContext,
                        ContainerResponseContext responseContext) throws IOException {

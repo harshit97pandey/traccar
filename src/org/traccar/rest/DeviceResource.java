@@ -3,13 +3,11 @@ package org.traccar.rest;
 import org.traccar.Context;
 import org.traccar.model.Device;
 import org.traccar.rest.utils.SessionUtil;
-import org.traccar.web.JsonConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.sql.SQLException;
 
 /**
  * Created by niko on 11/28/15.
@@ -64,7 +62,9 @@ public class DeviceResource {
     public Response remove(@PathParam("id") long id) throws Exception {
         Context.getPermissionsManager().checkReadonly(SessionUtil.getUserId(req));
         Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), id);
-        Context.getDataManager().removeDevice(id);
+        Device device = new Device();
+        device.setId(id);
+        Context.getDataManager().removeDevice(device);
         Context.getPermissionsManager().refresh();
         return Response.noContent().build();
     }

@@ -1,7 +1,6 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
-import org.traccar.database.DataManager;
 import org.traccar.database.mongo.MongoDataManager;
 import org.traccar.model.Polygon;
 import org.traccar.rest.utils.PolygonUtil;
@@ -27,39 +26,30 @@ public class PolygonResource {
     @POST
     public Response add(Polygon polygon) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        DataManager dataManager = Context.getDataManager();
-        if (dataManager instanceof MongoDataManager) {
-            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
-            mongoDataManager.addPolygon(polygon);
-            return Response.ok().entity(polygon).build();
-        }
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        MongoDataManager dataManager = Context.getDataManager();
+        dataManager.addPolygon(polygon);
+
+        return Response.ok().entity(polygon).build();
     }
 
     @Path("update")
     @POST
     public Response update(Polygon polygon) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        DataManager dataManager = Context.getDataManager();
-        if (dataManager instanceof MongoDataManager) {
-            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
-            mongoDataManager.updatePolygon(polygon);
-            return Response.ok().entity(polygon).build();
-        }
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        MongoDataManager dataManager = Context.getDataManager();
+        dataManager.updatePolygon(polygon);
+
+        return Response.ok().entity(polygon).build();
     }
 
     @Path("remove")
     @POST
     public Response remove(Polygon polygon) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        DataManager dataManager = Context.getDataManager();
-        if (dataManager instanceof MongoDataManager) {
-            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
-            mongoDataManager.removePolygon(polygon.getId());
-            return ResponseBuilder.getResponse(true);
-        }
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        MongoDataManager dataManager = Context.getDataManager();
+        dataManager.removePolygon(polygon.getId());
+
+        return ResponseBuilder.getResponse(true);
     }
 
     @Path("get")
@@ -67,14 +57,9 @@ public class PolygonResource {
     public Response get(@QueryParam("polygonId") long polygonId) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
 
-        DataManager dataManager = Context.getDataManager();
-        if (dataManager instanceof MongoDataManager) {
-            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
+        MongoDataManager dataManager = Context.getDataManager();
 
-            return Response.ok().entity(mongoDataManager.getPolygon(polygonId)).build();
-        }
-
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        return Response.ok().entity(dataManager.getPolygon(polygonId)).build();
     }
 
     @Path("list")
@@ -82,14 +67,9 @@ public class PolygonResource {
     public Response list() throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
 
-        DataManager dataManager = Context.getDataManager();
-        if (dataManager instanceof MongoDataManager) {
-            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
+        MongoDataManager dataManager = Context.getDataManager();
 
-            return Response.ok().entity(mongoDataManager.getPolygons()).build();
-        }
-
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        return Response.ok().entity(dataManager.getPolygons()).build();
     }
 
     @Path("contains")
@@ -109,13 +89,10 @@ public class PolygonResource {
             @FormParam("polygonId") long polygonId,
             @FormParam("deviceId") long deviceId) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        DataManager dataManager = Context.getDataManager();
-        if (dataManager instanceof MongoDataManager) {
-            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
-            mongoDataManager.linkPolygon(polygonId, deviceId);
-            return Response.ok().build();
-        }
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        MongoDataManager dataManager = Context.getDataManager();
+        dataManager.linkPolygon(polygonId, deviceId);
+
+        return Response.ok().build();
     }
 
     @Path("unlink")
@@ -124,12 +101,9 @@ public class PolygonResource {
             @FormParam("polygonId") long polygonId,
             @FormParam("deviceId") long deviceId) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        DataManager dataManager = Context.getDataManager();
-        if (dataManager instanceof MongoDataManager) {
-            MongoDataManager mongoDataManager = (MongoDataManager)dataManager;
-            mongoDataManager.unlinkPolygon(polygonId, deviceId);
-            return Response.ok().build();
-        }
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        MongoDataManager dataManager = Context.getDataManager();
+        dataManager.unlinkPolygon(polygonId, deviceId);
+
+        return Response.ok().build();
     }
 }

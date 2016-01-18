@@ -9,6 +9,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.BsonDouble;
 import org.bson.Document;
 import org.traccar.Config;
+import org.traccar.database.IdentityManager;
 import org.traccar.geofence.Notification;
 import org.traccar.geofence.Restriction;
 import org.traccar.geofence.RestrictionType;
@@ -24,7 +25,7 @@ import java.util.*;
 /**
  * Created by Niko on 11/30/2015.
  */
-public class MongoDataManager extends org.traccar.database.DataManager {
+public class MongoDataManager implements IdentityManager {
     private Map<Long, Position> parkingDevices = new HashMap<>();
     private static final long DEFAULT_REFRESH_DELAY = 300;
 
@@ -45,7 +46,6 @@ public class MongoDataManager extends org.traccar.database.DataManager {
 
         devicesRefreshDelay = config.getLong("database.refreshDelay", DEFAULT_REFRESH_DELAY) * 1000;
     }
-
 
     private void initDatabase() throws Exception {
         String host = config.getString("mongo.host");
