@@ -1,7 +1,7 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
-import org.traccar.database.mongo.MongoDataManager;
+import org.traccar.database.mongo.SessionRepository;
 import org.traccar.model.User;
 import org.traccar.rest.utils.SessionUtil;
 
@@ -24,13 +24,13 @@ public class UserResource {
     public Response get() throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
 
-        return Response.ok().entity(Context.getDataManager().getUsers()).build();
+        return Response.ok().entity(new SessionRepository().getUsers()).build();
     }
 
     @POST
     public Response add(User user) throws Exception {
         Context.getPermissionsManager().checkRegistration(SessionUtil.getUserId(req));
-        Context.getDataManager().addUser(user);
+        new SessionRepository().addUser(user);
         Context.getPermissionsManager().refresh();
         return Response.ok(user).build();
 
@@ -44,7 +44,7 @@ public class UserResource {
         } else {
             Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), entity.getId());
         }
-        Context.getDataManager().updateUser(entity);
+        new SessionRepository().updateUser(entity);
         Context.getPermissionsManager().refresh();
         return Response.ok(entity).build();
     }
@@ -56,7 +56,7 @@ public class UserResource {
         User user = new User();
         user.setId(id);
 
-        Context.getDataManager().removeUser(user);
+        new SessionRepository().removeUser(user);
         Context.getPermissionsManager().refresh();
         return Response.noContent().build();
     }
@@ -71,8 +71,7 @@ public class UserResource {
         long userId = SessionUtil.getUserId(req);
         Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), userId);
 
-        MongoDataManager dataManager = Context.getDataManager();
-        dataManager.updateLocation(userId, map, zoom, latitude, longitude);
+        new SessionRepository().updateLocation(userId, map, zoom, latitude, longitude);
 
         return Response.ok().build();
     }
@@ -82,9 +81,8 @@ public class UserResource {
     public Response updateLocation(@FormParam("language") String language) throws Exception {
         long userId = SessionUtil.getUserId(req);
         Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), userId);
-        MongoDataManager dataManager = Context.getDataManager();
 
-        dataManager.updateLanguage(userId, language);
+        new SessionRepository().updateLanguage(userId, language);
         return Response.ok().build();
     }
 

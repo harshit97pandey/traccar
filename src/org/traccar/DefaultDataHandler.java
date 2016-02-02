@@ -15,6 +15,7 @@
  */
 package org.traccar;
 
+import org.traccar.database.mongo.PositionRepository;
 import org.traccar.helper.Log;
 import org.traccar.model.Position;
 
@@ -24,10 +25,11 @@ public class DefaultDataHandler extends BaseDataHandler {
     protected Position handlePosition(Position position) {
 
         try {
-            Context.getDataManager().addPosition(position);
+            PositionRepository positionRepository = new PositionRepository();
+            positionRepository.addPosition(position);
             Position lastPosition = Context.getConnectionManager().getLastPosition(position.getDeviceId());
             if (lastPosition == null || position.getFixTime().compareTo(lastPosition.getFixTime()) > 0) {
-                Context.getDataManager().updateLatestPosition(position);
+                positionRepository.updateLatestPosition(position);
             }
         } catch (Exception error) {
             Log.warning(error);

@@ -1,9 +1,9 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
+import org.traccar.database.mongo.SessionRepository;
 import org.traccar.model.Server;
 import org.traccar.rest.utils.SessionUtil;
-import org.traccar.web.JsonConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -27,13 +27,13 @@ public class ServerResource {
 
     @GET
     public Response get() throws SQLException, IOException {
-     return Response.ok().entity(Context.getDataManager().getServer()).build();
+     return Response.ok().entity(new SessionRepository().getServer()).build();
     }
 
     @PUT
     public Response update(Server server) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        Context.getDataManager().updateServer(server);
+        new SessionRepository().updateServer(server);
         Context.getPermissionsManager().refresh();
         return Response.ok(server).build();
     }

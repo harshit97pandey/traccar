@@ -22,15 +22,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.traccar.database.mongo.MongoDataManager;
+import org.traccar.database.mongo.SessionRepository;
 import org.traccar.helper.Log;
 import org.traccar.model.Permission;
 import org.traccar.model.Server;
 import org.traccar.model.User;
 
 public class PermissionsManager {
-
-    private final MongoDataManager dataManager;
 
     private Server server;
 
@@ -45,20 +43,20 @@ public class PermissionsManager {
         return permissions.get(userId);
     }
 
-    public PermissionsManager(MongoDataManager dataManager) {
-        this.dataManager = dataManager;
+    public PermissionsManager() {
         refresh();
     }
 
     public final void refresh() {
         users.clear();
         permissions.clear();
+        SessionRepository sessionRepository = new SessionRepository();
         try {
-            server = dataManager.getServer();
-            for (User user : dataManager.getUsers()) {
+            server = sessionRepository.getServer();
+            for (User user : sessionRepository.getUsers()) {
                 users.put(user.getId(), user);
             }
-            for (Permission permission : dataManager.getPermissions()) {
+            for (Permission permission : sessionRepository.getPermissions()) {
                 getNotNull(permission.getUserId()).add(permission.getDeviceId());
             }
         } catch (SQLException error) {

@@ -1,6 +1,7 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
+import org.traccar.database.mongo.PositionRepository;
 import org.traccar.model.MiscFormatter;
 import org.traccar.model.Position;
 import org.traccar.rest.utils.SessionUtil;
@@ -45,7 +46,7 @@ public class PositionResource {
 
         Context.getConnectionManager().updatePosition(position);
         if (insert) {
-            Context.getDataManager().addPosition(position);
+            new PositionRepository().addPosition(position);
         }
         return Response.ok().build();
     }
@@ -57,7 +58,7 @@ public class PositionResource {
             @QueryParam("to") String to) throws Exception {
 
         Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), deviceId);
-        Collection<Position> positions = Context.getDataManager().getPositions(
+        Collection<Position> positions = new PositionRepository().getPositions(
                 deviceId, JsonConverter.parseDate(from), JsonConverter.parseDate(to));
 
         return Response.ok().entity(positions).build();

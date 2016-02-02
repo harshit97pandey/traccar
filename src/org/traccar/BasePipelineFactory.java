@@ -145,9 +145,8 @@ public abstract class BasePipelineFactory implements ChannelPipelineFactory {
             pipeline.addLast("filter", filterHandler);
         }
 
-        if (Context.getDataManager() != null) {
-            pipeline.addLast("dataHandler", new DefaultDataHandler());
-        }
+        pipeline.addLast("dataHandler", new DefaultDataHandler());
+
         if (Context.getConfig().getBoolean("forward.enable")) {
             pipeline.addLast("webHandler", new WebDataHandler(Context.getConfig().getString("forward.url")));
         }

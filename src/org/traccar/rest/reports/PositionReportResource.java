@@ -2,6 +2,7 @@ package org.traccar.rest.reports;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.traccar.database.mongo.PositionRepository;
 import org.traccar.model.Position;
 import org.traccar.rest.utils.DateTimeFormatter;
 import org.traccar.rest.utils.SessionUtil;
@@ -50,7 +51,7 @@ public class PositionReportResource {
         long deviceId = Long.parseLong(req.getParameter("deviceId"));
 
         org.traccar.Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), deviceId);
-        Collection<Position> positions = org.traccar.Context.getDataManager().getPositions(deviceId,
+        Collection<Position> positions =new PositionRepository().getPositions(deviceId,
                 JsonConverter.parseDate(req.getParameter("from")),
                 JsonConverter.parseDate(req.getParameter("to")));
 

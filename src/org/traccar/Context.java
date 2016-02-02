@@ -19,7 +19,9 @@ import com.ning.http.client.AsyncHttpClient;
 import org.traccar.database.ConnectionManager;
 import org.traccar.database.IdentityManager;
 import org.traccar.database.PermissionsManager;
-import org.traccar.database.mongo.MongoDataManager;
+import org.traccar.database.mongo.DeviceRepository;
+import org.traccar.database.mongo.PositionRepository;
+import org.traccar.database.mongo.Repository;
 import org.traccar.geocode.*;
 import org.traccar.helper.Log;
 import org.traccar.location.LocationProvider;
@@ -48,12 +50,6 @@ public final class Context {
 
     public static IdentityManager getIdentityManager() {
         return identityManager;
-    }
-
-    private static MongoDataManager dataManager;
-
-    public static MongoDataManager getDataManager() {
-        return dataManager;
     }
 
     private static ConnectionManager connectionManager;
@@ -110,19 +106,13 @@ public final class Context {
             Log.setupLogger(config);
         }
 
-        String strategy = config.getString("database.strategy", "rdbms");
-        switch (strategy) {
-            case "mongo":
-                dataManager = new MongoDataManager(config);
-                break;
-            case "rdbms":
-                if (config.hasKey("database.url")) {
-                    dataManager = new MongoDataManager(config);
-                }
-                break;
-        }
+        //init repository
+        new Repository(config);
 
-        identityManager = dataManager;
+        //init permission manager
+        permissionsManager = new PermissionsManager();
+        connectionManager = new ConnectionManager(new PositionRepository());
+        identityManager = new DeviceRepository(config);
 
         if (config.getBoolean("geocoder.enable")) {
             String type = config.getString("geocoder.type", "google");
@@ -172,12 +162,9 @@ public final class Context {
         if (config.getBoolean("web.enable")) {
             if (config.getString("web.type", "new").equals("new")
                     || config.getString("web.type", "new").equals("api")) {
-                permissionsManager = new PermissionsManager(dataManager);
             }
             webServer = new WebServer(config);
         }
-
-        connectionManager = new ConnectionManager(dataManager);
 
         serverManager = new ServerManager();
     }

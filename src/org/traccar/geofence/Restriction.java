@@ -1,7 +1,8 @@
 package org.traccar.geofence;
 
-import org.traccar.Context;
-import org.traccar.database.mongo.MongoDataManager;
+import org.traccar.database.mongo.DeviceRepository;
+import org.traccar.database.mongo.NotificationRepository;
+import org.traccar.database.mongo.PolygonRepository;
 import org.traccar.model.Polygon;
 import org.traccar.model.Position;
 import org.traccar.rest.PositionEventEndpoint;
@@ -17,11 +18,9 @@ public class Restriction {
 
     private Position position;
 
-    private MongoDataManager mongoDataManager;
 
     public Restriction(Position position) {
         this.position = position;
-        mongoDataManager = (MongoDataManager) Context.getDataManager();
     }
 
     public void apply() throws SQLException {
@@ -32,14 +31,14 @@ public class Restriction {
     }
 
     private List<RestrictionUnit> getDeviceRestrictions() {
-        return mongoDataManager.getDeviceRestrictions(position.getDeviceId());
+        return new DeviceRepository().getDeviceRestrictions(position.getDeviceId());
     }
 
     private void checkRestriction(RestrictionUnit restrictionUnit)
             throws SQLException {
-        Polygon polygon = mongoDataManager.getPolygon(restrictionUnit
+        Polygon polygon = new PolygonRepository().getPolygon(restrictionUnit
                 .getPolygonId());
-        Notification lastNotification = mongoDataManager.getLastNotification(
+        Notification lastNotification = new NotificationRepository().getLastNotification(
                 restrictionUnit, position);
         if (polygon != null) {
             Boolean check = restrictionUnit.check(polygon, position);
@@ -50,7 +49,7 @@ public class Restriction {
             } else if (lastNotification.isCanceled() && !check) {
                 saveNotification(restrictionUnit, polygon);
             } else if (!lastNotification.isCanceled() && check) {
-                mongoDataManager.markNotificationAsCanceled(lastNotification
+                new NotificationRepository().markNotificationAsCanceled(lastNotification
                         .getId());
             }
         }
@@ -59,7 +58,7 @@ public class Restriction {
 
     private void saveNotification(RestrictionUnit restrictionUnit,
             Polygon polygon) throws SQLException {
-        mongoDataManager.addNotification(restrictionUnit, polygon, position);
+        new NotificationRepository().addNotification(restrictionUnit, polygon, position);
 
         Notification notification = new Notification();
         notification.setCreationDate(new Date());

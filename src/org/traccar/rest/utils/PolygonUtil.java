@@ -1,7 +1,6 @@
 package org.traccar.rest.utils;
 
-import org.traccar.Context;
-import org.traccar.database.mongo.MongoDataManager;
+import org.traccar.database.mongo.PolygonRepository;
 import org.traccar.model.Point;
 import org.traccar.model.Polygon;
 
@@ -34,8 +33,7 @@ public class PolygonUtil {
     }
 
     public static Boolean contains(long polygonId, Double latitude, Double longitude) {
-        MongoDataManager dataManager = Context.getDataManager();
-        Polygon polygon = dataManager.getPolygon(polygonId);
+        Polygon polygon = new PolygonRepository().getPolygon(polygonId);
 
         return contains(polygon, latitude, longitude);
     }

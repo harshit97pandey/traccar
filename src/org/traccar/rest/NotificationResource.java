@@ -1,7 +1,8 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
-import org.traccar.database.mongo.MongoDataManager;
+import org.traccar.database.mongo.NotificationRepository;
+import org.traccar.database.mongo.SessionRepository;
 import org.traccar.geofence.Notification;
 import org.traccar.rest.utils.SessionUtil;
 
@@ -26,8 +27,7 @@ public class NotificationResource {
     public Response getNotifications(@QueryParam("all") boolean all) throws Exception {
 
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        MongoDataManager dataManager = Context.getDataManager();
-        List<Notification> notifications = dataManager.getNotifications(all);
+        List<Notification> notifications = new NotificationRepository().getNotifications(all);
 
         return Response.ok().entity(notifications).build();
 
@@ -37,8 +37,7 @@ public class NotificationResource {
     @POST
     public Response seen(@FormParam("notificationId") long notificationId) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        MongoDataManager dataManager = Context.getDataManager();
-        dataManager.markNotificationAsSeen(notificationId);
+        new NotificationRepository().markNotificationAsSeen(notificationId);
 
         return Response.ok().build();
     }

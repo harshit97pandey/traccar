@@ -1,7 +1,7 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
-import org.traccar.database.mongo.MongoDataManager;
+import org.traccar.database.mongo.PolygonRepository;
 import org.traccar.model.Polygon;
 import org.traccar.rest.utils.PolygonUtil;
 import org.traccar.rest.utils.SessionUtil;
@@ -26,8 +26,8 @@ public class PolygonResource {
     @POST
     public Response add(Polygon polygon) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        MongoDataManager dataManager = Context.getDataManager();
-        dataManager.addPolygon(polygon);
+
+        new PolygonRepository().addPolygon(polygon);
 
         return Response.ok().entity(polygon).build();
     }
@@ -36,8 +36,7 @@ public class PolygonResource {
     @POST
     public Response update(Polygon polygon) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        MongoDataManager dataManager = Context.getDataManager();
-        dataManager.updatePolygon(polygon);
+        new PolygonRepository().updatePolygon(polygon);
 
         return Response.ok().entity(polygon).build();
     }
@@ -46,8 +45,7 @@ public class PolygonResource {
     @POST
     public Response remove(Polygon polygon) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        MongoDataManager dataManager = Context.getDataManager();
-        dataManager.removePolygon(polygon.getId());
+        new PolygonRepository().removePolygon(polygon.getId());
 
         return ResponseBuilder.getResponse(true);
     }
@@ -57,9 +55,7 @@ public class PolygonResource {
     public Response get(@QueryParam("polygonId") long polygonId) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
 
-        MongoDataManager dataManager = Context.getDataManager();
-
-        return Response.ok().entity(dataManager.getPolygon(polygonId)).build();
+        return Response.ok().entity(new PolygonRepository().getPolygon(polygonId)).build();
     }
 
     @Path("list")
@@ -67,9 +63,7 @@ public class PolygonResource {
     public Response list() throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
 
-        MongoDataManager dataManager = Context.getDataManager();
-
-        return Response.ok().entity(dataManager.getPolygons()).build();
+        return Response.ok().entity(new PolygonRepository().getPolygons()).build();
     }
 
     @Path("contains")
@@ -89,8 +83,7 @@ public class PolygonResource {
             @FormParam("polygonId") long polygonId,
             @FormParam("deviceId") long deviceId) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        MongoDataManager dataManager = Context.getDataManager();
-        dataManager.linkPolygon(polygonId, deviceId);
+        new PolygonRepository().linkPolygon(polygonId, deviceId);
 
         return Response.ok().build();
     }
@@ -101,8 +94,7 @@ public class PolygonResource {
             @FormParam("polygonId") long polygonId,
             @FormParam("deviceId") long deviceId) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        MongoDataManager dataManager = Context.getDataManager();
-        dataManager.unlinkPolygon(polygonId, deviceId);
+        new PolygonRepository().unlinkPolygon(polygonId, deviceId);
 
         return Response.ok().build();
     }

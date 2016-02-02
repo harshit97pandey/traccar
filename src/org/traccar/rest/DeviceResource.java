@@ -1,6 +1,7 @@
 package org.traccar.rest;
 
 import org.traccar.Context;
+import org.traccar.database.mongo.DeviceRepository;
 import org.traccar.model.Device;
 import org.traccar.rest.utils.SessionUtil;
 
@@ -26,14 +27,14 @@ public class DeviceResource {
         if (all) {
             Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
 
-            return Response.ok().entity(Context.getDataManager().getAllDevices()).build();
+            return Response.ok().entity(new DeviceRepository().getAllDevices()).build();
         } else {
             if (userId == 0) {
                 userId = SessionUtil.getUserId(req);
             }
             Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), userId);
 
-            return Response.ok().entity(Context.getDataManager().getDevices(userId)).build();
+            return Response.ok().entity(new DeviceRepository().getDevices(userId)).build();
         }
     }
 
@@ -41,8 +42,9 @@ public class DeviceResource {
     @POST
     public Response add(Device device) throws Exception {
         Context.getPermissionsManager().checkReadonly(SessionUtil.getUserId(req));
-        Context.getDataManager().addDevice(device);
-        Context.getDataManager().linkDevice(SessionUtil.getUserId(req), device.getId());
+        DeviceRepository deviceRepository = new DeviceRepository();
+        deviceRepository.addDevice(device);
+        deviceRepository.linkDevice(SessionUtil.getUserId(req), device.getId());
         Context.getPermissionsManager().refresh();
 
         return Response.ok(device).build();
@@ -53,7 +55,7 @@ public class DeviceResource {
     public Response update(@PathParam("id") long id, Device entity) throws Exception {
         Context.getPermissionsManager().checkReadonly(SessionUtil.getUserId(req));
         Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), id);
-        Context.getDataManager().updateDevice(entity);
+        new DeviceRepository().updateDevice(entity);
         return Response.ok(entity).build();
     }
 
@@ -64,7 +66,7 @@ public class DeviceResource {
         Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), id);
         Device device = new Device();
         device.setId(id);
-        Context.getDataManager().removeDevice(device);
+        new DeviceRepository().removeDevice(device);
         Context.getPermissionsManager().refresh();
         return Response.noContent().build();
     }
@@ -73,7 +75,7 @@ public class DeviceResource {
     @GET
     public Response link() throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        Context.getDataManager().linkDevice(
+        new DeviceRepository().linkDevice(
                 Long.parseLong(req.getParameter("userId")),
                 Long.parseLong(req.getParameter("deviceId")));
         Context.getPermissionsManager().refresh();
@@ -85,7 +87,7 @@ public class DeviceResource {
     @GET
     public Response unlink() throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        Context.getDataManager().unlinkDevice(
+        new DeviceRepository().unlinkDevice(
                 Long.parseLong(req.getParameter("userId")),
                 Long.parseLong(req.getParameter("deviceId")));
         Context.getPermissionsManager().refresh();

@@ -1,8 +1,7 @@
 package org.traccar.rest;
 
-import org.traccar.Context;
+import org.traccar.database.mongo.SessionRepository;
 import org.traccar.model.User;
-import org.traccar.rest.utils.SessionUtil;
 import org.traccar.rest.utils.UserPassport;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import static org.traccar.rest.utils.SessionUtil.USER_ID_KEY;
 /**
  * Created by niko on 11/26/15.
@@ -31,8 +31,9 @@ public class SessionResource {
 
         Long userId = (Long) req.getSession().getAttribute(USER_ID_KEY);
         if (userId != null) {
-            userPassport.setUser(Context.getDataManager().getUser(userId));
-            userPassport.setServer(Context.getDataManager().getServer());
+            SessionRepository sessionRepository = new SessionRepository();
+            userPassport.setUser(sessionRepository.getUser(userId));
+            userPassport.setServer(sessionRepository.getServer());
             userPassport.setValid(Boolean.TRUE);
         }
 
@@ -43,7 +44,7 @@ public class SessionResource {
     public Response add(
             @FormParam("email") String email,
             @FormParam("password") String password) throws SQLException, IOException {
-        User user = Context.getDataManager().login(email, password);
+        User user = new SessionRepository().login(email, password);
         if (user != null) {
             req.getSession().setAttribute(USER_ID_KEY, user.getId());
             sessions.put(req.getSession().getId(), user.getId());

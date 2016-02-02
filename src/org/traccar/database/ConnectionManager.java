@@ -15,28 +15,24 @@
  */
 package org.traccar.database;
 
-import java.net.SocketAddress;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.util.Timeout;
 import org.jboss.netty.util.TimerTask;
 import org.traccar.Context;
 import org.traccar.GlobalTimer;
 import org.traccar.Protocol;
-import org.traccar.database.mongo.MongoDataManager;
+import org.traccar.database.mongo.DeviceRepository;
+import org.traccar.database.mongo.PositionRepository;
+import org.traccar.database.mongo.Repository;
+import org.traccar.database.mongo.SessionRepository;
 import org.traccar.helper.Log;
 import org.traccar.model.Device;
 import org.traccar.model.Position;
+
+import java.net.SocketAddress;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class ConnectionManager {
 
@@ -49,11 +45,12 @@ public class ConnectionManager {
     private final Map<Long, Set<UpdateListener>> listeners = new HashMap<>();
     private final Map<Long, Timeout> timeouts = new HashMap<>();
 
-    public ConnectionManager(MongoDataManager dataManager) {
+    public ConnectionManager(Repository dataManager) {
         deviceTimeout = Context.getConfig().getLong("status.timeout", DEFAULT_TIMEOUT) * 1000;
         if (dataManager != null) {
             try {
-                for (Position position : dataManager.getLatestPositions()) {
+                Collection<Position> latestPositions = new PositionRepository().getLatestPositions();
+                for (Position position : latestPositions) {
                     positions.put(position.getDeviceId(), position);
                 }
             } catch (SQLException error) {
@@ -108,7 +105,7 @@ public class ConnectionManager {
         }
 
         try {
-            Context.getDataManager().updateDeviceStatus(device);
+            new DeviceRepository().updateDeviceStatus(device);
         } catch (SQLException error) {
             Log.warning(error);
         }
