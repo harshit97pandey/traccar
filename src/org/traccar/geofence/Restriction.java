@@ -7,7 +7,6 @@ import org.traccar.model.Polygon;
 import org.traccar.model.Position;
 import org.traccar.rest.PositionEventEndpoint;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class Restriction {
         this.position = position;
     }
 
-    public void apply() throws SQLException {
+    public void apply() {
 
         for (RestrictionUnit restrictionUnit : getDeviceRestrictions()) {
             checkRestriction(restrictionUnit);
@@ -34,8 +33,7 @@ public class Restriction {
         return new DeviceRepository().getDeviceRestrictions(position.getDeviceId());
     }
 
-    private void checkRestriction(RestrictionUnit restrictionUnit)
-            throws SQLException {
+    private void checkRestriction(RestrictionUnit restrictionUnit) {
         Polygon polygon = new PolygonRepository().getPolygon(restrictionUnit
                 .getPolygonId());
         Notification lastNotification = new NotificationRepository().getLastNotification(
@@ -57,7 +55,7 @@ public class Restriction {
     }
 
     private void saveNotification(RestrictionUnit restrictionUnit,
-            Polygon polygon) throws SQLException {
+            Polygon polygon) {
         new NotificationRepository().addNotification(restrictionUnit, polygon, position);
 
         Notification notification = new Notification();

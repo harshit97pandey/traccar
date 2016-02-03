@@ -48,14 +48,8 @@ public class ConnectionManager {
     public ConnectionManager(Repository dataManager) {
         deviceTimeout = Context.getConfig().getLong("status.timeout", DEFAULT_TIMEOUT) * 1000;
         if (dataManager != null) {
-            try {
-                Collection<Position> latestPositions = new PositionRepository().getLatestPositions();
-                for (Position position : latestPositions) {
-                    positions.put(position.getDeviceId(), position);
-                }
-            } catch (SQLException error) {
-                Log.warning(error);
-            }
+            Collection<Position> latestPositions = new PositionRepository().getLatestPositions();
+            latestPositions.forEach((p)-> positions.putIfAbsent(p.getDeviceId(), p));
         }
     }
 
@@ -94,21 +88,12 @@ public class ConnectionManager {
         }
 
         if (status.equals(Device.STATUS_ONLINE)) {
-            timeouts.put(deviceId, GlobalTimer.getTimer().newTimeout(new TimerTask() {
-                @Override
-                public void run(Timeout timeout) throws Exception {
-                    if (!timeout.isCancelled()) {
+            timeouts.put(deviceId, GlobalTimer.getTimer().newTimeout(
+                    t -> {if (!timeout.isCancelled()) {
                         updateDevice(deviceId, Device.STATUS_UNKNOWN, null);
-                    }
-                }
-            }, deviceTimeout, TimeUnit.MILLISECONDS));
+                    }}, deviceTimeout, TimeUnit.MILLISECONDS));
         }
-
-        try {
-            new DeviceRepository().updateDeviceStatus(device);
-        } catch (SQLException error) {
-            Log.warning(error);
-        }
+        new DeviceRepository().updateDeviceStatus(device);
 
         if (listeners.containsKey(deviceId)) {
             for (UpdateListener listener : listeners.get(deviceId)) {
@@ -122,9 +107,7 @@ public class ConnectionManager {
         positions.put(deviceId, position);
 
         if (listeners.containsKey(deviceId)) {
-            for (UpdateListener listener : listeners.get(deviceId)) {
-                listener.onUpdatePosition(position);
-            }
+            listeners.get(deviceId).forEach(p -> p.onUpdatePosition(position));
         }
     }
 
@@ -136,11 +119,11 @@ public class ConnectionManager {
 
         List<Position> result = new LinkedList<>();
 
-        for (long device : devices) {
-            if (positions.containsKey(device)) {
-                result.add(positions.get(device));
+        devices.forEach((d) -> {
+            if (positions.containsKey(d)) {
+                result.add(positions.get(d));
             }
-        }
+        });
 
         return result;
     }
@@ -158,7 +141,7 @@ public class ConnectionManager {
 
     public synchronized void addListener(long deviceId, UpdateListener listener) {
         if (!listeners.containsKey(deviceId)) {
-            listeners.put(deviceId, new HashSet<UpdateListener>());
+            listeners.put(deviceId, new HashSet<>());
         }
         listeners.get(deviceId).add(listener);
     }
@@ -171,7 +154,7 @@ public class ConnectionManager {
 
     public synchronized void removeListener(long deviceId, UpdateListener listener) {
         if (!listeners.containsKey(deviceId)) {
-            listeners.put(deviceId, new HashSet<UpdateListener>());
+            listeners.put(deviceId, new HashSet<>());
         }
         listeners.get(deviceId).remove(listener);
     }

@@ -15,18 +15,12 @@
  */
 package org.traccar.database;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.traccar.database.mongo.SessionRepository;
-import org.traccar.helper.Log;
 import org.traccar.model.Permission;
 import org.traccar.model.Server;
 import org.traccar.model.User;
+
+import java.util.*;
 
 public class PermissionsManager {
 
@@ -37,9 +31,8 @@ public class PermissionsManager {
     private final Map<Long, Set<Long>> permissions = new HashMap<>();
 
     private Set<Long> getNotNull(long userId) {
-        if (!permissions.containsKey(userId)) {
-            permissions.put(userId, new HashSet<Long>());
-        }
+        permissions.putIfAbsent(userId, new HashSet<>());
+
         return permissions.get(userId);
     }
 
@@ -51,16 +44,11 @@ public class PermissionsManager {
         users.clear();
         permissions.clear();
         SessionRepository sessionRepository = new SessionRepository();
-        try {
-            server = sessionRepository.getServer();
-            for (User user : sessionRepository.getUsers()) {
-                users.put(user.getId(), user);
-            }
-            for (Permission permission : sessionRepository.getPermissions()) {
-                getNotNull(permission.getUserId()).add(permission.getDeviceId());
-            }
-        } catch (SQLException error) {
-            Log.warning(error);
+        server = sessionRepository.getServer();
+        sessionRepository.getUsers().forEach(u -> users.put(u.getId(), u));
+
+        for (Permission permission : sessionRepository.getPermissions()) {
+            getNotNull(permission.getUserId()).add(permission.getDeviceId());
         }
     }
 

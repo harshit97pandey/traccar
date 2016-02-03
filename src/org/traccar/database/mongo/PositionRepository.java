@@ -8,7 +8,6 @@ import org.bson.Document;
 import org.traccar.geofence.Restriction;
 import org.traccar.model.Position;
 
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -18,7 +17,7 @@ public class PositionRepository extends Repository{
 
     private Map<Long, Position> parkingDevices = new HashMap<>();
 
-    public Collection<Position> getPositions(long deviceId, java.util.Date from, java.util.Date to) throws SQLException {
+    public Collection<Position> getPositions(long deviceId, java.util.Date from, java.util.Date to) {
         MongoCursor<Document> cursor = database.getCollection(CollectionName.position).find(
                 new BasicDBObject("deviceId", deviceId)
                         .append("fixTime", new BasicDBObject("$gte", from).append("$lte", to))).sort(new BasicDBObject("fixTime", -1)).iterator();
@@ -53,7 +52,7 @@ public class PositionRepository extends Repository{
         return positions;
     }
 
-    public void addPosition(Position position) throws SQLException {
+    public void addPosition(Position position) {
 
 
         MongoCollection<Document> collection = database.getCollection(CollectionName.position);
@@ -139,13 +138,13 @@ public class PositionRepository extends Repository{
             }
         }
     }
-    public void updateLatestPosition(Position position) throws SQLException {
+    public void updateLatestPosition(Position position) {
         database.getCollection(CollectionName.device)
                 .findOneAndUpdate(new BasicDBObject("id", position.getDeviceId()),
                         new BasicDBObject("$set", new BasicDBObject("positionId", position.getId())));
     }
 
-    public Collection<Position> getLatestPositions() throws SQLException {
+    public Collection<Position> getLatestPositions() {
         List<Long> deviceIds = new ArrayList<>();
         MongoCollection<Document> device = database.getCollection(CollectionName.device);
         MongoCursor<Document> iterator = device.find().projection(new Document("_id", 0).append("id", 1)).iterator();

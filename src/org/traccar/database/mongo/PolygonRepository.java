@@ -7,7 +7,6 @@ import org.bson.Document;
 import org.traccar.model.Point;
 import org.traccar.model.Polygon;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +49,7 @@ public class PolygonRepository extends Repository {
         }
     }
 
-    public Polygon addPolygon(Polygon polygon) throws SQLException {
+    public Polygon addPolygon(Polygon polygon) {
 
         MongoCollection<Document> collection = database.getCollection(CollectionName.polygon);
 
@@ -74,7 +73,7 @@ public class PolygonRepository extends Repository {
         return polygon;
     }
 
-    public Polygon updatePolygon(Polygon polygon) throws Exception {
+    public Polygon updatePolygon(Polygon polygon) {
         List<Document> coordinates = new ArrayList<>();
         for (Point point : polygon.getCoordinates()){
             Document pointDocument = new Document()
@@ -96,7 +95,7 @@ public class PolygonRepository extends Repository {
         //TODO update device
     }
 
-    public void removePolygon(long polygonId) throws Exception {
+    public void removePolygon(long polygonId) {
         database.getCollection(CollectionName.polygon).findOneAndDelete(new BasicDBObject("id", polygonId));
 
         MongoCollection<Document> collection = database.getCollection(CollectionName.device);

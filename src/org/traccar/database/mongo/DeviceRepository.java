@@ -3,7 +3,6 @@ package org.traccar.database.mongo;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.traccar.Config;
 import org.traccar.database.IdentityManager;
@@ -12,7 +11,6 @@ import org.traccar.geofence.RestrictionUnit;
 import org.traccar.model.Device;
 import org.traccar.rest.PositionEventEndpoint;
 
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -38,7 +36,7 @@ public class DeviceRepository extends Repository implements IdentityManager{
     }
 
     @Override
-    public Device getDeviceByUniqueId(String uniqueId) throws SQLException {
+    public Device getDeviceByUniqueId(String uniqueId) {
         //TODO call super
         if (System.currentTimeMillis() - devicesLastUpdate > devicesRefreshDelay
                 || !devicesByUniqueId.containsKey(uniqueId)) {
@@ -54,7 +52,7 @@ public class DeviceRepository extends Repository implements IdentityManager{
         return devicesByUniqueId.get(uniqueId);
     }
 
-    public Collection<Device> getAllDevices() throws SQLException {
+    public Collection<Device> getAllDevices() {
         MongoCursor<Document> cursor = database.getCollection(CollectionName.device).find().iterator();
         List<Device> devices = new ArrayList<>();
         while (cursor.hasNext()) {
@@ -77,7 +75,7 @@ public class DeviceRepository extends Repository implements IdentityManager{
         return device;
     }
 
-    public Collection<Device> getDevices(long userId) throws SQLException {
+    public Collection<Device> getDevices(long userId) {
         MongoCursor<Document> udCursor = database.getCollection(CollectionName.userDevice)
                 .find(new BasicDBObject("userId", userId))
                 .projection(new BasicDBObject("_id", 0).append("deviceId", 1)).iterator();
@@ -98,7 +96,7 @@ public class DeviceRepository extends Repository implements IdentityManager{
         return devices;
     }
 
-    public void addDevice(Device device) throws SQLException {
+    public void addDevice(Device device) {
         MongoCollection<Document> collection = database.getCollection(CollectionName.device);
         long id = getId(CollectionName.device);
         device.setId(id);
@@ -111,24 +109,24 @@ public class DeviceRepository extends Repository implements IdentityManager{
         collection.insertOne(doc);
     }
 
-    public void updateDevice(Device device) throws SQLException {
+    public void updateDevice(Device device) {
         database.getCollection(CollectionName.device).updateOne(new Document("id", device.getId()),
                 new Document("$set", new Document("name", device.getName())
                         .append("uniqueId", device.getUniqueId())));
     }
 
-    public void updateDeviceStatus(Device device) throws SQLException {
+    public void updateDeviceStatus(Device device) {
         database.getCollection(CollectionName.device).updateOne(new Document("id", device.getId()),
                 new Document("$set", new Document("status", device.getStatus())
                         .append("lastUpdate", device.getLastUpdate())));
     }
 
-    public void removeDevice(Device device) throws SQLException {
+    public void removeDevice(Device device) {
         database.getCollection(CollectionName.device).findOneAndDelete(new Document("id", device.getId()));
         PositionEventEndpoint.sessionRefreshDevice(device.getId());
     }
 
-    public void linkDevice(long userId, long deviceId) throws SQLException {
+    public void linkDevice(long userId, long deviceId) {
         MongoCollection<Document> collection = database.getCollection(CollectionName.userDevice);
         Document doc = new Document()
                 .append("userId", userId)
@@ -137,7 +135,7 @@ public class DeviceRepository extends Repository implements IdentityManager{
         PositionEventEndpoint.sessionRefreshUser(userId);
     }
 
-    public void unlinkDevice(long userId, long deviceId) throws SQLException {
+    public void unlinkDevice(long userId, long deviceId) {
         database.getCollection(CollectionName.userDevice)
                 .findOneAndDelete(new BasicDBObject("userId", userId)
                         .append("deviceId", deviceId));

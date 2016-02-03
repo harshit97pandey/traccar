@@ -1,33 +1,23 @@
 package org.traccar.database.mongo;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
-import org.bson.BsonDouble;
 import org.bson.Document;
-import org.traccar.Config;
-import org.traccar.database.IdentityManager;
-import org.traccar.geofence.Notification;
-import org.traccar.geofence.Restriction;
-import org.traccar.geofence.RestrictionType;
-import org.traccar.geofence.RestrictionUnit;
-import org.traccar.helper.Log;
-import org.traccar.model.*;
-import org.traccar.rest.PositionEventEndpoint;
-import org.traccar.web.JsonConverter;
+import org.traccar.model.Permission;
+import org.traccar.model.Server;
+import org.traccar.model.User;
 
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Niko on 11/30/2015.
  */
 public class SessionRepository extends Repository{
 
-    public User login(String email, String password) throws SQLException {
+    public User login(String email, String password) {
         MongoCollection<Document> collection = database.getCollection(CollectionName.user);
         Document cursor = collection.find(new BasicDBObject("email", email)).first();
         if (cursor != null && !cursor.isEmpty()) {
@@ -56,7 +46,7 @@ public class SessionRepository extends Repository{
         return null;
     }
 
-    public Collection<User> getUsers() throws SQLException {
+    public Collection<User> getUsers() {
         MongoCollection<Document> collection = database.getCollection(CollectionName.user);
         MongoCursor<Document> cursor = collection.find().iterator();
         List<User> users = new ArrayList<>();
@@ -84,7 +74,7 @@ public class SessionRepository extends Repository{
         return users;
     }
 
-    public User getUser(long userId) throws SQLException {
+    public User getUser(long userId) {
         MongoCollection<Document> collection = database.getCollection(CollectionName.user);
         Document cursor = collection.find(new BasicDBObject("id", userId)).first();
         if (cursor != null && !cursor.isEmpty()) {
@@ -108,7 +98,7 @@ public class SessionRepository extends Repository{
         return null;
     }
 
-    public void addUser(User user) throws SQLException {
+    public void addUser(User user) {
         MongoCollection<Document> collection = database.getCollection(CollectionName.user);
         long id = getId(CollectionName.user);
         user.setId(id);
@@ -130,7 +120,7 @@ public class SessionRepository extends Repository{
         collection.insertOne(doc);
     }
 
-    public void updateUser(User user) throws SQLException {
+    public void updateUser(User user) {
         database.getCollection(CollectionName.user).updateOne(new Document("id", user.getId()),
                 new Document("$set", new Document("name", user.getName())
                         .append("email", user.getEmail())
@@ -163,11 +153,11 @@ public class SessionRepository extends Repository{
                 new Document("$set", new Document("language", language)));
     }
 
-    public void removeUser(User user) throws SQLException {
+    public void removeUser(User user) {
         database.getCollection(CollectionName.user).findOneAndDelete(new BasicDBObject("id", user.getId()));
     }
 
-    public Collection<Permission> getPermissions() throws SQLException {
+    public Collection<Permission> getPermissions() {
         List<Permission> permissions = new ArrayList<>();
         MongoCollection<Document> collection = database.getCollection(CollectionName.userDevice);
         MongoCursor<Document> cursor = collection.find().iterator();
@@ -189,7 +179,7 @@ public class SessionRepository extends Repository{
 
 
 
-    public Server getServer() throws SQLException {
+    public Server getServer() {
         Document cursor = database.getCollection(CollectionName.server).find().first();
 
         Server server = new Server();
@@ -207,7 +197,7 @@ public class SessionRepository extends Repository{
         return server;
     }
 
-    public void updateServer(Server server) throws SQLException {
+    public void updateServer(Server server) {
         database.getCollection(CollectionName.server).updateOne(new Document("id", server.getId()),
                 new Document("$set", new Document("registration", server.getRegistration())
                         .append("map", server.getMap())

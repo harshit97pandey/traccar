@@ -5,14 +5,12 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.traccar.Config;
-import org.traccar.helper.Log;
 import org.traccar.model.Device;
 import org.traccar.model.Position;
 import org.traccar.model.Server;
 import org.traccar.model.User;
 import org.traccar.web.JsonConverter;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -42,7 +40,7 @@ public class Repository {
         initDatabaseSchema();
     }
 
-    private void initDatabaseSchema() throws SQLException {
+    private void initDatabaseSchema() {
         List<String> databaseNames = dataSource.getDatabaseNames();
         if (!databaseNames.contains("traccar")) {
             User admin = new User();
@@ -92,40 +90,35 @@ public class Repository {
 
     private void mockData(long userId) {
         if (config.getBoolean("database.mock")) {
-            try {
-                Device device = new Device();
-                device.setName("test1");
-                device.setUniqueId("123456789012345");
-                new DeviceRepository().addDevice(device);
-                new DeviceRepository().linkDevice(userId, device.getId());
+            Device device = new Device();
+            device.setName("test1");
+            device.setUniqueId("123456789012345");
+            new DeviceRepository().addDevice(device);
+            new DeviceRepository().linkDevice(userId, device.getId());
 
-                Position position = new Position();
-                position.setDeviceId(device.getId());
+            Position position = new Position();
+            position.setDeviceId(device.getId());
 
-                position.setTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
-                position.setServerTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
-                position.setLatitude(-36.8785803);
-                position.setLongitude(174.7281713);
-                position.setSpeed(1311.234123);
-                new PositionRepository().addPosition(position);
+            position.setTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
+            position.setServerTime(JsonConverter.parseDate("2015-05-22T12:00:01.000Z"));
+            position.setLatitude(-36.8785803);
+            position.setLongitude(174.7281713);
+            position.setSpeed(1311.234123);
+            new PositionRepository().addPosition(position);
 
-                position.setTime(JsonConverter.parseDate("2015-05-22T12:00:02.000Z"));
-                position.setLatitude(-36.8870932);
-                position.setLongitude(174.7473116);
-                position.setSpeed(1311.234123);
-                new PositionRepository().addPosition(position);
+            position.setTime(JsonConverter.parseDate("2015-05-22T12:00:02.000Z"));
+            position.setLatitude(-36.8870932);
+            position.setLongitude(174.7473116);
+            position.setSpeed(1311.234123);
+            new PositionRepository().addPosition(position);
 
-                position.setTime(JsonConverter.parseDate("2015-05-22T12:00:03.000Z"));
-                position.setLatitude(-36.8932371);
-                position.setLongitude(174.7743053);
-                position.setSpeed(1311.234123);
-                new PositionRepository().addPosition(position);
+            position.setTime(JsonConverter.parseDate("2015-05-22T12:00:03.000Z"));
+            position.setLatitude(-36.8932371);
+            position.setLongitude(174.7743053);
+            position.setSpeed(1311.234123);
+            new PositionRepository().addPosition(position);
 
-                new PositionRepository().updateLatestPosition(position);
-
-            } catch (SQLException error) {
-                Log.warning(error);
-            }
+            new PositionRepository().updateLatestPosition(position);
         }
     }
 

@@ -9,7 +9,6 @@ import org.traccar.geofence.RestrictionUnit;
 import org.traccar.model.Polygon;
 import org.traccar.model.Position;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
  * Created by niko on 2/2/16.
  */
 public class NotificationRepository extends Repository{
-    public void addNotification(RestrictionUnit restrictionUnit, Polygon polygon, Position position) throws SQLException {
+    public void addNotification(RestrictionUnit restrictionUnit, Polygon polygon, Position position) {
         MongoCollection<Document> collection = database.getCollection(CollectionName.notifications);
 
         long id = getId(CollectionName.notifications);
@@ -74,7 +73,7 @@ public class NotificationRepository extends Repository{
         return notification;
     }
 
-    public List<Notification> getNotifications(boolean all) throws SQLException {
+    public List<Notification> getNotifications(boolean all) {
 
         List<Notification> notifications = new ArrayList<>();
 
@@ -115,12 +114,12 @@ public class NotificationRepository extends Repository{
         return notifications;
     }
 
-    public void markNotificationAsSeen(long notificationId) throws SQLException {
+    public void markNotificationAsSeen(long notificationId) {
         database.getCollection(CollectionName.notifications).updateOne(new Document("id", notificationId),
                 new Document("$set", new Document("seen", Boolean.TRUE)));
     }
 
-    public void markNotificationAsCanceled(long notificationId) throws SQLException {
+    public void markNotificationAsCanceled(long notificationId) {
         database.getCollection(CollectionName.notifications)
                 .updateOne(new Document("id", notificationId),
                         new Document("$set", new Document("canceled", Boolean.TRUE)
