@@ -6,6 +6,7 @@ import org.traccar.database.mongo.PolygonRepository;
 import org.traccar.model.Polygon;
 import org.traccar.model.Position;
 import org.traccar.rest.PositionEventEndpoint;
+import org.traccar.rest.utils.PolygonUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -23,10 +24,7 @@ public class Restriction {
     }
 
     public void apply() {
-
-        for (RestrictionUnit restrictionUnit : getDeviceRestrictions()) {
-            checkRestriction(restrictionUnit);
-        }
+        getDeviceRestrictions().forEach(ru -> checkRestriction(ru));
     }
 
     private List<RestrictionUnit> getDeviceRestrictions() {
@@ -39,7 +37,12 @@ public class Restriction {
         Notification lastNotification = new NotificationRepository().getLastNotification(
                 restrictionUnit, position);
         if (polygon != null) {
-            Boolean check = restrictionUnit.check(polygon, position);
+            Boolean check = restrictionUnit.check(
+                    polygon,
+                    position,
+                    (pol,pos) -> PolygonUtil.contains(polygon.getId(), position.getLatitude(), position.getLongitude())
+
+            );
             if (lastNotification == null) {
                 if (!check) {
                     saveNotification(restrictionUnit, polygon);
