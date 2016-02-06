@@ -143,7 +143,6 @@ public class WebServer {
     private void initConsole() {
         ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         servletHandler.setContextPath("/console");
-        servletHandler.addServlet(new ServletHolder(new ConsoleServlet()), "/*");
         handlers.addHandler(servletHandler);
     }
 
