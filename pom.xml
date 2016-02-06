@@ -151,7 +151,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.traccar.Main</mainClass>
+                            <mainClass>org.traccar.ApplicationContextListener</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -179,7 +179,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.traccar.Main</mainClass>
+                            <mainClass>org.traccar.ApplicationContextListener</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

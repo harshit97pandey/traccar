@@ -15,45 +15,34 @@
  */
 package org.traccar;
 
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Locale;
-
+import org.traccar.helper.ConfigUtil;
 import org.traccar.helper.Log;
 
-import javax.servlet.*;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import java.util.Locale;
 
 @WebListener
-public final class Main implements ServletContextListener{
+public final class ApplicationContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         Locale.setDefault(Locale.ENGLISH);
-        URL resource = Main.class.getResource("/debug.xml");
 
-        try {
-            Context.init(Paths.get(resource.toURI()));
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (ConfigUtil configUtil : ConfigUtil.values()) {
+            if (configUtil.findAndLoad()) {
+                break;
+            }
         }
         Log.info("Starting server...");
-
         Context.getServerManager().start();
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                Log.info("Shutting down server...");
-
-                Context.getServerManager().stop();
-            }
-        });
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        Context.getServerManager().stop();
     }
+
+
 }

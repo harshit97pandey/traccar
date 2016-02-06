@@ -142,10 +142,11 @@ public class PositionEventEndpoint {
         }
     }
 
+    private HttpSession httpSession;
     @OnOpen
     public void OnOpen(Session session, EndpointConfig endpointConfig) {
         synchronized (SESSIONS) {
-            HttpSession httpSession = (HttpSession) endpointConfig.getUserProperties()
+            httpSession = (HttpSession) endpointConfig.getUserProperties()
                     .get(HttpSession.class.getName());
             Long userId = getUserId(httpSession);
 
@@ -174,10 +175,9 @@ public class PositionEventEndpoint {
     }
 
     @OnClose
-    public void onClose(Session session) {
-        
-        /*synchronized (SESSIONS) {
-            Long userId = getUserId(session);
+    public void onClose(Session session, CloseReason closeReason) {
+        synchronized (SESSIONS) {
+            Long userId = getUserId(httpSession);
             Map<Session, AsyncSession> asyncSession = SESSIONS.get(userId);
             if (asyncSession.containsKey(session)) {
                 asyncSession.remove(session).removeListener();
@@ -185,8 +185,14 @@ public class PositionEventEndpoint {
             if (asyncSession.isEmpty()) {
                 SESSIONS.remove(userId);
             }
-        }*/
+        }
     }
+
+    @OnError
+    public void onError(Session session, Throwable thr) {
+        thr.printStackTrace();
+    }
+
 
     public static void showAlert(Message message){
         Alert body = (Alert)message.getBody();
