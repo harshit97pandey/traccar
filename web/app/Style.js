@@ -57,7 +57,7 @@ Ext.define('Traccar.Style', {
     mapRadiusNormal: 7,
     mapRadiusSelected: 14,
 
-    mapMaxZoom: 19,
+    mapMaxZoom: 20,
     mapDelay: 500,
 
     coordinatePrecision: 6,
