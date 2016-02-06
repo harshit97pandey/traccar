@@ -15,18 +15,21 @@
  */
 package org.traccar;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Properties;
 
 public class Config {
 
     private final Properties properties = new Properties();
 
-    public void load(String file) throws IOException {
-        try (InputStream inputStream = new FileInputStream(file)) {
-            properties.loadFromXML(inputStream);
+    public void load(Path path) throws IOException {
+        try {
+            properties.loadFromXML(Files.newInputStream(path, StandardOpenOption.READ));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

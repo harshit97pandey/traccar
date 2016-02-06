@@ -27,7 +27,9 @@ import org.traccar.helper.Log;
 import org.traccar.location.LocationProvider;
 import org.traccar.location.MozillaLocationProvider;
 import org.traccar.location.OpenCellIdLocationProvider;
-import org.traccar.web.WebServer;
+
+import java.io.File;
+import java.nio.file.Path;
 
 public final class Context {
 
@@ -76,11 +78,6 @@ public final class Context {
         return locationProvider;
     }
 
-    private static WebServer webServer;
-
-    public static WebServer getWebServer() {
-        return webServer;
-    }
 
     private static ServerManager serverManager;
 
@@ -94,12 +91,10 @@ public final class Context {
         return ASYNC_HTTP_CLIENT;
     }
 
-    public static void init(String[] arguments) throws Exception {
+    public static void init(Path path) throws Exception {
 
         config = new Config();
-        if (arguments.length > 0) {
-            config.load(arguments[0]);
-        }
+        config.load(path);
 
         loggerEnabled = config.getBoolean("logger.enable");
         if (loggerEnabled) {
@@ -163,7 +158,6 @@ public final class Context {
             if (config.getString("web.type", "new").equals("new")
                     || config.getString("web.type", "new").equals("api")) {
             }
-            webServer = new WebServer(config);
         }
 
         serverManager = new ServerManager();

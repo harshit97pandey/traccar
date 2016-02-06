@@ -5,7 +5,7 @@ import org.traccar.database.mongo.NotificationRepository;
 import org.traccar.database.mongo.PolygonRepository;
 import org.traccar.model.Polygon;
 import org.traccar.model.Position;
-import org.traccar.rest.PositionEventEndpoint;
+import org.traccar.webSocket.PositionEventEndpoint;
 import org.traccar.rest.utils.PolygonUtil;
 
 import java.util.Date;

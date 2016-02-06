@@ -9,7 +9,7 @@ import org.traccar.database.IdentityManager;
 import org.traccar.geofence.RestrictionType;
 import org.traccar.geofence.RestrictionUnit;
 import org.traccar.model.Device;
-import org.traccar.rest.PositionEventEndpoint;
+import org.traccar.webSocket.PositionEventEndpoint;
 
 import java.util.*;
 

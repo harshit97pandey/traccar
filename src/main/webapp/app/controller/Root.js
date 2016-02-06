@@ -75,7 +75,7 @@ Ext.define('Traccar.controller.Root', {
             wsUri = "ws:";
         }
         wsUri += "//" + location.host;
-        wsUri += location.pathname + "api/ws/positions/";
+        wsUri += location.pathname + "ws/positions";
         
         websocket = new WebSocket(wsUri);
         websocket.onopen = function(evt) {

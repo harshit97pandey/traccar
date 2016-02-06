@@ -1,8 +1,6 @@
-package org.traccar.rest;
+package org.traccar.webSocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.*;
 import org.traccar.Context;
 import org.traccar.database.ConnectionManager;
 import org.traccar.geofence.Alert;
@@ -10,19 +8,20 @@ import org.traccar.geofence.Message;
 import org.traccar.geofence.Notification;
 import org.traccar.model.Device;
 import org.traccar.model.Position;
+import org.traccar.rest.SessionResource;
 import org.traccar.rest.utils.DateTimeFormatter;
 
+import javax.servlet.http.HttpSession;
+import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.net.HttpCookie;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
  * Created by Niko on 12/4/2015.
  */
-@WebSocket
-@ServerEndpoint(value = "/ws/positions")
+@ServerEndpoint(value = "/ws/positions", configurator = SessionConfigurator.class)
 public class PositionEventEndpoint {
     private static final Map<Long, Map<Session, AsyncSession>> SESSIONS = new HashMap<>();
 
@@ -56,6 +55,7 @@ public class PositionEventEndpoint {
             }
         }
     }
+
     public static class AsyncSession {
 
         private final Set<Long> devices = new HashSet<>();
@@ -115,21 +115,25 @@ public class PositionEventEndpoint {
                 deviceUpdates.clear();
                 positionUpdates.clear();
 
-                session.getRemote().sendString(m);
+                session.getAsyncRemote().sendText(m);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    session.close(1001, "Communication Error");
+                try {
+                    session.close(new CloseReason(CloseReason.CloseCodes.PROTOCOL_ERROR, "exception"));
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
+            }
         }
 
-        private synchronized void response(Message message) {
+        private synchronized void response(Message message) throws IOException {
             try {
 
                 String m = mapper.writeValueAsString(message);
-                session.getRemote().sendString(m);
+                session.getAsyncRemote().sendText(m);
             } catch (IOException e) {
                 e.printStackTrace();
-                session.close(1001, "Communication Error");
+                session.close(new CloseReason(CloseReason.CloseCodes.PROTOCOL_ERROR, "exception"));
             }
         }
 
@@ -138,10 +142,12 @@ public class PositionEventEndpoint {
         }
     }
 
-    @OnWebSocketConnect
-    public void onConnect(Session session) {
+    @OnOpen
+    public void OnOpen(Session session, EndpointConfig endpointConfig) {
         synchronized (SESSIONS) {
-            Long userId = getUserId(session);
+            HttpSession httpSession = (HttpSession) endpointConfig.getUserProperties()
+                    .get(HttpSession.class.getName());
+            Long userId = getUserId(httpSession);
 
             Collection<Long> devices = Context.getPermissionsManager().allowedDevices(userId);
             if (!SESSIONS.containsKey(userId)) {
@@ -156,24 +162,30 @@ public class PositionEventEndpoint {
         }
     }
 
-    private Long getUserId(Session session) {
-        Long userId = null;
-        List<HttpCookie> cookies = session.getUpgradeRequest().getCookies();
-        for(HttpCookie cookie :cookies) {
-            if (cookie.getName().equals("JSESSIONID")) {
-                userId = SessionResource.sessions.get(cookie.getValue());
-                if (userId != null) {
-                    break;
-                }
-            }
-        }
+    private Long getUserId(HttpSession httpSession) {
+        String id = httpSession.getId();
+        Long userId = SessionResource.sessions.get(id);
         return userId;
     }
 
-    @OnWebSocketMessage
-    public void onWebSocketText(String message) {
+    @OnMessage
+    public static  void onMessage(String message, Session session) {
+        System.out.println("On Message for Web Socket");
+    }
 
-
+    @OnClose
+    public void onClose(Session session) {
+        session.
+        /*synchronized (SESSIONS) {
+            Long userId = getUserId(session);
+            Map<Session, AsyncSession> asyncSession = SESSIONS.get(userId);
+            if (asyncSession.containsKey(session)) {
+                asyncSession.remove(session).removeListener();
+            }
+            if (asyncSession.isEmpty()) {
+                SESSIONS.remove(userId);
+            }
+        }*/
     }
 
     public static void showAlert(Message message){
@@ -189,28 +201,14 @@ public class PositionEventEndpoint {
                 while (asyncSessions.hasNext()) {
                     Map.Entry<Session, AsyncSession> asyncSession = asyncSessions.next();
                     if (asyncSession.getValue().hasDevice(notification.getDeviceId())) {
-                        asyncSession.getValue().response(message);
+                        try {
+                            asyncSession.getValue().response(message);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
         }
-    }
-    @OnWebSocketClose
-    public void onWebSocketClose(Session session, int status, String reason) {
-        synchronized (SESSIONS) {
-            Long userId = getUserId(session);
-            Map<Session, AsyncSession> asyncSession = SESSIONS.get(userId);
-            if (asyncSession.containsKey(session)) {
-                asyncSession.remove(session).removeListener();
-            }
-            if (asyncSession.isEmpty()) {
-                SESSIONS.remove(userId);
-            }
-        }
-    }
-
-    @OnWebSocketError
-    public void onWebSocketError(Throwable cause) {
-        cause.printStackTrace();
     }
 }
