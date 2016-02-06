@@ -175,7 +175,7 @@ public class PositionEventEndpoint {
 
     @OnClose
     public void onClose(Session session) {
-        session.
+        
         /*synchronized (SESSIONS) {
             Long userId = getUserId(session);
             Map<Session, AsyncSession> asyncSession = SESSIONS.get(userId);
