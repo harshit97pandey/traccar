@@ -10,6 +10,7 @@ import org.traccar.rest.utils.PolygonUtil;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by niko on 12/26/15.
@@ -34,7 +35,7 @@ public class Restriction {
     private void checkRestriction(RestrictionUnit restrictionUnit) {
         Polygon polygon = new PolygonRepository().getPolygon(restrictionUnit
                 .getPolygonId());
-        Notification lastNotification = new NotificationRepository().getLastNotification(
+        Optional<Notification> lastNotification = new NotificationRepository().getLastNotification(
                 restrictionUnit, position);
         if (polygon != null) {
             Boolean check = restrictionUnit.check(
@@ -43,14 +44,14 @@ public class Restriction {
                     (pol,pos) -> PolygonUtil.contains(polygon.getId(), position.getLatitude(), position.getLongitude())
 
             );
-            if (lastNotification == null) {
+            if ( ! lastNotification.isPresent()) {
                 if (!check) {
                     saveNotification(restrictionUnit, polygon);
                 }
-            } else if (lastNotification.isCanceled() && !check) {
+            } else if (lastNotification.get().isCanceled() && !check) {
                 saveNotification(restrictionUnit, polygon);
-            } else if (!lastNotification.isCanceled() && check) {
-                new NotificationRepository().markNotificationAsCanceled(lastNotification
+            } else if (!lastNotification.get().isCanceled() && check) {
+                new NotificationRepository().markNotificationAsCanceled(lastNotification.get()
                         .getId());
             }
         }

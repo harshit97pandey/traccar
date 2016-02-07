@@ -37,7 +37,6 @@ public class DeviceRepository extends Repository implements IdentityManager{
 
     @Override
     public Device getDeviceByUniqueId(String uniqueId) {
-        //TODO call super
         if (System.currentTimeMillis() - devicesLastUpdate > devicesRefreshDelay
                 || !devicesByUniqueId.containsKey(uniqueId)) {
             devicesById.clear();

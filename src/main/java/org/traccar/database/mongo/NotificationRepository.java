@@ -9,9 +9,11 @@ import org.traccar.geofence.RestrictionUnit;
 import org.traccar.model.Polygon;
 import org.traccar.model.Position;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by niko on 2/2/16.
@@ -38,7 +40,7 @@ public class NotificationRepository extends Repository{
         collection.insertOne(doc);
     }
 
-    public Notification getLastNotification(RestrictionUnit restrictionUnit, Position position){
+    public Optional<Notification> getLastNotification(RestrictionUnit restrictionUnit, Position position){
         MongoCollection<Document> collection = database.getCollection(CollectionName.notifications);
 
         Document document = collection.find(new Document("deviceId", position.getDeviceId())
@@ -49,7 +51,7 @@ public class NotificationRepository extends Repository{
 
 
         if (document ==null || document.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
         Notification notification = new Notification();
@@ -70,7 +72,7 @@ public class NotificationRepository extends Repository{
         r.setPolygonId(rd.getLong("polygonId"));
         r.setRestrictionType(rd.getInteger("restrictionType"));
 
-        return notification;
+        return Optional.of(notification);
     }
 
     public List<Notification> getNotifications(boolean all) {
