@@ -52,7 +52,7 @@ Ext.define('Traccar.view.LoginController', {
             method: 'DELETE',
             url: './api/session',
             callback: function () {
-                window.location.reload();
+                window.location.href = './login.html';
             }
         });
     },
