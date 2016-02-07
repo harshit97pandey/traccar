@@ -41,7 +41,7 @@ Ext.define('Traccar.view.PolygonsController', {
         var devices = Ext.getStore('Devices');
         Ext.Ajax.request({
             scope: this,
-            url: '/api/polygon/link',
+            url: './api/polygon/link',
             method: 'POST',
             params: {
                 polygonId: polygon.id,
@@ -56,7 +56,7 @@ Ext.define('Traccar.view.PolygonsController', {
         var devices = Ext.getStore('Devices');
         Ext.Ajax.request({
             scope: this,
-            url: '/api/polygon/unlink',
+            url: './api/polygon/unlink',
             method: 'POST',
             params: {
                 polygonId: polygon.id,

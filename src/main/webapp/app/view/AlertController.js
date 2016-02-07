@@ -24,7 +24,7 @@ Ext.define('Traccar.view.AlertController', {
             var id = selected.getSelection()[0].getData().id;
             Ext.Ajax.request({
                 scope: this,
-                url: '/api/notifications/seen',
+                url: './api/notifications/seen',
                 params: {
                     notificationId: id
                 },

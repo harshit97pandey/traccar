@@ -33,7 +33,7 @@ Ext.define('Traccar.controller.Root', {
         Ext.get('spinner').remove();
         Ext.Ajax.request({
             scope: this,
-            url: '/api/session',
+            url: './api/session',
             callback: this.onSessionReturn
         });
     },

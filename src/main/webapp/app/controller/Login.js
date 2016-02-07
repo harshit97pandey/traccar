@@ -7,7 +7,7 @@ Ext.define('Traccar.controller.Login', {
     onLaunch: function () {
         Ext.Ajax.request({
             scope: this,
-            url: '/api/session',
+            url: './api/session',
             callback: this.onSessionReturn
         });
     },
@@ -24,7 +24,6 @@ Ext.define('Traccar.controller.Login', {
                     login: this.onLogin
                 }
             });
-            //this.login.show();
         }
     },
 

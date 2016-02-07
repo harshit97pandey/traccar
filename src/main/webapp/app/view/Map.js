@@ -135,7 +135,7 @@ Ext.define('Traccar.view.Map', {
                     }
                     Ext.Ajax.request({
                         scope: this,
-                        url: '/api/users/location/update',
+                        url: './api/users/location/update',
                         method: 'POST',
                         params: {
                             map: currentLayer,

@@ -76,7 +76,7 @@ Ext.define('Traccar.view.ReportController', {
             params: params,
             callback: function(records, operation, success) {
                 if (success && records.length > 0) {
-                    exportButton.setHref('api/report/csv?' + serialize(params));
+                    exportButton.setHref('./api/report/csv?' + serialize(params));
                     exportButton.setDisabled(false);
                 } 
             }

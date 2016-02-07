@@ -5,10 +5,10 @@ Ext.define('Traccar.store.Polygons', {
     proxy: {
         type: 'ajax',
         api: {
-            create: '/api/polygon/add',
-            read: '/api/polygon/list',
-            update: '/api/polygon/update',
-            destroy: '/api/polygon/remove'
+            create: './api/polygon/add',
+            read: './api/polygon/list',
+            update: './api/polygon/update',
+            destroy: './api/polygon/remove'
         },
         reader: {
             type: 'json'
