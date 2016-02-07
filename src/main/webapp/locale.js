@@ -69,4 +69,4 @@ Ext.Ajax.request({
     }
 });
 
-Ext.Loader.loadScript('//cdnjs.cloudflare.com/ajax/libs/extjs/6.0.0/classic/locale/locale-' + Locale.languages[Locale.language].code + '.js');
+Ext.Loader.loadScript('extjs/build/classic/locale/locale-' + Locale.languages[Locale.language].code + '.js');
