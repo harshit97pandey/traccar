@@ -50,10 +50,15 @@ public class PositionReportResource {
 
         long deviceId = Long.parseLong(req.getParameter("deviceId"));
 
+        Integer stopTime = null;
+        String stopTimeStr = req.getParameter("stopTime");
+        if (stopTimeStr != null) {
+            stopTime = Integer.parseInt(stopTimeStr);
+        }
         org.traccar.Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), deviceId);
         Collection<Position> positions =new PositionRepository().getPositions(deviceId,
                 JsonConverter.parseDate(req.getParameter("from")),
-                JsonConverter.parseDate(req.getParameter("to")));
+                JsonConverter.parseDate(req.getParameter("to")), stopTime);
 
         for (Position position : positions) {
             List positionRecord = new ArrayList();

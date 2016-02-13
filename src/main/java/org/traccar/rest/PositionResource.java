@@ -55,11 +55,12 @@ public class PositionResource {
     public Response get(
             @QueryParam("deviceId") long deviceId,
             @QueryParam("from") String from,
-            @QueryParam("to") String to) throws Exception {
+            @QueryParam("to") String to,
+            @QueryParam("stopTime") Integer stopTime) throws Exception {
 
         Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), deviceId);
         Collection<Position> positions = new PositionRepository().getPositions(
-                deviceId, JsonConverter.parseDate(from), JsonConverter.parseDate(to));
+                deviceId, JsonConverter.parseDate(from), JsonConverter.parseDate(to), stopTime);
 
         return Response.ok().entity(positions).build();
     }

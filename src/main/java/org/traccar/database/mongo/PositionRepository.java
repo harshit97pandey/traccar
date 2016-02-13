@@ -17,10 +17,15 @@ public class PositionRepository extends Repository{
 
     private Map<Long, Position> parkingDevices = new HashMap<>();
 
-    public Collection<Position> getPositions(long deviceId, java.util.Date from, java.util.Date to) {
-        MongoCursor<Document> cursor = database.getCollection(CollectionName.position).find(
-                new BasicDBObject("deviceId", deviceId)
-                        .append("fixTime", new BasicDBObject("$gte", from).append("$lte", to))).sort(new BasicDBObject("fixTime", -1)).iterator();
+    public Collection<Position> getPositions(long deviceId, Date from, Date to, Integer stopTime) {
+
+        BasicDBObject queryObject = new BasicDBObject("deviceId", deviceId)
+                .append("fixTime", new BasicDBObject("$gte", from).append("$lte", to));
+        if (stopTime != null) {
+            queryObject.append("calculatedStopTime",new BasicDBObject("$gte", stopTime));
+        }
+
+        MongoCursor<Document> cursor = database.getCollection(CollectionName.position).find(queryObject).sort(new BasicDBObject("fixTime", -1)).iterator();
 
         List<Position> positions = new ArrayList<>();
         while (cursor.hasNext()) {
