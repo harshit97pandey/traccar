@@ -35,6 +35,9 @@ Ext.define('Traccar.view.Main', {
         width : Traccar.Style.deviceWidth,
         title : 'Devices & rules',
         collapsed : true,
+        titleCollapse : false,
+        floatable : false,
+        titleAlign: 'right',
         tabBarHeaderPosition: 0,
         xtype : 'tabpanel',
         items : [ {
@@ -70,10 +73,12 @@ Ext.define('Traccar.view.Main', {
     }, {
         xtype : 'tabpanel',
         region : 'south',
-        tabPosition : 'left',
+        titleAlign: 'right',
+        //tabPosition : 'left',
         height : Traccar.Style.reportHeight,
         collapsed : true,
-        titleCollapse : true,
+        tabBarHeaderPosition: 0,
+        titleCollapse : false,
         floatable : false,
         title : 'Alerts & Reports',
         items : [ {
