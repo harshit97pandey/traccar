@@ -104,10 +104,14 @@ public class ConnectionManager {
 
     public synchronized void updatePosition(Position position) {
         long deviceId = position.getDeviceId();
-        positions.put(deviceId, position);
-
-        if (listeners.containsKey(deviceId)) {
-            listeners.get(deviceId).forEach(p -> p.onUpdatePosition(position));
+        if (positions.containsKey(deviceId)) {
+            Position ps = positions.get(deviceId);
+            if (ps.getFixTime().before(position.getFixTime())) {
+                positions.put(deviceId, position);
+                if (listeners.containsKey(deviceId)) {
+                    listeners.get(deviceId).forEach(p -> p.onUpdatePosition(position));
+                }
+            }
         }
     }
 
