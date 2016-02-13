@@ -15,73 +15,81 @@
  */
 
 Ext.define('Traccar.view.Main', {
-    extend: 'Ext.container.Viewport',
-    alias: 'widget.main',
+    extend : 'Ext.container.Viewport',
+    alias : 'widget.main',
 
-    requires: [
-        'Traccar.view.Devices',
-        'Traccar.view.Polygons',
-        'Traccar.view.State',
-        'Traccar.view.Report',
-        'Traccar.view.Alert',
-        'Traccar.view.Map'
-    ],
+    requires : [ 'Traccar.view.Devices', 'Traccar.view.Polygons',
+            'Traccar.view.State', 'Traccar.view.Report', 'Traccar.view.Alert',
+            'Traccar.view.Map' ],
 
-    layout: 'border',
+    layout : 'border',
 
-    defaults: {
-        header: false,
-        collapsible: true,
-        split: true
+    defaults : {
+        collapsible : true,
+        split : true
     },
 
-    items: [{
-        region: 'west',
-        layout: 'border',
-        width: Traccar.Style.deviceWidth,
-        title: Strings.deviceTitle,
-        header: true,
-        collapsed: true,
-        defaults: {
-            split: true,
-            flex: 1
-        },
-
-        items: [{
-            region: 'center',
-            header: false,
-            xtype: 'devicesView',
-            flex: 1
+    items : [ {
+        region : 'west',
+        layout : 'border',
+        width : Traccar.Style.deviceWidth,
+        title : 'Devices & rules',
+        collapsed : true,
+        titleCollapse : false,
+        floatable : false,
+        titleAlign: 'right',
+        tabBarHeaderPosition: 0,
+        xtype : 'tabpanel',
+        items : [ {
+            layout : 'border',
+            title : 'Devices',
+            defaults : {
+                split : true,
+                flex : 1,
+                header : false
+            },
+            items : [ {
+                region : 'center',
+                xtype : 'devicesView',
+                flex : 1
+            }, {
+                region : 'south',
+                xtype : 'stateView',
+                flex : 1,
+                collapsible : true
+            } ]
         }, {
-            region: 'south',
-            xtype: 'stateView',
-            flex: 1,
-            header: false,
-            collapsible: true
-        }, {
-            region: 'north',
-            header: false,
-            xtype: 'polygonsView',
-            flex: 1
-        }]
+            title : 'Rules',
+            defaults : {
+                split : true,
+                flex : 1,
+                header : false
+            },
+            items : [ {
+                xtype : 'polygonsView',
+                flex : 1
+            } ]
+        } ]
     }, {
-        xtype: 'panel',
-        region: 'south',
-        height: Traccar.Style.reportHeight,
-        collapsed: true,
-        titleCollapse: true,
-        floatable: false,
-        title: 'Alerts & Reports',
-        layout: 'accordion',
-        items: [{
-            xtype: 'alertView'
+        xtype : 'tabpanel',
+        region : 'south',
+        titleAlign: 'right',
+        //tabPosition : 'left',
+        height : Traccar.Style.reportHeight,
+        collapsed : true,
+        tabBarHeaderPosition: 0,
+        titleCollapse : false,
+        floatable : false,
+        title : 'Alerts & Reports',
+        items : [ {
+            xtype : 'alertView'
         }, {
-            xtype: 'reportView'
-        }]
+            xtype : 'reportView'
+        } ]
     }, {
-        region: 'center',
-        xtype: 'mapView',
-        header: false,
-        collapsible: false
-    }]
+        region : 'center',
+        xtype : 'mapView',
+        header : false,
+        collapsible : false
+    } ]
 });
