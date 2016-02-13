@@ -30,10 +30,13 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.handler.timeout.IdleStateHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.traccar.helper.Log;
 
 public abstract class BasePipelineFactory implements ChannelPipelineFactory {
 
+    private static Logger logger = LoggerFactory.getLogger(BasePipelineFactory.class);
     private final TrackerServer server;
     private final int resetDelay;
 
@@ -84,7 +87,7 @@ public abstract class BasePipelineFactory implements ChannelPipelineFactory {
                     msg.append(ChannelBuffers.hexDump((ChannelBuffer) event.getMessage()));
                 }
 
-                Log.debug(msg.toString());
+                logger.debug(msg.toString());
             }
         }
 

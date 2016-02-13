@@ -15,26 +15,15 @@
  */
 package org.traccar.helper;
 
+import org.jboss.netty.logging.AbstractInternalLogger;
+import org.traccar.Config;
+
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
-
-import org.apache.log4j.Appender;
-import org.apache.log4j.DailyRollingFileAppender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.spi.LoggerFactory;
-import org.apache.log4j.varia.NullAppender;
-import org.jboss.netty.logging.AbstractInternalLogger;
-import org.jboss.netty.logging.InternalLogger;
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.traccar.Config;
 
 public final class Log {
 
@@ -43,22 +32,13 @@ public final class Log {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    private static final String LOGGER_NAME = "traccar";
-
     private static final String STACK_PACKAGE = "org.traccar";
+
     private static final int STACK_LIMIT = 3;
 
-    private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LOGGER_NAME);
+    private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Log.class);
 
     public static void setupLogger(Config config) throws IOException {
-
-        // Workaround for "Bug 745866 - (EDG-45) Possible netty logging config problem"
-        InternalLoggerFactory.setDefaultFactory(new InternalLoggerFactory() {
-            @Override
-            public InternalLogger newInstance(String string) {
-                return new NettyInternalLogger();
-            }
-        });
 
         Log.logSystemInfo();
         Log.info("Version: " + Log.class.getPackage().getImplementationVersion());
