@@ -29,6 +29,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.spi.LoggerFactory;
 import org.apache.log4j.varia.NullAppender;
 import org.jboss.netty.logging.AbstractInternalLogger;
 import org.jboss.netty.logging.InternalLogger;
@@ -47,21 +48,9 @@ public final class Log {
     private static final String STACK_PACKAGE = "org.traccar";
     private static final int STACK_LIMIT = 3;
 
-    private static Logger logger = null;
+    private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LOGGER_NAME);
 
     public static void setupLogger(Config config) throws IOException {
-
-        Layout layout = new PatternLayout("%d{" + DATE_FORMAT + "} %5p: %m%n");
-
-        Appender appender = new DailyRollingFileAppender(
-                layout, config.getString("logger.file"), "'.'yyyyMMdd");
-
-        LogManager.resetConfiguration();
-        LogManager.getRootLogger().addAppender(new NullAppender());
-
-        logger = Logger.getLogger(LOGGER_NAME);
-        logger.addAppender(appender);
-        logger.setLevel(Level.toLevel(config.getString("logger.level"), Level.ALL));
 
         // Workaround for "Bug 745866 - (EDG-45) Possible netty logging config problem"
         InternalLoggerFactory.setDefaultFactory(new InternalLoggerFactory() {
@@ -75,11 +64,7 @@ public final class Log {
         Log.info("Version: " + Log.class.getPackage().getImplementationVersion());
     }
 
-    public static Logger getLogger() {
-        if (logger == null) {
-            logger = Logger.getLogger(LOGGER_NAME);
-            logger.setLevel(Level.OFF);
-        }
+    public static org.slf4j.Logger getLogger() {
         return logger;
     }
 
