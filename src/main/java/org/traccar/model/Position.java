@@ -141,4 +141,14 @@ public class Position extends Event {
     public void setCalculatedStopTime(long calculatedStopTime) {
         this.calculatedStopTime = calculatedStopTime;
     }
+
+    private boolean latest = true;
+
+    public boolean isLatest() {
+        return latest;
+    }
+
+    public void setLatest(boolean latest) {
+        this.latest = latest;
+    }
 }

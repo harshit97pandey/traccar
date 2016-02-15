@@ -52,15 +52,21 @@ public abstract class ExtendedObjectDecoder implements ChannelUpstreamHandler {
                             Position p1 = (Position)o1;
                             Position p2 = (Position)o2;
 
-                            return - p1.getDeviceTime().compareTo(p2.getDeviceTime());
+                            return p1.getDeviceTime().compareTo(p2.getDeviceTime());
                         }
                         return 0;
                     }
                 });
 
-                for (Object o : messages) {
-                    Channels.fireMessageReceived(ctx, o, e.getRemoteAddress());
+                Iterator iterator = messages.iterator();
+                while (iterator.hasNext()) {
+                    Position p = (Position)iterator.next();
+                    if (iterator.hasNext()) {
+                        p.setLatest(false);
+                    }
+                    Channels.fireMessageReceived(ctx, p, e.getRemoteAddress());
                 }
+
             } else {
                 Channels.fireMessageReceived(ctx, decodedMessage, e.getRemoteAddress());
             }

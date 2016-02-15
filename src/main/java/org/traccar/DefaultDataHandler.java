@@ -28,8 +28,10 @@ public class DefaultDataHandler extends BaseDataHandler {
             PositionRepository positionRepository = new PositionRepository();
             positionRepository.addPosition(position);
             Position lastPosition = Context.getConnectionManager().getLastPosition(position.getDeviceId());
-            if (lastPosition == null || position.getFixTime().compareTo(lastPosition.getFixTime()) > 0) {
-                positionRepository.updateLatestPosition(position);
+            if (position.isLatest()) {
+                if (lastPosition == null || position.getFixTime().compareTo(lastPosition.getFixTime()) > 0) {
+                    positionRepository.updateLatestPosition(position);
+                }
             }
         } catch (Exception error) {
             Log.warning(error);
