@@ -41,7 +41,7 @@ public class PositionResource {
         position.setLatitude(-36.8785803);
         x=x-1.1;
         position.setLongitude(x);
-        position.setSpeed(1311.234123);
+        position.setSpeed(0);
 
 
         Context.getConnectionManager().updatePosition(position);

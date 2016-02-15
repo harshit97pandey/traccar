@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.BsonDouble;
+import org.bson.BsonInt64;
 import org.bson.Document;
 import org.traccar.geofence.Restriction;
 import org.traccar.model.Position;
@@ -15,7 +16,7 @@ import java.util.*;
  */
 public class PositionRepository extends Repository{
 
-    private Map<Long, Position> parkingDevices = new HashMap<>();
+    private static Map<Long, Position> parkingDevices = new HashMap<>();
 
     public Collection<Position> getPositions(long deviceId, Date from, Date to, Integer stopTime) {
 
@@ -124,7 +125,7 @@ public class PositionRepository extends Repository{
     }
     private void calculateStopTime(Position position){
         Double speed = position.getSpeed();
-        if(speed.equals(0)) {
+        if(speed.equals(new Double(0))) {
             synchronized (parkingDevices){
                 if(parkingDevices.containsKey(position.getDeviceId())) {
                     Position last = parkingDevices.get(position.getDeviceId());
