@@ -34,5 +34,8 @@ Ext.define('Traccar.model.Device', {
         name: 'lastUpdate',
         type: 'date',
         dateWriteFormat: 'c'
+    }, {
+        name: 'phoneNumber',
+        type: 'string'
     }]
 });
