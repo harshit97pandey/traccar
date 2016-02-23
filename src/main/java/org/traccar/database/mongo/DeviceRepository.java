@@ -70,7 +70,9 @@ public class DeviceRepository extends Repository implements IdentityManager{
         device.setStatus(document.getString("status"));
         device.setLastUpdate(document.getDate("lastUpdate"));
         device.setPositionId(document.getLong("positionId"));
-
+        if (document.containsKey("phoneNumber")) {
+            device.setPhoneNumber(document.getString("phoneNumber"));
+        }
         return device;
     }
 
@@ -101,6 +103,7 @@ public class DeviceRepository extends Repository implements IdentityManager{
         device.setId(id);
         Document doc = new Document("id", device.getId())
                 .append("name", device.getName())
+                .append("phoneNumber", device.getPhoneNumber())
                 .append("uniqueId", device.getUniqueId())
                 .append("status", device.getStatus())
                 .append("lastUpdate", device.getLastUpdate())
@@ -111,7 +114,8 @@ public class DeviceRepository extends Repository implements IdentityManager{
     public void updateDevice(Device device) {
         database.getCollection(CollectionName.device).updateOne(new Document("id", device.getId()),
                 new Document("$set", new Document("name", device.getName())
-                        .append("uniqueId", device.getUniqueId())));
+                        .append("uniqueId", device.getUniqueId())
+                        .append("phoneNumber", device.getPhoneNumber())));
     }
 
     public void updateDeviceStatus(Device device) {
