@@ -32,11 +32,6 @@ Ext.define('Traccar.view.SettingsMenu', {
             text: Strings.settingsUser,
             handler: 'onUserClick'
         }, {
-            text: Strings.settingsServer,
-            hidden: true,
-            handler: 'onServerClick',
-            reference: 'settingsServerButton'
-        }, {
             text: Strings.settingsUsers,
             hidden: true,
             handler: 'onUsersClick',

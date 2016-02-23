@@ -29,6 +29,7 @@ Ext.define('Traccar.view.Main', {
         split : true
     },
 
+    
     items : [ {
         region : 'west',
         layout : 'border',

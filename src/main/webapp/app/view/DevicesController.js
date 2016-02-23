@@ -38,6 +38,29 @@ Ext.define('Traccar.view.DevicesController', {
         this.lookupReference('toolbarAddButton').setVisible(!readonly);
         this.lookupReference('toolbarEditButton').setVisible(!readonly);
         this.lookupReference('toolbarRemoveButton').setVisible(!readonly);
+        if (Traccar.app.getUser().get('admin')) {
+            this.lookupReference('settingsUsersButton').setHidden(false);
+        }
+    },
+
+    onAccoountClick : function() {
+        var dialog = Ext.create('Traccar.view.UserDialog');
+        dialog.down('form').loadRecord(Traccar.app.getUser());
+        dialog.show();
+    },
+
+    onUsersClick : function() {
+        Ext.create('Traccar.view.BaseWindow', {
+            title : Strings.settingsUsers,
+            modal : false,
+            items : {
+                xtype : 'usersView'
+            }
+        }).show();
+    },
+
+    onLogoutClick : function() {
+        Ext.create('Traccar.view.LoginController').logout();
     },
 
     onAddClick: function () {

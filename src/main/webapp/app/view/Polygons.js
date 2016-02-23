@@ -58,6 +58,24 @@ Ext.define('Traccar.view.Polygons', {
             handler : 'onUnlinkClick',
             tooltip : 'Unlink',
             tooltipType : 'title'
+        }, {
+            xtype: 'tbfill'
+        }, {
+            glyph: 'xf0c0@FontAwesome',
+            tooltip : 'Users',
+            tooltipType : 'title',
+            handler : 'onUsersClick',
+            reference : 'settingsUsersButton',
+        }, {
+            glyph: 'xf013@FontAwesome',
+            tooltip : 'Account',
+            tooltipType : 'title',
+            handler : 'onAccoountClick',
+        }, {
+            glyph: 'xf08b@FontAwesome',
+            tooltip : 'Sign out',
+            tooltipType : 'title',
+            handler : 'onLogoutClick',
         } ]
     },
     listeners : {
