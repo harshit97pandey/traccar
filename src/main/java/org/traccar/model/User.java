@@ -50,6 +50,26 @@ public class User {
         this.email = email;
     }
 
+    private boolean personal;
+
+    public boolean isPersonal() {
+        return personal;
+    }
+
+    public void setPersonal(boolean personal) {
+        this.personal = personal;
+    }
+
+    private String company;
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
     private boolean readonly;
 
     public boolean getReadonly() {
@@ -182,5 +202,4 @@ public class User {
     public boolean isPasswordValid(String password) {
         return Hashing.validatePassword(password, hashedPassword, salt);
     }
-
 }

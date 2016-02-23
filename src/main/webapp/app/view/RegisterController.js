@@ -20,12 +20,15 @@ Ext.define('Traccar.view.RegisterController', {
 
     onCreateClick: function () {
         var form = this.lookupReference('form');
+        var data = form.getValues();
+        data['personal'] = !!data['personal'] && data['personal'] == 'on' 
+        data['admin'] = true;
         if (form.isValid()) {
             Ext.Ajax.request({
                 scope: this,
                 method: 'POST',
                 url: './api/users',
-                jsonData: form.getValues(),
+                jsonData: data,
                 callback: this.onCreateReturn
             });
         }
@@ -38,6 +41,12 @@ Ext.define('Traccar.view.RegisterController', {
         } else {
             Traccar.app.showError(response);
         }
+    },
+    
+    onPersonalClick: function(box,value) {
+        var company = this.lookupReference('company');
+        company.setDisabled(false);
+        company.focus();
     }
 
 });

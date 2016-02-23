@@ -29,7 +29,7 @@ public class UserResource {
 
     @POST
     public Response add(User user) throws Exception {
-        Context.getPermissionsManager().checkRegistration(SessionUtil.getUserId(req));
+        //Context.getPermissionsManager().checkRegistration(SessionUtil.getUserId(req));
         new SessionRepository().addUser(user);
         Context.getPermissionsManager().refresh();
         return Response.ok(user).build();

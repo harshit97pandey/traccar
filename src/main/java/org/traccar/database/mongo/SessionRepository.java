@@ -115,8 +115,9 @@ public class SessionRepository extends Repository{
                 .append("latitude", user.getLatitude())
                 .append("longitude", user.getLongitude())
                 .append("zoom", user.getZoom())
-                .append("salt", user.getSalt());
-
+                .append("salt", user.getSalt())
+                .append("personal", user.isPersonal())
+                .append("company", user.getCompany());
         collection.insertOne(doc);
     }
 

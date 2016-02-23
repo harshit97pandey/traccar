@@ -1,16 +1,21 @@
 package org.traccar.rest;
 
-import org.traccar.Context;
-import org.traccar.database.mongo.NotificationRepository;
-import org.traccar.database.mongo.SessionRepository;
-import org.traccar.geofence.Notification;
-import org.traccar.rest.utils.SessionUtil;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
+
+import org.traccar.Context;
+import org.traccar.database.mongo.NotificationRepository;
+import org.traccar.geofence.Notification;
+import org.traccar.rest.utils.SessionUtil;
 
 /**
  * Created by niko on 1/3/16.

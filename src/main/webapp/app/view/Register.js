@@ -59,10 +59,14 @@ Ext.define('Traccar.view.Register', {
         }, {
             xtype: 'checkbox',
             fieldLabel: 'Personal',
-            checked: true
+            name: 'personal',
+            checked: true,
+            handler: 'onPersonalClick'
         }, {
             xtype: 'textfield',
             fieldLabel: 'Company name',
+            name: 'company',
+            reference: 'company',
             disabled: true
         }]
     },
