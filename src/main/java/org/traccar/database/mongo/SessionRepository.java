@@ -1,6 +1,7 @@
 package org.traccar.database.mongo;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoCursorNotFoundException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
@@ -8,6 +9,7 @@ import org.traccar.model.Permission;
 import org.traccar.model.Server;
 import org.traccar.model.User;
 
+import javax.jws.soap.SOAPBinding;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,6 +39,10 @@ public class SessionRepository extends Repository{
             user.setHashedPassword(cursor.getString("hashedPassword"));
             user.setSalt(cursor.getString("salt"));
 
+            if (cursor.containsKey("company")) {
+                user.setCompany(cursor.getString("company"));
+            }
+
             if (user != null && user.isPasswordValid(password)) {
                 return user;
             } else {
@@ -46,6 +52,7 @@ public class SessionRepository extends Repository{
         return null;
     }
 
+    //TODO remove
     public Collection<User> getUsers() {
         MongoCollection<Document> collection = database.getCollection(CollectionName.user);
         MongoCursor<Document> cursor = collection.find().iterator();
@@ -74,6 +81,33 @@ public class SessionRepository extends Repository{
         return users;
     }
 
+    public Collection<User> getUsers(User u) {
+        MongoCollection<Document> collection = database.getCollection(CollectionName.user);
+        MongoCursor<Document> cursor = collection.find(new BasicDBObject("company", u.getCompany())).iterator();
+        List<User> users = new ArrayList<>();
+        try {
+            while (cursor.hasNext()) {
+                Document next = cursor.next();
+                User user = new User();
+                user.setId(next.getLong("id"));
+                user.setName(next.getString("name"));
+                user.setEmail(next.getString("email"));
+                user.setReadonly(next.getBoolean("readonly", false));
+                user.setAdmin(next.getBoolean("admin", false));
+                user.setMap(next.getString("map"));
+                user.setLanguage(next.getString("language"));
+                user.setDistanceUnit(next.getString("distanceUnit"));
+                user.setSpeedUnit(next.getString("speedUnit"));
+                user.setLatitude(next.getDouble("latitude"));
+                user.setLongitude(next.getDouble("longitude"));
+                user.setZoom(next.getInteger("zoom", 0));
+                users.add(user);
+            }
+        } finally {
+            cursor.close();
+        }
+        return users;
+    }
     public User getUser(long userId) {
         MongoCollection<Document> collection = database.getCollection(CollectionName.user);
         Document cursor = collection.find(new BasicDBObject("id", userId)).first();
@@ -148,7 +182,7 @@ public class SessionRepository extends Repository{
         MongoCollection<Document> collection = database.getCollection(CollectionName.user);
         Document companyDoc = collection.find(new BasicDBObject("company", companyName)).first();
 
-        return ! companyDoc.isEmpty();
+        return companyDoc != null && ! companyDoc.isEmpty();
     }
     public void updateLocation(long userId, String map, Integer zoom, Double latitude, Double longitude) {
         database.getCollection(CollectionName.user).updateOne(new Document("id", userId),

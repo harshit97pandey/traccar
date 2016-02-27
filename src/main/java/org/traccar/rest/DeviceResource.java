@@ -3,6 +3,7 @@ package org.traccar.rest;
 import org.traccar.Context;
 import org.traccar.database.mongo.DeviceRepository;
 import org.traccar.model.Device;
+import org.traccar.model.User;
 import org.traccar.rest.utils.SessionUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +43,10 @@ public class DeviceResource {
     @POST
     public Response add(Device device) throws Exception {
         Context.getPermissionsManager().checkReadonly(SessionUtil.getUserId(req));
+        //add company info
+        User user = (User)req.getSession().getAttribute(SessionUtil.USER_DATA);
+        device.setCompany(user.getCompany());
+
         DeviceRepository deviceRepository = new DeviceRepository();
         deviceRepository.addDevice(device);
         deviceRepository.linkDevice(SessionUtil.getUserId(req), device.getId());

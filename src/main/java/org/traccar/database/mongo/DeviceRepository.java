@@ -76,6 +76,7 @@ public class DeviceRepository extends Repository implements IdentityManager{
         return device;
     }
 
+    //TODO get by company
     public Collection<Device> getDevices(long userId) {
         MongoCursor<Document> udCursor = database.getCollection(CollectionName.userDevice)
                 .find(new BasicDBObject("userId", userId))
@@ -107,7 +108,8 @@ public class DeviceRepository extends Repository implements IdentityManager{
                 .append("uniqueId", device.getUniqueId())
                 .append("status", device.getStatus())
                 .append("lastUpdate", device.getLastUpdate())
-                .append("positionId", device.getPositionId());
+                .append("positionId", device.getPositionId())
+                .append("company", device.getCompany());
         collection.insertOne(doc);
     }
 

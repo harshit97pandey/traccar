@@ -93,6 +93,7 @@ public class Device {
 
     private long positionId;
 
+
     public long getPositionId() {
         return positionId;
     }
@@ -101,4 +102,13 @@ public class Device {
         this.positionId = positionId;
     }
 
+    private String company;
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
 }

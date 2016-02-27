@@ -3,6 +3,7 @@ package org.traccar.rest;
 import org.traccar.Context;
 import org.traccar.database.mongo.SessionRepository;
 import org.traccar.model.User;
+import org.traccar.rest.utils.CompanyNameGenerator;
 import org.traccar.rest.utils.SessionUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +12,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static org.traccar.rest.utils.SessionUtil.USER_DATA;
-import static org.traccar.rest.utils.SessionUtil.USER_ID_KEY;
 
 /**
  * Created by niko on 11/28/15.
@@ -26,8 +26,8 @@ public class UserResource {
     @GET
     public Response get() throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-
-        return Response.ok().entity(new SessionRepository().getUsers()).build();
+        User user = (User)req.getSession().getAttribute(SessionUtil.USER_DATA);
+        return Response.ok().entity(new SessionRepository().getUsers(user)).build();
     }
 
     @Path("/add")
@@ -61,6 +61,8 @@ public class UserResource {
                         .entity("Company Already Exists!")
                         .build();
             }
+        } else {
+            user.setCompany(CompanyNameGenerator.generate(user));
         }
 
         sessionRepository.addUser(user);
