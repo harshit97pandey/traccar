@@ -16,6 +16,7 @@ import java.util.List;
 /**
  * Created by niko on 2/2/16.
  */
+//TODO company name migration
 public class Repository {
     private MongoClient dataSource;
 

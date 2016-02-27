@@ -9,6 +9,7 @@ import org.traccar.database.IdentityManager;
 import org.traccar.geofence.RestrictionType;
 import org.traccar.geofence.RestrictionUnit;
 import org.traccar.model.Device;
+import org.traccar.model.User;
 import org.traccar.webSocket.PositionEventEndpoint;
 
 import java.util.*;
@@ -73,29 +74,44 @@ public class DeviceRepository extends Repository implements IdentityManager{
         if (document.containsKey("phoneNumber")) {
             device.setPhoneNumber(document.getString("phoneNumber"));
         }
+        if (document.containsKey("company")) {
+            device.setCompany(document.getString("company"));
+        }
         return device;
     }
 
-    //TODO get by company
-    public Collection<Device> getDevices(long userId) {
-        MongoCursor<Document> udCursor = database.getCollection(CollectionName.userDevice)
-                .find(new BasicDBObject("userId", userId))
+    public Collection<Device> getDevices(User user) {
+
+        MongoCursor<Document> devices = database.getCollection(CollectionName.device)
+                .find(new BasicDBObject("company", user.getCompany()))
+                .projection(new BasicDBObject("_id", 0).append("id", 1)).iterator();
+
+        List<Long> deviceIds = new ArrayList<>();
+        while (devices.hasNext()) {
+            Document next = devices.next();
+            deviceIds.add(next.getLong("id"));
+        }
+
+        MongoCursor<Document> userDevices = database.getCollection(CollectionName.userDevice)
+                .find(new BasicDBObject("deviceId",  new BasicDBObject("$in", deviceIds.toArray())))
                 .projection(new BasicDBObject("_id", 0).append("deviceId", 1)).iterator();
 
-        List<Long> userDeviceIds = new ArrayList<>();
-        while (udCursor.hasNext()) {
-            Document next = udCursor.next();
-            userDeviceIds.add(next.getLong("deviceId"));
+
+        List<Long> ids = new ArrayList<>();
+        while (userDevices.hasNext()) {
+            Document next = userDevices.next();
+            ids.add(next.getLong("deviceId"));
         }
 
         MongoCursor<Document> deviceCursor = database.getCollection(CollectionName.device)
-                .find(new BasicDBObject("id", new BasicDBObject("$in", userDeviceIds.toArray()))).iterator();
-        List<Device> devices = new ArrayList<>();
+                .find(new BasicDBObject("id", new BasicDBObject("$in", ids.toArray()))).iterator();
+
+        List<Device> ud = new ArrayList<>();
         while (deviceCursor.hasNext()) {
             Document document = deviceCursor.next();
-            devices.add(getDeviceFromDocument(document));
+            ud.add(getDeviceFromDocument(document));
         }
-        return devices;
+        return ud;
     }
 
     public void addDevice(Device device) {

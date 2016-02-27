@@ -73,6 +73,9 @@ public class SessionRepository extends Repository{
                 user.setLatitude(next.getDouble("latitude"));
                 user.setLongitude(next.getDouble("longitude"));
                 user.setZoom(next.getInteger("zoom", 0));
+                if (next.containsKey("company")) {
+                    user.setCompany(next.getString("company"));
+                }
                 users.add(user);
             }
         } finally {
@@ -101,6 +104,9 @@ public class SessionRepository extends Repository{
                 user.setLatitude(next.getDouble("latitude"));
                 user.setLongitude(next.getDouble("longitude"));
                 user.setZoom(next.getInteger("zoom", 0));
+                if (next.containsKey("company")) {
+                    user.setCompany(next.getString("company"));
+                }
                 users.add(user);
             }
         } finally {

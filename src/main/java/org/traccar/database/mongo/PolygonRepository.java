@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.traccar.model.Point;
 import org.traccar.model.Polygon;
+import org.traccar.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,17 +110,22 @@ public class PolygonRepository extends Repository {
             //TODO update device
         }
     }
-    public List<Polygon> getPolygons(){
+    public List<Polygon> getPolygons(User u){
         List<Polygon> polygons = new ArrayList<>();
         MongoCollection<Document> collection = database.getCollection(CollectionName.polygon);
 
-        MongoCursor<Document> iterator = collection.find().iterator();
+        MongoCursor<Document> iterator = collection
+                .find(new BasicDBObject("company", u.getCompany()))
+                .iterator();
         while (iterator.hasNext()) {
             Document next = iterator.next();
             Polygon polygon = new Polygon();
             polygon.setId(next.getLong("id"));
             polygon.setType(next.getString("type"));
             polygon.setName(next.getString("name"));
+            if (next.containsKey("company")) {
+                polygon.setCompany(next.getString("company"));
+            }
 
             List<Document> coordinates = (List<Document>)next.get("coordinates");
             List<Point> points = new ArrayList<>();

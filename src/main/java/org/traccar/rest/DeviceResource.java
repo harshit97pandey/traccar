@@ -34,8 +34,8 @@ public class DeviceResource {
                 userId = SessionUtil.getUserId(req);
             }
             Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), userId);
-
-            return Response.ok().entity(new DeviceRepository().getDevices(userId)).build();
+            User user = SessionUtil.getUser(req);
+            return Response.ok().entity(new DeviceRepository().getDevices(user)).build();
         }
     }
 

@@ -11,7 +11,7 @@ public class CompanyNameGenerator {
             return new StringBuilder()
                     .append("company")
                     .append("-")
-                    .append(user.getEmail())
+                    .append(user.getId())
                     .toString();
         }
         throw new RuntimeException("User Must be personal");

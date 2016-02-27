@@ -58,7 +58,8 @@ public class PositionResource {
             @QueryParam("to") String to,
             @QueryParam("stopTime") Integer stopTime) throws Exception {
 
-        Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), deviceId);
+        //TODO
+        //Context.getPermissionsManager().checkDevice(SessionUtil.getUserId(req), deviceId);
         Collection<Position> positions = new PositionRepository().getPositions(
                 deviceId, JsonConverter.parseDate(from), JsonConverter.parseDate(to), stopTime);
 

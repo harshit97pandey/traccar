@@ -30,8 +30,8 @@ public class NotificationResource {
     @Path("list")
     @GET
     public Response getNotifications(@QueryParam("all") boolean all) throws Exception {
-
-        Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
+        //TODO rights
+        //Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
         List<Notification> notifications = new NotificationRepository().getNotifications(all);
 
         return Response.ok().entity(notifications).build();

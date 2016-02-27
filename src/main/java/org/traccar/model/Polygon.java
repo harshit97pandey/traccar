@@ -22,6 +22,8 @@ public class Polygon{
 
     private List<Point> coordinates;
 
+    private String company;
+
     public String getType() {
         return type;
     }
@@ -44,5 +46,13 @@ public class Polygon{
 
     public void setCoordinates(List<Point> coordinates) {
         this.coordinates = coordinates;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
     }
 }

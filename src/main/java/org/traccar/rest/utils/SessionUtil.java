@@ -1,5 +1,7 @@
 package org.traccar.rest.utils;
 
+import org.traccar.model.User;
+
 import javax.servlet.http.HttpServletRequest;
 import java.security.AccessControlException;
 
@@ -16,5 +18,9 @@ public class SessionUtil {
             throw new AccessControlException("User not logged in");
         }
         return userId;
+    }
+
+    public static User getUser(HttpServletRequest req) {
+        return (User)req.getSession().getAttribute(USER_DATA);
     }
 }

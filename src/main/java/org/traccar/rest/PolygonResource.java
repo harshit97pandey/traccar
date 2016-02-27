@@ -3,6 +3,7 @@ package org.traccar.rest;
 import org.traccar.Context;
 import org.traccar.database.mongo.PolygonRepository;
 import org.traccar.model.Polygon;
+import org.traccar.model.User;
 import org.traccar.rest.utils.PolygonUtil;
 import org.traccar.rest.utils.SessionUtil;
 
@@ -26,6 +27,10 @@ public class PolygonResource {
     @POST
     public Response add(Polygon polygon) throws Exception {
         Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
+
+        //set company
+        User user = SessionUtil.getUser(req);
+        polygon.setCompany(user.getCompany());
 
         new PolygonRepository().addPolygon(polygon);
 
@@ -61,9 +66,11 @@ public class PolygonResource {
     @Path("list")
     @GET
     public Response list() throws Exception {
-        Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
+        //TODO permission
+        //Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
+        User user = SessionUtil.getUser(req);
 
-        return Response.ok().entity(new PolygonRepository().getPolygons()).build();
+        return Response.ok().entity(new PolygonRepository().getPolygons(user)).build();
     }
 
     @Path("contains")
