@@ -39,7 +39,7 @@ Ext.define('Traccar.view.LoginController', {
                     if (success) {
                         this.fireViewEvent('login');
                     } else {
-                        Traccar.app.showError(Strings.loginFailed);
+                        Ext.Msg.alert(Strings.errorTitle, Strings.loginFailed);
                     }
                 }
             });
