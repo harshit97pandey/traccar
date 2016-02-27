@@ -66,11 +66,10 @@ public class PolygonResource {
     @Path("list")
     @GET
     public Response list() throws Exception {
-        //TODO permission
-        //Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        User user = SessionUtil.getUser(req);
-
-        return Response.ok().entity(new PolygonRepository().getPolygons(user)).build();
+        return Response
+                .ok()
+                .entity(new PolygonRepository().getPolygons(SessionUtil.getUser(req)))
+                .build();
     }
 
     @Path("contains")

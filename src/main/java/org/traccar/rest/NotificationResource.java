@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import org.traccar.Context;
 import org.traccar.database.mongo.NotificationRepository;
 import org.traccar.geofence.Notification;
+import org.traccar.model.User;
 import org.traccar.rest.utils.SessionUtil;
 
 /**
@@ -30,12 +31,10 @@ public class NotificationResource {
     @Path("list")
     @GET
     public Response getNotifications(@QueryParam("all") boolean all) throws Exception {
-        //TODO rights
-        //Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
-        List<Notification> notifications = new NotificationRepository().getNotifications(all);
+
+        List<Notification> notifications = new NotificationRepository().getNotifications(all, SessionUtil.getUser(req));
 
         return Response.ok().entity(notifications).build();
-
     }
 
     @Path("seen")

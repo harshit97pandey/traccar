@@ -53,7 +53,6 @@ public class SessionRepository extends Repository{
         return null;
     }
 
-    //TODO remove
     public Collection<User> getUsers() {
         MongoCollection<Document> collection = database.getCollection(CollectionName.user);
         MongoCursor<Document> cursor = collection.find().iterator();

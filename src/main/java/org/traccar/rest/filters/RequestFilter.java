@@ -15,6 +15,6 @@ public class RequestFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-    //TODO add headers
+
     }
 }

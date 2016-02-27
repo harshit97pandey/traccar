@@ -1,19 +1,21 @@
 package org.traccar.database.mongo;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.traccar.geofence.Notification;
 import org.traccar.geofence.RestrictionUnit;
+import org.traccar.model.Device;
 import org.traccar.model.Polygon;
 import org.traccar.model.Position;
+import org.traccar.model.User;
 
 import javax.swing.text.html.Option;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 /**
  * Created by niko on 2/2/16.
@@ -75,21 +77,20 @@ public class NotificationRepository extends Repository{
         return Optional.of(notification);
     }
 
-    public List<Notification> getNotifications(boolean all) {
+    public List<Notification> getNotifications(boolean all, User user) {
 
         List<Notification> notifications = new ArrayList<>();
 
         MongoCollection<Document> collection = database.getCollection(CollectionName.notifications);
-        FindIterable<Document> iterable;
-        if (all) {
-            iterable = collection.find();
-        } else {
-            iterable = collection.find(new Document("seen", false));
+
+        Collection<Device> devices = new DeviceRepository().getDevices(user);
+        List<Long> deviceIds = devices.stream().mapToLong(Device::getId).boxed().collect(Collectors.toList());
+        BasicDBObject q = new BasicDBObject("deviceId", new BasicDBObject("$in", deviceIds));
+        if ( ! all) {
+            q.append("seen", false);
         }
 
-        iterable.sort(new Document("creationDate", -1));
-
-        MongoCursor<Document> iterator = iterable.iterator();
+        MongoCursor<Document> iterator = collection.find(q).sort(new Document("creationDate", -1)).iterator();
 
 
         while (iterator.hasNext()) {

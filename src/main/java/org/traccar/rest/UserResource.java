@@ -42,7 +42,6 @@ public class UserResource {
         user.setCompany(company == null? null : company);
         sessionRepository.addUser(user);
 
-        //TODO session refresh refactoring
         Context.getPermissionsManager().refresh();
         return Response.ok(user).build();
 
