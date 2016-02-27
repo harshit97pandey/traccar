@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.traccar.rest.utils.SessionUtil.USER_ID_KEY;
+import static org.traccar.rest.utils.SessionUtil.*;
 /**
  * Created by niko on 11/26/15.
  */
@@ -47,6 +47,7 @@ public class SessionResource {
         User user = new SessionRepository().login(email, password);
         if (user != null) {
             req.getSession().setAttribute(USER_ID_KEY, user.getId());
+            req.getSession().setAttribute(USER_DATA, user);
             sessions.put(req.getSession().getId(), user.getId());
             return Response.ok().entity(user).build();
         } else {

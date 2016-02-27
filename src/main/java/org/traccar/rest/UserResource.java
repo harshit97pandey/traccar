@@ -10,6 +10,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static org.traccar.rest.utils.SessionUtil.USER_DATA;
 import static org.traccar.rest.utils.SessionUtil.USER_ID_KEY;
 
 /**
@@ -34,14 +35,13 @@ public class UserResource {
     public Response add(User user) throws Exception {
         Context.getPermissionsManager().checkRegistration(SessionUtil.getUserId(req));
 
-        Long userId = (Long) req.getSession().getAttribute(USER_ID_KEY);
+        User actorUser = (User) req.getSession().getAttribute(USER_DATA);
         SessionRepository sessionRepository = new SessionRepository();
 
-        //TODO get user from session
-        User actorUser = sessionRepository.getUser(userId);
         String company = actorUser.getCompany();
         user.setCompany(company == null? null : company);
         sessionRepository.addUser(user);
+
         //TODO session refresh refactoring
         Context.getPermissionsManager().refresh();
         return Response.ok(user).build();

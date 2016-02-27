@@ -8,6 +8,8 @@ import java.security.AccessControlException;
  */
 public class SessionUtil {
     public static final String USER_ID_KEY = "userId";
+    public static final String USER_DATA = "user";
+
     public static long getUserId(HttpServletRequest req) throws Exception  {
         Long userId = (Long) req.getSession().getAttribute(USER_ID_KEY);
         if (userId == null) {
