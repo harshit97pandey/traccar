@@ -93,6 +93,9 @@ public class SessionRepository extends Repository{
             user.setZoom(cursor.getInteger("zoom", 0));
             user.setHashedPassword(cursor.getString("hashedPassword"));
             user.setSalt(cursor.getString("salt"));
+            if (cursor.containsKey("company")) {
+                user.setCompany(cursor.getString("company"));
+            }
             return user;
         }
         return null;
@@ -141,6 +144,12 @@ public class SessionRepository extends Repository{
         }
     }
 
+    public boolean existsCompany(String companyName){
+        MongoCollection<Document> collection = database.getCollection(CollectionName.user);
+        Document companyDoc = collection.find(new BasicDBObject("company", companyName)).first();
+
+        return ! companyDoc.isEmpty();
+    }
     public void updateLocation(long userId, String map, Integer zoom, Double latitude, Double longitude) {
         database.getCollection(CollectionName.user).updateOne(new Document("id", userId),
                 new Document("$set", new Document("map", map)

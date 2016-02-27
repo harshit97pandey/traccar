@@ -10,6 +10,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static org.traccar.rest.utils.SessionUtil.USER_ID_KEY;
+
 /**
  * Created by niko on 11/28/15.
  */
@@ -27,13 +29,43 @@ public class UserResource {
         return Response.ok().entity(new SessionRepository().getUsers()).build();
     }
 
+    @Path("/add")
     @POST
     public Response add(User user) throws Exception {
-        //Context.getPermissionsManager().checkRegistration(SessionUtil.getUserId(req));
-        new SessionRepository().addUser(user);
+        Context.getPermissionsManager().checkRegistration(SessionUtil.getUserId(req));
+
+        Long userId = (Long) req.getSession().getAttribute(USER_ID_KEY);
+        SessionRepository sessionRepository = new SessionRepository();
+
+        //TODO get user from session
+        User actorUser = sessionRepository.getUser(userId);
+        String company = actorUser.getCompany();
+        user.setCompany(company == null? null : company);
+        sessionRepository.addUser(user);
+        //TODO session refresh refactoring
         Context.getPermissionsManager().refresh();
         return Response.ok(user).build();
 
+
+
+    }
+
+    @Path("/register")
+    @POST
+    public Response register(User user) throws Exception {
+        SessionRepository sessionRepository = new SessionRepository();
+        if ( ! user.isPersonal()) {
+            if (sessionRepository.existsCompany(user.getCompany())) {
+                return Response
+                        .status(Response.Status.FORBIDDEN)
+                        .entity("Company Already Exists!")
+                        .build();
+            }
+        }
+
+        sessionRepository.addUser(user);
+        Context.getPermissionsManager().refresh();
+        return Response.ok(user).build();
     }
 
     @Path("{id}")
