@@ -21,6 +21,12 @@ Ext.define('Traccar.store.Users', {
     proxy: {
         type: 'rest',
         url: './api/users',
+        api: {
+            create: './api/users/add',
+            read: './api/users',
+            update: './api/users',
+            destroy: './api/users'
+        },
         writer: {
             writeAllFields: true
         }
