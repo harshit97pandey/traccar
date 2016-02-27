@@ -2,6 +2,7 @@ package org.traccar.database.mongo;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoCursorNotFoundException;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
@@ -209,20 +210,29 @@ public class SessionRepository extends Repository{
 
     public Collection<Permission> getPermissions() {
         List<Permission> permissions = new ArrayList<>();
-        MongoCollection<Document> collection = database.getCollection(CollectionName.userDevice);
-        MongoCursor<Document> cursor = collection.find().iterator();
-        try {
-            while (cursor.hasNext()) {
-                Document next = cursor.next();
-                Permission permission = new Permission();
-                permission.setUserId(next.getLong("userId"));
-                permission.setDeviceId(next.getLong("deviceId"));
+        MongoCollection<Document> collection = database.getCollection(CollectionName.device);
+        MongoCollection<Document> userDevices = database.getCollection(CollectionName.userDevice);
 
-                permissions.add(permission);
+        MongoCursor<Document> users = database.getCollection(CollectionName.user).find().iterator();
+        while (users.hasNext()) {
+            Document next = users.next();
+            String company = next.getString("company");
+            Long id = next.getLong("id");
+
+            MongoCursor<Document> devices = collection.find(new BasicDBObject("company", company)).iterator();
+            while (devices.hasNext()) {
+                Document d = devices.next();
+                Document first = userDevices.find(new BasicDBObject("deviceId", d.getLong("id"))).first();
+                if (first != null) {
+                    Permission permission = new Permission();
+                    permission.setUserId(id);
+                    permission.setDeviceId(d.getLong("id"));
+
+                    permissions.add(permission);
+                }
             }
-        } finally {
-            cursor.close();
         }
+
         return permissions;
     }
 
