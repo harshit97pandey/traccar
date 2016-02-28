@@ -11,6 +11,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import static org.traccar.rest.utils.SessionUtil.USER_DATA;
 
 /**
@@ -37,9 +40,13 @@ public class UserResource {
 
         SessionRepository sessionRepository = new SessionRepository();
         if (sessionRepository.existsUser(user)) {
+            Locale locale = new Locale("ge");
+
+            ResourceBundle rb = ResourceBundle.getBundle("User", locale);
+            String val = rb.getString("exists");
             return Response
                     .status(Response.Status.FORBIDDEN)
-                    .entity("User Already exist")
+                    .entity(val)
                     .build();
         }
 
