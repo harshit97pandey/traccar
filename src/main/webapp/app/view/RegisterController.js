@@ -18,6 +18,10 @@ Ext.define('Traccar.view.RegisterController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.register',
 
+    init: function () {
+        this.lookupReference('languageField').setValue(Locale.language);
+    },
+
     onCreateClick: function () {
         var form = this.lookupReference('form');
         var data = form.getValues();

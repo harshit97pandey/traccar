@@ -28,6 +28,11 @@ Ext.define('Traccar.controller.Login', {
     },
 
     onLogin: function () {
-        location.href='./';
+        var locale = Ext.util.Cookies.get('locale');
+        var query = '';
+        if (locale) {
+            query = '?locale=' + locale;
+        }
+        location.href='./' + query;
     }
 });

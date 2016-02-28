@@ -23,6 +23,9 @@ Ext.define('Traccar.view.LoginController', {
     ],
 
     init: function () {
+        var paramName = 'locale';
+        var language = Ext.util.Cookies.get(paramName) || Locale.language;
+        this.lookupReference('languageField').setValue(Locale.language);
     },
 
     login: function () {
@@ -37,6 +40,10 @@ Ext.define('Traccar.view.LoginController', {
                 callback: function (options, success, response) {
                     Ext.getBody().unmask();
                     if (success) {
+                        data = JSON.parse(response.responseText);
+                        if (!!data && !!data.language) {
+                            Ext.util.Cookies.set('locale', data.language);
+                        }
                         this.fireViewEvent('login');
                     } else {
                         Ext.Msg.alert(Strings.errorTitle, Strings.loginFailed);
@@ -61,6 +68,8 @@ Ext.define('Traccar.view.LoginController', {
         var paramName, paramValue, url, prefix, suffix;
         paramName = 'locale';
         paramValue = selected.getValue();
+        Ext.util.Cookies.set(paramName, paramValue);
+        
         url = window.location.href;
         if (url.indexOf(paramName + '=') >= 0) {
             prefix = url.substring(0, url.indexOf(paramName));

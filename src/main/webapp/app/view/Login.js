@@ -50,7 +50,10 @@ Ext.define('Traccar.view.Login', {
             displayField: 'name',
             valueField: 'code',
             submitValue: false,
-            reference: 'languageField'
+            reference: 'languageField',
+            listeners: {
+                select: 'onSelectLanguage'
+            }
         }, {
             xtype: 'textfield',
             name: 'email',
