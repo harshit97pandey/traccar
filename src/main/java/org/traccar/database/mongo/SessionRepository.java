@@ -9,6 +9,7 @@ import org.bson.Document;
 import org.traccar.model.Permission;
 import org.traccar.model.Server;
 import org.traccar.model.User;
+import org.traccar.rest.utils.CompanyNameGenerator;
 
 import javax.jws.soap.SOAPBinding;
 import java.util.ArrayList;
@@ -145,6 +146,9 @@ public class SessionRepository extends Repository{
         MongoCollection<Document> collection = database.getCollection(CollectionName.user);
         long id = getId(CollectionName.user);
         user.setId(id);
+        if (user.isPersonal()) {
+            user.setCompany(CompanyNameGenerator.generate(user));
+        }
         Document doc = new Document("id", user.getId())
                 .append("name", user.getName())
                 .append("email", user.getEmail())

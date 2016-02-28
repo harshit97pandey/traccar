@@ -76,8 +76,6 @@ public class UserResource {
                         .entity(ErrorCode.COMPANY_EXISTS.value())
                         .build();
             }
-        } else {
-            user.setCompany(CompanyNameGenerator.generate(user));
         }
 
         sessionRepository.addUser(user);
