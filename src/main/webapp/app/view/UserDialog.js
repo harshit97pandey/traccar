@@ -51,6 +51,15 @@ Ext.define('Traccar.view.UserDialog', {
             reference: 'adminField'
         }, {
             xtype: 'combobox',
+            name: 'language',
+            fieldLabel: Strings.loginLanguage,
+            store: 'Languages',
+            displayField: 'name',
+            valueField: 'code',
+            submitValue: false,
+            reference: 'languageField'
+        }, {
+            xtype: 'combobox',
             name: 'map',
             fieldLabel: Strings.mapLayer,
             store: 'MapTypes',
