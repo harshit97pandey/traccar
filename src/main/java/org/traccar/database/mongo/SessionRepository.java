@@ -190,6 +190,14 @@ public class SessionRepository extends Repository{
 
         return companyDoc != null && ! companyDoc.isEmpty();
     }
+
+    public boolean existsUser(User user){
+        MongoCollection<Document> collection = database.getCollection(CollectionName.user);
+        Document userDocument = collection.find(new BasicDBObject("email", user.getEmail())).first();
+
+        return userDocument != null && ! userDocument.isEmpty();
+    }
+
     public void updateLocation(long userId, String map, Integer zoom, Double latitude, Double longitude) {
         database.getCollection(CollectionName.user).updateOne(new Document("id", userId),
                 new Document("$set", new Document("map", map)
@@ -255,6 +263,7 @@ public class SessionRepository extends Repository{
         server.setZoom(cursor.getInteger("zoom"));
         return server;
     }
+
 
     public void updateServer(Server server) {
         database.getCollection(CollectionName.server).updateOne(new Document("id", server.getId()),

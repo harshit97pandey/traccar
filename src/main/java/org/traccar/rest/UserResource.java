@@ -35,8 +35,15 @@ public class UserResource {
     public Response add(User user) throws Exception {
         Context.getPermissionsManager().checkRegistration(SessionUtil.getUserId(req));
 
-        User actorUser = (User) req.getSession().getAttribute(USER_DATA);
         SessionRepository sessionRepository = new SessionRepository();
+        if (sessionRepository.existsUser(user)) {
+            return Response
+                    .status(Response.Status.FORBIDDEN)
+                    .entity("User Already exist")
+                    .build();
+        }
+
+        User actorUser = (User) req.getSession().getAttribute(USER_DATA);
 
         String company = actorUser.getCompany();
         user.setCompany(company == null? null : company);
@@ -53,6 +60,13 @@ public class UserResource {
     @POST
     public Response register(User user) throws Exception {
         SessionRepository sessionRepository = new SessionRepository();
+        if (sessionRepository.existsUser(user)) {
+            return Response
+                    .status(Response.Status.FORBIDDEN)
+                    .entity("User Already exist")
+                    .build();
+        }
+
         if ( ! user.isPersonal()) {
             if (sessionRepository.existsCompany(user.getCompany())) {
                 return Response
@@ -72,12 +86,23 @@ public class UserResource {
     @Path("{id}")
     @PUT
     public Response update(@PathParam("id") long id, User entity) throws Exception {
+        SessionRepository sessionRepository = new SessionRepository();
+        User user = sessionRepository.getUser(id);
+        if (! user.getEmail().equals(entity.getEmail())) {
+            if (sessionRepository.existsUser(entity)) {
+                return Response
+                        .status(Response.Status.FORBIDDEN)
+                        .entity("User Already exist")
+                        .build();
+            }
+        }
+
         if (entity.getAdmin()) {
             Context.getPermissionsManager().checkAdmin(SessionUtil.getUserId(req));
         } else {
             Context.getPermissionsManager().checkUser(SessionUtil.getUserId(req), entity.getId());
         }
-        new SessionRepository().updateUser(entity);
+        sessionRepository.updateUser(entity);
         Context.getPermissionsManager().refresh();
         return Response.ok(entity).build();
     }
