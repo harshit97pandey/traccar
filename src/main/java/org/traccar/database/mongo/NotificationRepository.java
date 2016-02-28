@@ -104,7 +104,10 @@ public class NotificationRepository extends Repository{
             notification.setPositionId(document.getLong("positionId"));
             notification.setDeviceId(document.getLong("deviceId"));
             notification.setSeen(document.getBoolean("seen"));
-
+            if (document.containsKey("canceled")) {
+                notification.setCanceled(document.getBoolean("canceled"));
+                notification.setCancelDate(document.getDate("cancelDate"));
+            }
             Document r = (Document) document.get("restrictionUnit");
             RestrictionUnit restrictionUnit = new RestrictionUnit();
             restrictionUnit.setPolygonId(r.getLong("polygonId"));
