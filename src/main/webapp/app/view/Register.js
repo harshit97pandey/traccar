@@ -37,7 +37,6 @@ Ext.define('Traccar.view.Register', {
             store: 'Languages',
             displayField: 'name',
             valueField: 'code',
-            submitValue: false,
             reference: 'languageField'
         },{
             xtype: 'textfield',
