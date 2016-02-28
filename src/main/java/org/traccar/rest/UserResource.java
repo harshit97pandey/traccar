@@ -4,15 +4,13 @@ import org.traccar.Context;
 import org.traccar.database.mongo.SessionRepository;
 import org.traccar.model.User;
 import org.traccar.rest.utils.CompanyNameGenerator;
+import org.traccar.rest.utils.ErrorCode;
 import org.traccar.rest.utils.SessionUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 import static org.traccar.rest.utils.SessionUtil.USER_DATA;
 
@@ -40,13 +38,10 @@ public class UserResource {
 
         SessionRepository sessionRepository = new SessionRepository();
         if (sessionRepository.existsUser(user)) {
-            Locale locale = new Locale("ge");
 
-            ResourceBundle rb = ResourceBundle.getBundle("User", locale);
-            String val = rb.getString("exists");
             return Response
                     .status(Response.Status.FORBIDDEN)
-                    .entity(val)
+                    .entity(ErrorCode.USER_EXISTS)
                     .build();
         }
 
@@ -70,7 +65,7 @@ public class UserResource {
         if (sessionRepository.existsUser(user)) {
             return Response
                     .status(Response.Status.FORBIDDEN)
-                    .entity("User Already exist")
+                    .entity(ErrorCode.USER_EXISTS)
                     .build();
         }
 
@@ -78,7 +73,7 @@ public class UserResource {
             if (sessionRepository.existsCompany(user.getCompany())) {
                 return Response
                         .status(Response.Status.FORBIDDEN)
-                        .entity("Company Already Exists!")
+                        .entity(ErrorCode.COMPANY_EXISTS)
                         .build();
             }
         } else {
@@ -99,7 +94,7 @@ public class UserResource {
             if (sessionRepository.existsUser(entity)) {
                 return Response
                         .status(Response.Status.FORBIDDEN)
-                        .entity("User Already exist")
+                        .entity(ErrorCode.USER_EXISTS)
                         .build();
             }
         }
