@@ -1,7 +1,22 @@
 package org.traccar.webSocket;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpSession;
+import javax.websocket.CloseReason;
+import javax.websocket.EndpointConfig;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
 
 import org.traccar.Context;
 import org.traccar.database.ConnectionManager;
@@ -11,15 +26,9 @@ import org.traccar.geofence.Notification;
 import org.traccar.model.Device;
 import org.traccar.model.Position;
 import org.traccar.rest.SessionResource;
-import org.traccar.rest.utils.DateTimeFormatter;
 
-import javax.servlet.http.HttpSession;
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Created by Niko on 12/4/2015.
