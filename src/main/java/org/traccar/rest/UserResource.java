@@ -41,7 +41,7 @@ public class UserResource {
 
             return Response
                     .status(Response.Status.FORBIDDEN)
-                    .entity(ErrorCode.USER_EXISTS)
+                    .entity(ErrorCode.USER_EXISTS.value())
                     .build();
         }
 
@@ -65,7 +65,7 @@ public class UserResource {
         if (sessionRepository.existsUser(user)) {
             return Response
                     .status(Response.Status.FORBIDDEN)
-                    .entity(ErrorCode.USER_EXISTS)
+                    .entity(ErrorCode.USER_EXISTS.value())
                     .build();
         }
 
@@ -73,7 +73,7 @@ public class UserResource {
             if (sessionRepository.existsCompany(user.getCompany())) {
                 return Response
                         .status(Response.Status.FORBIDDEN)
-                        .entity(ErrorCode.COMPANY_EXISTS)
+                        .entity(ErrorCode.COMPANY_EXISTS.value())
                         .build();
             }
         } else {
@@ -94,7 +94,7 @@ public class UserResource {
             if (sessionRepository.existsUser(entity)) {
                 return Response
                         .status(Response.Status.FORBIDDEN)
-                        .entity(ErrorCode.USER_EXISTS)
+                        .entity(ErrorCode.USER_EXISTS.value())
                         .build();
             }
         }
