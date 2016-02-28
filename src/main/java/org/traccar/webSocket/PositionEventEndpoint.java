@@ -1,6 +1,8 @@
 package org.traccar.webSocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import org.traccar.Context;
 import org.traccar.database.ConnectionManager;
 import org.traccar.geofence.Alert;
@@ -14,6 +16,7 @@ import org.traccar.rest.utils.DateTimeFormatter;
 import javax.servlet.http.HttpSession;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,8 +31,8 @@ public class PositionEventEndpoint {
     private static ObjectMapper mapper = new ObjectMapper();
 
     {
-        mapper.setConfig(mapper.getSerializationConfig().with(
-                new SimpleDateFormat(DateTimeFormatter.FORMAT)));
+        mapper.setConfig(mapper.getSerializationConfig().without(
+                SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
     }
 
     public static void sessionRefreshUser(long userId) {
