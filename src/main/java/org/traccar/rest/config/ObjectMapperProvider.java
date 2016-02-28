@@ -15,12 +15,11 @@
  */
 package org.traccar.rest.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.traccar.rest.utils.DateTimeFormatter;
-
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import java.text.SimpleDateFormat;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Provider
 public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
@@ -28,8 +27,8 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
     private ObjectMapper mapper = new ObjectMapper();
 
     public ObjectMapperProvider() {
-        mapper.setConfig(mapper.getSerializationConfig().with(
-                new SimpleDateFormat(DateTimeFormatter.FORMAT)));
+        mapper.setConfig(mapper.getSerializationConfig().without(
+                SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
     }
 
     @Override
