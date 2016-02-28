@@ -1,7 +1,6 @@
 Ext.define('Traccar.store.Polygons', {
     extend: 'Ext.data.Store',
     model: 'Traccar.model.Polygon',
-    identifier: 'negative',
     proxy: {
         type: 'ajax',
         api: {
