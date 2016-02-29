@@ -115,6 +115,8 @@ public class ConnectionManager {
                     listeners.get(deviceId).forEach(p -> p.onUpdatePosition(position));
                 }
             }
+        } else {
+            positions.putIfAbsent(deviceId, position);
         }
     }
 
