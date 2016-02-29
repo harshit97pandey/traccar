@@ -117,18 +117,20 @@ public class PositionEventEndpoint {
 
         private synchronized void response() {
             try {
-                Map<String, Object> data = new HashMap<>();
-                data.put("devices", deviceUpdates);
-                data.put("positions", positionUpdates);
+                if(session.isOpen()) {
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("devices", deviceUpdates);
+                    data.put("positions", positionUpdates);
 
-                Message message = new Message("position", data);
-                String m = mapper.writeValueAsString(message);
+                    Message message = new Message("position", data);
+                    String m = mapper.writeValueAsString(message);
 
-                deviceUpdates.clear();
-                positionUpdates.clear();
+                    deviceUpdates.clear();
+                    positionUpdates.clear();
 
-                session.getAsyncRemote().sendText(m);
-                } catch (IOException e) {
+                    session.getAsyncRemote().sendText(m);
+                }
+                } catch (Exception e) {
                     e.printStackTrace();
                 try {
                     session.close(new CloseReason(CloseReason.CloseCodes.PROTOCOL_ERROR, "exception"));
@@ -145,6 +147,7 @@ public class PositionEventEndpoint {
                 session.getAsyncRemote().sendText(m);
             } catch (IOException e) {
                 e.printStackTrace();
+
                 session.close(new CloseReason(CloseReason.CloseCodes.PROTOCOL_ERROR, "exception"));
             }
         }
@@ -202,7 +205,6 @@ public class PositionEventEndpoint {
 
     @OnError
     public void onError(Session session, Throwable thr) {
-        thr.printStackTrace();
     }
 
 
