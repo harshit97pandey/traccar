@@ -194,11 +194,13 @@ public class PositionEventEndpoint {
         synchronized (SESSIONS) {
             Long userId = getUserId(httpSession);
             Map<Session, AsyncSession> asyncSession = SESSIONS.get(userId);
-            if (asyncSession.containsKey(session)) {
-                asyncSession.remove(session).removeListener();
-            }
-            if (asyncSession.isEmpty()) {
-                SESSIONS.remove(userId);
+            if (asyncSession != null) {
+                if (asyncSession.containsKey(session)) {
+                    asyncSession.remove(session).removeListener();
+                }
+                if (asyncSession.isEmpty()) {
+                    SESSIONS.remove(userId);
+                }
             }
         }
     }
