@@ -49,6 +49,8 @@ public abstract class Event extends Extensible {
     public static final String KEY_DISTANCE = "distance";
     public static final String KEY_RPM = "rpm";
     public static final String KEY_VIN = "vin";
+    public static final String KEY_COMM = "comm";//comment
+    public static final String KEY_STAT = "stat";//status
     public static final String KEY_APPROXIMATE = "approximate";
 
     public static final String KEY_OBD_SPEED = "obd-speed";

@@ -102,10 +102,10 @@ public class OsmAndProtocolDecoder extends BaseProtocolDecoder {
                     position.set(Event.KEY_BATTERY, value);
                     break;
                 case "comm":
-                    position.setComment(value);
+                    position.set(Event.KEY_COMM, value);
                     break;
                 case "stat":
-                    position.setStatus(Integer.valueOf(value));
+                    position.set(Event.KEY_STAT, Integer.valueOf(value));
                     break;
                 default:
                     position.set(entry.getKey(), value);
