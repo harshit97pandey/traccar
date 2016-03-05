@@ -151,4 +151,24 @@ public class Position extends Event {
     public void setLatest(boolean latest) {
         this.latest = latest;
     }
+
+    private String comment;
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 }

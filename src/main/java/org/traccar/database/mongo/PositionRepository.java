@@ -53,6 +53,12 @@ public class PositionRepository extends Repository{
             if (next.containsKey("calculatedStopTime")) {
                 position.setCalculatedStopTime(next.getLong("calculatedStopTime"));
             }
+            if (next.containsKey("comment")) {
+                position.setComment(next.getString("comment"));
+            }
+            if (next.containsKey("status")) {
+                position.setStatus(next.getInteger("status"));
+            }
             positions.add(position);
         }
         return positions;
@@ -112,7 +118,9 @@ public class PositionRepository extends Repository{
                 .append("address", position.getAddress())
                 .append("calculatedDistance", calculatedDistance)
                 .append("calculatedStopTime", position.getCalculatedStopTime())
-                .append("attributes", position.getAttributes());
+                .append("attributes", position.getAttributes())
+                .append("comment", position.getComment())
+                .append("status", position.getStatus());
 
         //Set calculated distance
         position.setCalculatedDistance(calculatedDistance);
@@ -189,6 +197,13 @@ public class PositionRepository extends Repository{
                 }
                 if (document.containsKey("calculatedStopTime")) {
                     position.setCalculatedStopTime(document.getLong("calculatedStopTime"));
+                }
+
+                if (document.containsKey("comment")) {
+                    position.setComment(document.getString("comment"));
+                }
+                if (document.containsKey("status")) {
+                    position.setStatus(document.getInteger("status"));
                 }
                 positions.add(position);
             }
