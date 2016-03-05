@@ -92,7 +92,7 @@ public class ConnectionManager {
 
         if (status.equals(Device.STATUS_ONLINE)) {
             timeouts.put(deviceId, GlobalTimer.getTimer().newTimeout(
-                    t -> {if (!timeout.isCancelled()) {
+                    t -> {if (!t.isCancelled()) {
                         updateDevice(deviceId, Device.STATUS_UNKNOWN, null);
                     }}, deviceTimeout, TimeUnit.MILLISECONDS));
         }
