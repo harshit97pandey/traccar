@@ -58,7 +58,6 @@ Ext.define('Traccar.controller.Root', {
         Ext.getStore('Devices').load();
         Ext.getStore('Alerts').load();
         Ext.getStore('Polygons').load();
-        Ext.get('attribution').remove();
         if (this.isPhone) {
             Ext.create('widget.mainMobile');
         } else {
