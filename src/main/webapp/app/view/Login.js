@@ -86,10 +86,34 @@ Ext.define('Traccar.view.Login', {
     },
 
     buttons: [{
-        text: Strings.loginRegister,
-        handler: 'onRegisterClick',
-        reference: 'registerButton'
-    }, {
+        xtype: 'container',
+        bodyCls: 'x-toolbar-footer',
+        layout: {
+            type: 'vbox',
+            align: 'left'
+        },
+        items: [{
+            xtype: 'component',
+            autoEl: {
+                tag: 'a',
+                html: Strings.loginRegister,
+                href: '',
+                onclick: 'event.preventDefault();Ext.create(\'Traccar.view.Register\').show();',
+                style: 'margin: 5px;'
+            }
+        }, {
+            xtype: 'component',
+            autoEl: {
+                tag: 'a',
+                html: 'Android app',
+                href: './downloads/traccar.apk',
+                target: '_blank',
+                style: 'margin: 5px; background-color:inherit;'
+            }
+        }]
+    }
+              
+,'->', {
         text: Strings.loginLogin,
         handler: 'onLoginClick'
     }]
