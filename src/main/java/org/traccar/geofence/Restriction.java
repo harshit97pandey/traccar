@@ -1,12 +1,9 @@
 package org.traccar.geofence;
 
-import org.traccar.database.mongo.DeviceRepository;
 import org.traccar.database.mongo.NotificationRepository;
-import org.traccar.database.mongo.PolygonRepository;
-import org.traccar.model.Polygon;
+import org.traccar.database.mongo.RestrictionRepository;
 import org.traccar.model.Position;
 import org.traccar.webSocket.PositionEventEndpoint;
-import org.traccar.rest.utils.PolygonUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -28,48 +25,39 @@ public class Restriction {
         getDeviceRestrictions().forEach(ru -> checkRestriction(ru));
     }
 
-    private List<RestrictionUnit> getDeviceRestrictions() {
-        return new DeviceRepository().getDeviceRestrictions(position.getDeviceId());
+    private List<RestrictionUnion> getDeviceRestrictions() {
+        return new RestrictionRepository().getDeviceRestrictions(position.getDeviceId());
     }
 
-    private void checkRestriction(RestrictionUnit restrictionUnit) {
-        Polygon polygon = new PolygonRepository().getPolygon(restrictionUnit
-                .getPolygonId());
+    private void checkRestriction(RestrictionUnion restrictionUnion) {
         Optional<Notification> lastNotification = new NotificationRepository().getLastNotification(
-                restrictionUnit, position);
-        if (polygon != null) {
-            Boolean check = restrictionUnit.check(
-                    polygon,
-                    position,
-                    (pol,pos) -> PolygonUtil.contains(polygon.getId(), position.getLatitude(), position.getLongitude())
+                restrictionUnion, position);
 
-            );
-            if ( ! lastNotification.isPresent()) {
-                if (!check) {
-                    saveNotification(restrictionUnit, polygon);
-                }
-            } else if (lastNotification.get().isCanceled() && !check) {
-                saveNotification(restrictionUnit, polygon);
-            } else if (!lastNotification.get().isCanceled() && check) {
-                new NotificationRepository().markNotificationAsCanceled(lastNotification.get()
-                        .getId());
+
+        Boolean check = restrictionUnion.test();
+
+        if ( ! lastNotification.isPresent()) {
+            if (!check) {
+                saveNotification(restrictionUnion);
             }
+        } else if (lastNotification.get().isCanceled() && !check) {
+            saveNotification(restrictionUnion);
+        } else if (!lastNotification.get().isCanceled() && check) {
+            new NotificationRepository().markNotificationAsCanceled(lastNotification.get()
+                    .getId());
         }
 
     }
 
-    private void saveNotification(RestrictionUnit restrictionUnit,
-            Polygon polygon) {
-        new NotificationRepository().addNotification(restrictionUnit, polygon, position);
+    private void saveNotification(RestrictionUnion restrictionUnion) {
+        new NotificationRepository().addNotification(restrictionUnion, position);
 
         Notification notification = new Notification();
         notification.setCreationDate(new Date());
-        notification.setPolygonId(polygon.getId());
-        notification.setPolygonName(polygon.getName());
         notification.setSeen(false);
         notification.setDeviceId(position.getDeviceId());
 
-        notification.setRestrictionUnit(restrictionUnit);
+        notification.setRestrictionUnits(restrictionUnion.getUnits());
         notification.setPositionId(position.getId());
 
         Alert alert = new Alert("OUT_OF_AREA", notification);
