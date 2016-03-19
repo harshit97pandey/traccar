@@ -33,7 +33,6 @@ public class Restriction {
         Optional<Notification> lastNotification = new NotificationRepository().getLastNotification(
                 restrictionUnion, position);
 
-
         Boolean check = restrictionUnion.test();
 
         if ( ! lastNotification.isPresent()) {
@@ -60,6 +59,7 @@ public class Restriction {
         notification.setRestrictionUnits(restrictionUnion.getUnits());
         notification.setPositionId(position.getId());
 
+        //TODO სახელის დარქმევა ალერტისთვის
         Alert alert = new Alert("OUT_OF_AREA", notification);
         Message message = new Message("alert", alert);
         PositionEventEndpoint.showAlert(message);

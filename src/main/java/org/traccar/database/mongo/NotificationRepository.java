@@ -27,8 +27,6 @@ public class NotificationRepository extends Repository{
 
         long id = getId(CollectionName.notifications);
 
-
-
         Document doc = new Document()
                 .append("id", id)
                 .append("restrictionUnits", restrictionUnion.getDocument());
@@ -61,9 +59,6 @@ public class NotificationRepository extends Repository{
         notification.setSeen(document.getBoolean("seen"));
         notification.setCanceled(document.getBoolean("canceled"));
         notification.setCancelDate(document.getDate("cancelDate"));
-
-//        Document rd = (Document) document.get("restrictionUnits");
-
 
         return Optional.of(notification);
     }
