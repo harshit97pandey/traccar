@@ -1,7 +1,5 @@
 package org.traccar.rest;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.sun.xml.internal.ws.wsdl.writer.document.StartWithExtensionsType;
 import org.traccar.database.mongo.RestrictionRepository;
 import org.traccar.geofence.IntoAreaRestriction;
 import org.traccar.geofence.RestrictionUnion;
@@ -93,5 +91,14 @@ public class RestrictionResource {
             default:
                 return null;
         }
+    }
+
+    @GET
+    @Path("deviceRestrictions")
+    public Response getDeviceRestrictions(@QueryParam("deviceId") long deviceId) {
+        return Response
+                .ok()
+                .entity(new RestrictionRepository().getDeviceRestrictions(deviceId))
+                .build();
     }
 }

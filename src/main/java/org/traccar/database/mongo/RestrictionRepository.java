@@ -8,8 +8,6 @@ import org.traccar.geofence.IntoAreaRestriction;
 import org.traccar.geofence.RestrictionUnion;
 import org.traccar.geofence.RestrictionUnit;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -83,7 +81,7 @@ public class RestrictionRepository extends Repository {
         Document device = collection.find(new Document("id", deviceId)).first();
         List<String> restrictionUnions;
         if (device.containsKey("restrictions")) {
-            restrictionUnions = device.get("polygons", List.class);
+            restrictionUnions = device.get("restrictions", List.class);
             if ( ! restrictionUnions.contains(restrictionUnionId)) {
                 restrictionUnions.add(restrictionUnionId);
             }
@@ -101,25 +99,28 @@ public class RestrictionRepository extends Repository {
 
     public List<RestrictionUnion> getDeviceRestrictions(long deviceId) {
         MongoCollection<Document> collection = database.getCollection(CollectionName.device);
-        ObjectId objectId = new ObjectId();
-        List<RestrictionUnit> restrictions = new ArrayList<>();
+        MongoCollection<Document> restrictionCollection = database.getCollection(CollectionName.restrictions);
+
+        List<RestrictionUnion> restrictionUnions = new ArrayList<>();
 
         Document device = collection.find(new Document("id", deviceId)).first();
-        List<Long> polygons;
-        if (device.containsKey("polygons")) {
-            polygons = device.get("polygons", List.class);
-        } else {
-            polygons = new ArrayList<>();
+        if (device.containsKey("restrictions")) {
+            List<String> restrictionUnionIds = device.get("restrictions", List.class);
+            for (String idHex : restrictionUnionIds) {
+                Document doc = restrictionCollection.find(new Document("_id", new ObjectId(idHex))).first();
+
+                RestrictionUnion union = new RestrictionUnion();
+
+                ObjectId id = doc.getObjectId("_id");
+                union.idHex = id.toHexString();
+                union.setEnabled(doc.getBoolean("enabled"));
+                union.setCompanyName(doc.getString("companyName"));
+                union.setUnits(getUnits(doc));
+
+                restrictionUnions.add(union);
+            }
+
         }
-
-        for (Long polygon : polygons) {
-
-           /* RestrictionUnit r = new RestrictionUnit();
-            r.setPolygonId(polygon);
-            r.setRestrictionType(RestrictionType.INTO_AREA);
-
-            restrictions.add(r);*/
-        }
-        return null;
+        return restrictionUnions;
     }
 }
