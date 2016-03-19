@@ -3,10 +3,13 @@ package org.traccar.database.mongo;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.traccar.geofence.IntoAreaRestriction;
 import org.traccar.geofence.RestrictionUnion;
 import org.traccar.geofence.RestrictionUnit;
 
+import javax.ws.rs.FormParam;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +49,9 @@ public class RestrictionRepository extends Repository {
         while (cursor.hasNext()) {
             Document doc = cursor.next();
             RestrictionUnion union = new RestrictionUnion();
+
+            ObjectId id = doc.getObjectId("_id");
+            union.idHex = id.toHexString();
             union.setEnabled(doc.getBoolean("enabled"));
             union.setCompanyName(doc.getString("companyName"));
             union.setUnits(getUnits(doc));
@@ -67,12 +73,35 @@ public class RestrictionRepository extends Repository {
 
 
         collection.insertOne(document);
+        ObjectId id = document.getObjectId("_id");
+        restrictionUnion.idHex = id.toHexString();
         return restrictionUnion;
     }
 
+    public Boolean applyToDevice(long deviceId, String restrictionUnionId) {
+        MongoCollection<Document> collection = database.getCollection(CollectionName.device);
+        Document device = collection.find(new Document("id", deviceId)).first();
+        List<String> restrictionUnions;
+        if (device.containsKey("restrictions")) {
+            restrictionUnions = device.get("polygons", List.class);
+            if ( ! restrictionUnions.contains(restrictionUnionId)) {
+                restrictionUnions.add(restrictionUnionId);
+            }
+
+        } else {
+            restrictionUnions = new ArrayList<>();
+            restrictionUnions.add(restrictionUnionId);
+        }
+        database.getCollection(CollectionName.device).updateOne(new Document("id", deviceId),
+                new Document("$set", new Document("restrictions", restrictionUnions)));
+
+        return true;
+    }
+
+
     public List<RestrictionUnion> getDeviceRestrictions(long deviceId) {
         MongoCollection<Document> collection = database.getCollection(CollectionName.device);
-
+        ObjectId objectId = new ObjectId();
         List<RestrictionUnit> restrictions = new ArrayList<>();
 
         Document device = collection.find(new Document("id", deviceId)).first();

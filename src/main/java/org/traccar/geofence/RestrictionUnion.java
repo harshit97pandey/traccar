@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
  */
 public class RestrictionUnion {
 
+    public String idHex;
+
     private LinkedList<RestrictionUnit> units;
 
     private boolean enabled;

@@ -40,7 +40,7 @@ public class RestrictionResource {
     }
 
     @POST
-    public Response put(String restrictionJSONData) {
+    public Response add(String restrictionJSONData) {
 
         RestrictionUnion restrictionUnion = new RestrictionUnion();
         User user = SessionUtil.getUser(req);
@@ -66,6 +66,17 @@ public class RestrictionResource {
         return Response
                 .ok()
                 .entity(new RestrictionRepository().add(restrictionUnion))
+                .build();
+    }
+
+    @POST
+    @Path("applyToDevice")
+    public Response applyToDevice(@FormParam("deviceId") long deviceId,
+                                  @FormParam("restrictionUnionId") String restrictionUnionId) {
+
+        return Response
+                .ok()
+                .entity(new RestrictionRepository().applyToDevice(deviceId, restrictionUnionId))
                 .build();
     }
 
