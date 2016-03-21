@@ -6,6 +6,7 @@ import org.traccar.model.Position;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -23,9 +24,18 @@ public class RestrictionUnion {
 
     public Boolean test(Position position){
         Boolean result = units.get(0).test(position);
+        Predicate<Boolean> predicate = a -> result;
+        for (int i= 1; i < units.size(); i++) {
+            RestrictionUnit unit = units.get(i);
+            boolean lResult = unit.test(position);
 
-        //units.stream().skip(1).forEach(a -> {boolean lResult = a.test(position);});
-        return result;
+            if (unit.chainCondition) {
+                predicate = predicate.and(a -> lResult);
+            } else {
+                predicate = predicate.or(a -> lResult);
+            }
+        }
+        return predicate.test(result);
     }
 
     @JsonIgnore
