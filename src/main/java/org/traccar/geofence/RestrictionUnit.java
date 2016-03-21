@@ -16,11 +16,26 @@ public abstract class RestrictionUnit {
 
     public Integer restrictionType;
 
-    public abstract Document getDocument();
+    public Document getDocument(){
+        return new Document("chainCondition", chainCondition)
+                .append("restrictionType", restrictionType);
+    }
 
 
     public abstract Boolean test(Position position);
 
-    public abstract StringBuilder appendConditionAndGet(StringBuilder condition);
+    public StringBuilder appendConditionAndGet(StringBuilder condition) {
+
+        if(chainCondition) {
+            condition.append("[and]");
+        } else {
+            condition.append("[or]");
+        }
+        condition.append("[restriction]");
+
+        condition.append(restrictionType);
+
+        return condition;
+    }
 
 }

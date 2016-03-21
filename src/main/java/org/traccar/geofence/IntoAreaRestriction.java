@@ -26,17 +26,8 @@ public class IntoAreaRestriction extends RestrictionUnit{
 
     @Override
     public StringBuilder appendConditionAndGet(StringBuilder condition) {
-        condition.append("-");
-        if(chainCondition) {
-            condition.append("and");
-        } else {
-            condition.append("or");
-        }
-        condition.append("-");
-
-        condition.append(RestrictionType.INTO_AREA);
-
-        condition.append("->polygonId:");
+        super.appendConditionAndGet(condition);
+        condition.append("@polygonId:");
         condition.append(polygonId);
         return condition;
     }
@@ -44,9 +35,7 @@ public class IntoAreaRestriction extends RestrictionUnit{
     @Override
     @JsonIgnore
     public Document getDocument() {
-        return new Document("chainCondition", chainCondition)
-                .append("polygonId", polygonId)
-                .append("restrictionType", RestrictionType.INTO_AREA);
+        return super.getDocument().append("polygonId", polygonId);
     }
 
     public long getPolygonId() {

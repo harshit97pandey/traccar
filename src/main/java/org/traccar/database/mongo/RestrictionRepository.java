@@ -4,9 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.traccar.geofence.IntoAreaRestriction;
-import org.traccar.geofence.RestrictionUnion;
-import org.traccar.geofence.RestrictionUnit;
+import org.traccar.geofence.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -26,6 +24,23 @@ public class RestrictionRepository extends Repository {
                 r.restrictionType = restrictionType;
                 r.chainCondition = document.getBoolean("chainCondition");
                 return r;
+            case 2:
+                OutOfAreaRestriction r1 = new OutOfAreaRestriction();
+                r1.restrictionType = restrictionType;
+                r1.chainCondition = document.getBoolean("chainCondition");
+                r1.setPolygonId(document.getLong("polygonId"));
+                return r1;
+            case 3:
+                SpeedRestriction sr = new SpeedRestriction();
+                sr.setSpeedLimit(document.getDouble("speedLimit"));
+                sr.restrictionType = restrictionType;
+                sr.chainCondition = document.getBoolean("chainCondition");
+            case 4:
+                DistanceRestriction dr = new DistanceRestriction();
+                dr.setDistanceLimit(document.getDouble("distanceLimit"));
+                dr.restrictionType = restrictionType;
+                dr.chainCondition = document.getBoolean("chainCondition");
+                return dr;
             default:
                 return null;
         }
@@ -95,6 +110,22 @@ public class RestrictionRepository extends Repository {
         return true;
     }
 
+    public Boolean ignoreFromDevice(long deviceId, String restrictionUnionId) {
+        MongoCollection<Document> collection = database.getCollection(CollectionName.device);
+        Document device = collection.find(new Document("id", deviceId)).first();
+        List<String> restrictionUnions;
+        if (device.containsKey("restrictions")) {
+            restrictionUnions = device.get("restrictions", List.class);
+            if (restrictionUnions.contains(restrictionUnionId)) {
+                restrictionUnions.remove(restrictionUnionId);
+                database.getCollection(CollectionName.device).updateOne(new Document("id", deviceId),
+                        new Document("$set", new Document("restrictions", restrictionUnions)));
+            }
+
+        }
+
+        return true;
+    }
 
     public List<RestrictionUnion> getDeviceRestrictions(long deviceId) {
         MongoCollection<Document> collection = database.getCollection(CollectionName.device);

@@ -23,25 +23,15 @@ public class OutOfAreaRestriction extends RestrictionUnit{
 
     @Override
     public StringBuilder appendConditionAndGet(StringBuilder condition) {
-        condition.append("-");
-        if(chainCondition) {
-            condition.append("and");
-        } else {
-            condition.append("or");
-        }
-        condition.append("-");
-
-        condition.append(RestrictionType.OUT_OF_AREA);
-
-        condition.append("->polygonId:");
+        super.appendConditionAndGet(condition);
+        condition.append("@polygonId:");
         condition.append(polygonId);
         return condition;
     }
 
     @Override
     public Document getDocument() {
-        return new Document("polygonId", polygonId)
-                .append("restrictionType", RestrictionType.OUT_OF_AREA);
+        return super.getDocument().append("polygonId", polygonId);
     }
 
     public long getPolygonId() {
