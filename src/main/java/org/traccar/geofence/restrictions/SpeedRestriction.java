@@ -1,6 +1,8 @@
-package org.traccar.geofence;
+package org.traccar.geofence.restrictions;
 
 import org.bson.Document;
+import org.traccar.geofence.restrictions.RestrictionType;
+import org.traccar.geofence.restrictions.RestrictionUnit;
 import org.traccar.model.Position;
 
 /**

@@ -6,8 +6,6 @@ import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.traccar.Config;
 import org.traccar.database.IdentityManager;
-import org.traccar.geofence.RestrictionType;
-import org.traccar.geofence.RestrictionUnit;
 import org.traccar.model.Device;
 import org.traccar.model.User;
 import org.traccar.webSocket.PositionEventEndpoint;

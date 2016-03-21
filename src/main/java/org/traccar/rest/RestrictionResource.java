@@ -1,7 +1,7 @@
 package org.traccar.rest;
 
 import org.traccar.database.mongo.RestrictionRepository;
-import org.traccar.geofence.*;
+import org.traccar.geofence.restrictions.*;
 import org.traccar.model.User;
 import org.traccar.rest.utils.SessionUtil;
 

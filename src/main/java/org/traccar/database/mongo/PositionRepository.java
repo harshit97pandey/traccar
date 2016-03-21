@@ -4,9 +4,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.BsonDouble;
-import org.bson.BsonInt64;
 import org.bson.Document;
-import org.traccar.geofence.Restriction;
+import org.traccar.geofence.restrictions.Restriction;
 import org.traccar.model.Position;
 
 import java.util.*;

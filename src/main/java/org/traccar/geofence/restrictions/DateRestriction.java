@@ -1,12 +1,14 @@
-package org.traccar.geofence;
+package org.traccar.geofence.restrictions;
 
 import org.bson.Document;
+import org.traccar.geofence.restrictions.RestrictionType;
+import org.traccar.geofence.restrictions.RestrictionUnit;
 import org.traccar.model.Position;
 
 /**
  * Created by niko on 3/19/16.
  */
-public class DateRestriction extends RestrictionUnit{
+public class DateRestriction extends RestrictionUnit {
 
     private boolean periodical;
 

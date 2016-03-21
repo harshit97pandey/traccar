@@ -1,22 +1,17 @@
 package org.traccar.database.mongo;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.traccar.geofence.Notification;
-import org.traccar.geofence.RestrictionUnion;
-import org.traccar.geofence.RestrictionUnit;
+import org.traccar.geofence.restrictions.RestrictionUnion;
 import org.traccar.model.Device;
-import org.traccar.model.Polygon;
 import org.traccar.model.Position;
 import org.traccar.model.User;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 /**
  * Created by niko on 2/2/16.

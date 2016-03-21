@@ -1,7 +1,8 @@
-package org.traccar.geofence;
+package org.traccar.geofence.restrictions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.Document;
+import org.traccar.geofence.restrictions.RestrictionUnit;
 import org.traccar.model.Position;
 
 import java.util.LinkedList;

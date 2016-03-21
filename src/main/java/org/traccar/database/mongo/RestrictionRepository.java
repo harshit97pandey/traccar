@@ -4,7 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.traccar.geofence.*;
+import org.traccar.geofence.restrictions.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -1,4 +1,4 @@
-package org.traccar.geofence;
+package org.traccar.geofence.restrictions;
 
 import org.bson.Document;
 import org.traccar.model.Polygon;

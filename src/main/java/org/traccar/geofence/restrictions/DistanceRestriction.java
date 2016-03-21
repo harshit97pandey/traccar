@@ -1,12 +1,14 @@
-package org.traccar.geofence;
+package org.traccar.geofence.restrictions;
 
 import org.bson.Document;
+import org.traccar.geofence.restrictions.RestrictionType;
+import org.traccar.geofence.restrictions.RestrictionUnit;
 import org.traccar.model.Position;
 
 /**
  * Created by niko on 3/21/16.
  */
-public class DistanceRestriction extends RestrictionUnit{
+public class DistanceRestriction extends RestrictionUnit {
 
     private double distanceLimit;
 

@@ -1,7 +1,11 @@
-package org.traccar.geofence;
+package org.traccar.geofence.restrictions;
 
 import org.traccar.database.mongo.NotificationRepository;
 import org.traccar.database.mongo.RestrictionRepository;
+import org.traccar.geofence.Alert;
+import org.traccar.geofence.Message;
+import org.traccar.geofence.Notification;
+import org.traccar.geofence.restrictions.RestrictionUnion;
 import org.traccar.model.Position;
 import org.traccar.webSocket.PositionEventEndpoint;
 

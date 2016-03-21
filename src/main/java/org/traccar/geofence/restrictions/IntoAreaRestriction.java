@@ -1,7 +1,10 @@
-package org.traccar.geofence;
+package org.traccar.geofence.restrictions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.Document;
 import org.traccar.database.mongo.PolygonRepository;
+import org.traccar.geofence.restrictions.RestrictionType;
+import org.traccar.geofence.restrictions.RestrictionUnit;
 import org.traccar.model.Polygon;
 import org.traccar.model.Position;
 import org.traccar.rest.utils.PolygonUtil;
@@ -9,16 +12,18 @@ import org.traccar.rest.utils.PolygonUtil;
 /**
  * Created by niko on 3/19/16.
  */
-public class OutOfAreaRestriction extends RestrictionUnit{
+public class IntoAreaRestriction extends RestrictionUnit {
     private long polygonId;
 
     {
-        restrictionType = RestrictionType.OUT_OF_AREA;
+        restrictionType = RestrictionType.INTO_AREA;
     }
+
     @Override
     public Boolean test(Position position) {
         Polygon polygon = new PolygonRepository().getPolygon(polygonId);
-        return ! PolygonUtil.contains(polygon.getId(), position.getLatitude(), position.getLongitude());
+
+        return PolygonUtil.contains(polygon.getId(), position.getLatitude(), position.getLongitude());
     }
 
     @Override
@@ -30,6 +35,7 @@ public class OutOfAreaRestriction extends RestrictionUnit{
     }
 
     @Override
+    @JsonIgnore
     public Document getDocument() {
         return super.getDocument().append("polygonId", polygonId);
     }

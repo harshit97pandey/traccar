@@ -1,4 +1,4 @@
-package org.traccar.geofence;
+package org.traccar.geofence.restrictions;
 
 /**
  * Created by niko on 12/26/15.
