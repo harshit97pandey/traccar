@@ -69,7 +69,6 @@ public class RestrictionRepository extends Repository {
                 .append("companyName", restrictionUnion.getCompanyName())
                 .append("restrictionUnits", restrictionUnion.getDocument());
 
-
         collection.insertOne(document);
         ObjectId id = document.getObjectId("_id");
         restrictionUnion.idHex = id.toHexString();
