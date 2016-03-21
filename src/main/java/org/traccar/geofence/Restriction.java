@@ -33,7 +33,7 @@ public class Restriction {
         Optional<Notification> lastNotification = new NotificationRepository().getLastNotification(
                 restrictionUnion, position);
 
-        Boolean check = restrictionUnion.test();
+        Boolean check = restrictionUnion.test(position);
 
         if ( ! lastNotification.isPresent()) {
             if (!check) {

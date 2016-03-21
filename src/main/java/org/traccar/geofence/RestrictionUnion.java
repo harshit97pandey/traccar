@@ -2,6 +2,7 @@ package org.traccar.geofence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.Document;
+import org.traccar.model.Position;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,8 +21,11 @@ public class RestrictionUnion {
 
     private String companyName;
 
-    public Boolean test(){
-        return false;
+    public Boolean test(Position position){
+        Boolean result = units.get(0).test(position);
+
+        //units.stream().skip(1).forEach(a -> {boolean lResult = a.test(position);});
+        return result;
     }
 
     @JsonIgnore

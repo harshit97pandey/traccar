@@ -57,7 +57,7 @@ public class NotificationRepository extends Repository{
         notification.setPositionId(document.getLong("positionId"));
         notification.setDeviceId(document.getLong("deviceId"));
         notification.setSeen(document.getBoolean("seen"));
-        notification.setCanceled(document.getBoolean("canceled"));
+        notification.setCanceled(document.getBoolean("canceled", false));
         notification.setCancelDate(document.getDate("cancelDate"));
 
         return Optional.of(notification);

@@ -68,6 +68,7 @@ public class PolygonRepository extends Repository {
                 .append("id", polygon.getId())
                 .append("type", polygon.getType())
                 .append("name", polygon.getName())
+                .append("company", polygon.getCompany())
                 .append("coordinates", coordinates);
 
         collection.insertOne(doc);
