@@ -132,6 +132,26 @@ public class Position extends Event {
         this.calculatedDistance = calculatedDistance;
     }
 
+    private double recalculatedDistance;
+
+    public double getRecalculatedDistance() {
+        return recalculatedDistance;
+    }
+
+    public void setRecalculatedDistance(double recalculatedDistance) {
+        this.recalculatedDistance = recalculatedDistance;
+    }
+
+    private double summaryDistance;
+
+    public double getSummaryDistance() {
+        return summaryDistance;
+    }
+
+    public void setSummaryDistance(double summaryDistance) {
+        this.summaryDistance = summaryDistance;
+    }
+    
     private long calculatedStopTime;
 
     public long getCalculatedStopTime() {

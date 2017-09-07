@@ -3,9 +3,13 @@ package org.traccar.database.mongo;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+
+import jersey.repackaged.com.google.common.collect.Lists;
+
 import org.bson.BsonDouble;
 import org.bson.Document;
 import org.traccar.geofence.restrictions.Restriction;
+import org.traccar.helper.DistanceCalculator;
 import org.traccar.model.Position;
 
 import java.util.*;
@@ -25,9 +29,10 @@ public class PositionRepository extends Repository{
             queryObject.append("calculatedStopTime",new BasicDBObject("$gte", stopTime));
         }
 
-        MongoCursor<Document> cursor = database.getCollection(CollectionName.position).find(queryObject).sort(new BasicDBObject("fixTime", -1)).iterator();
+        MongoCursor<Document> cursor = database.getCollection(CollectionName.position).find(queryObject).sort(new BasicDBObject("deviceTime", -1)).iterator();
 
         List<Position> positions = new ArrayList<>();
+        
         while (cursor.hasNext()) {
             Document next = cursor.next();
 
@@ -52,9 +57,26 @@ public class PositionRepository extends Repository{
             if (next.containsKey("calculatedStopTime")) {
                 position.setCalculatedStopTime(next.getLong("calculatedStopTime"));
             }
-
+            
             positions.add(position);
         }
+        
+        Position prevPosistion = null;
+        for (Position position : Lists.reverse(positions)) {
+          if (prevPosistion == null ) {
+            position.setRecalculatedDistance(0);
+          } else {
+            double distance = DistanceCalculator.distance(prevPosistion.getLatitude(), prevPosistion.getLongitude(), position.getLatitude(), position.getLongitude());
+            position.setRecalculatedDistance(distance);
+            if (distance <= 200) {
+              position.setSummaryDistance(prevPosistion.getSummaryDistance() + distance); 
+            } else {
+              position.setSummaryDistance(prevPosistion.getSummaryDistance()); 
+            }
+          }
+          prevPosistion = position;
+        }
+        
         return positions;
     }
 

@@ -35,6 +35,7 @@ public class PositionReportResource {
     @javax.ws.rs.core.Context
     HttpServletRequest req;
 
+    @SuppressWarnings("unchecked")
     @GET
     @Path("csv")
     @Produces(MediaType.TEXT_PLAIN)
@@ -69,6 +70,8 @@ public class PositionReportResource {
             positionRecord.add(String.valueOf(position.getAltitude()));
             positionRecord.add(String.valueOf(position.getSpeed()));
             positionRecord.add(position.getAddress());
+            positionRecord.add(Math.round(position.getSummaryDistance()));
+            
             csvFilePrinter.printRecord(positionRecord);
         }
         outputStream.write(stringWriter.toString().getBytes());
