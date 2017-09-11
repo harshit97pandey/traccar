@@ -71,6 +71,7 @@ public class PositionReportResource {
             positionRecord.add(String.valueOf(position.getSpeed()));
             positionRecord.add(position.getAddress());
             positionRecord.add(Math.round(position.getSummaryDistance()));
+            positionRecord.add(Math.round(position.getSummaryDistance()/10D)/100D);
             
             csvFilePrinter.printRecord(positionRecord);
         }
