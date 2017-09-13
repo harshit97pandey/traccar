@@ -124,6 +124,12 @@ Ext.define('Traccar.view.Report', {
         align:'right',
         renderer: Traccar.AttributeFormatter.getFormatter('speed')
     }, {
+        text: Strings.positionDistance,
+        dataIndex: 'summaryDistance',
+        flex: 1,
+        align:'right',
+        renderer: Traccar.AttributeFormatter.getFormatter('distance')
+    }, {
         text: Strings.positionAddress,
         dataIndex: 'address',
         flex: 3,
