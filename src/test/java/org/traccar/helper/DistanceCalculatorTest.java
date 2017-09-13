@@ -9,6 +9,9 @@ public class DistanceCalculatorTest {
     public void testDistance() {
         Assert.assertEquals(
                 DistanceCalculator.distance(0.0, 0.0, 0.05, 0.05), 7863.0, 10.0);
+        
+        Assert.assertEquals(
+            DistanceCalculator.distance(40.0, 40.0, 40.0, 40.0), 0, 0);
     }
 
 }

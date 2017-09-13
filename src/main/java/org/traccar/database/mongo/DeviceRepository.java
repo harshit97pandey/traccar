@@ -6,8 +6,6 @@ import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.traccar.Config;
 import org.traccar.database.IdentityManager;
-import org.traccar.geofence.RestrictionType;
-import org.traccar.geofence.RestrictionUnit;
 import org.traccar.model.Device;
 import org.traccar.model.User;
 import org.traccar.webSocket.PositionEventEndpoint;
@@ -163,26 +161,5 @@ public class DeviceRepository extends Repository implements IdentityManager{
         PositionEventEndpoint.sessionRefreshUser(userId);
     }
 
-    public List<RestrictionUnit> getDeviceRestrictions(long deviceId) {
-        MongoCollection<Document> collection = database.getCollection(CollectionName.device);
 
-        List<RestrictionUnit> restrictions = new ArrayList<>();
-
-        Document device = collection.find(new Document("id", deviceId)).first();
-        List<Long> polygons;
-        if (device.containsKey("polygons")) {
-            polygons = device.get("polygons", List.class);
-        } else {
-            polygons = new ArrayList<>();
-        }
-
-        for (Long polygon : polygons) {
-            RestrictionUnit r = new RestrictionUnit();
-            r.setPolygonId(polygon);
-            r.setRestrictionType(RestrictionType.INTO_AREA);
-
-            restrictions.add(r);
-        }
-        return restrictions;
-    }
 }

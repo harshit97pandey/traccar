@@ -1,6 +1,9 @@
 package org.traccar.geofence;
 
+import org.traccar.geofence.restrictions.RestrictionUnit;
+
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by niko on 1/3/16.
@@ -8,17 +11,13 @@ import java.util.Date;
 public class Notification {
     private long id;
 
-    private RestrictionUnit restrictionUnit;
+    private List<RestrictionUnit> restrictionUnits;
 
     private long deviceId;
 
     private Date creationDate;
 
     private long positionId;
-
-    private long polygonId;
-
-    private String polygonName;
 
     private boolean seen;
 
@@ -34,12 +33,12 @@ public class Notification {
         this.id = id;
     }
 
-    public RestrictionUnit getRestrictionUnit() {
-        return restrictionUnit;
+    public List<RestrictionUnit> getRestrictionUnits() {
+        return restrictionUnits;
     }
 
-    public void setRestrictionUnit(RestrictionUnit restrictionUnit) {
-        this.restrictionUnit = restrictionUnit;
+    public void setRestrictionUnits(List<RestrictionUnit> restrictionUnits) {
+        this.restrictionUnits = restrictionUnits;
     }
 
     public long getDeviceId() {
@@ -64,22 +63,6 @@ public class Notification {
 
     public void setPositionId(long positionId) {
         this.positionId = positionId;
-    }
-
-    public long getPolygonId() {
-        return polygonId;
-    }
-
-    public void setPolygonId(long polygonId) {
-        this.polygonId = polygonId;
-    }
-
-    public String getPolygonName() {
-        return polygonName;
-    }
-
-    public void setPolygonName(String polygonName) {
-        this.polygonName = polygonName;
     }
 
     public boolean isSeen() {
